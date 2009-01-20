@@ -1,0 +1,80 @@
+package javatools.filehandlers;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Writer;
+
+import javatools.parsers.Char;
+
+/** 
+This class is part of the Java Tools (see http://mpii.de/~suchanek/downloads/javatools).
+It is licensed under the Creative Commons Attribution License 
+(see http://creativecommons.org/licenses/by/3.0) by 
+Fabian M. Suchanek (see http://mpii.de/~suchanek).
+  
+If you use the class for scientific purposes, please cite our paper
+  Fabian M. Suchanek, Georgiana Ifrim and Gerhard Weikum
+  "Combining Linguistic and Statistical Analysis to Extract Relations from Web Documents" (SIGKDD 2006)
+
+This allows to write characters as UTF8 to a file<BR>
+Example:
+<PRE>
+     Writer w=new UTF8Writer("c:\\blah.blb");
+     w.write(Char.decodePercentage("Hall&ouml;chen"));
+     w.close();
+</PRE>
+*/
+public class UTF8Writer extends Writer {
+
+  /** The real writer */
+  protected OutputStream out;
+  
+  /** Writes to a file*/
+  public UTF8Writer(File f, boolean append) throws IOException{
+    this(new FileOutputStream(f,append));
+  }
+  
+  /** Writes to a file*/
+  public UTF8Writer(File f) throws IOException{
+    this(f,false);
+  }
+
+  /** Writes to a file*/
+  public UTF8Writer(String f) throws IOException{
+    this(new File(f));
+  }
+  
+  /** Writes to a writer*/
+  public UTF8Writer(OutputStream f){
+    out=f;
+  }
+
+  @Override
+  public void close() throws IOException {
+     out.close();    
+  }
+
+  @Override
+  public void flush() throws IOException {
+    out.flush();
+  }
+
+  @Override
+  public void write(char[] cbuf, int off, int len) throws IOException {
+    for(int i=off;i<off+len;i++) write(cbuf[i]);
+  }
+
+  @Override
+  public void write(int c) throws IOException {
+    String s=Char.encodeUTF8(c);
+    for(int i=0;i<s.length();i++) out.write((byte)s.charAt(i));
+  }
+  
+  /** Writes a line*/
+  public void writeln(String s) throws IOException {
+    write(s);
+    write("\n");
+  }
+  
+}
