@@ -1126,7 +1126,7 @@ public class Char {
 
   /** Returns an HTML-String of the String */
   public static String toHTML(String s) {
-    return(Char.encodeAmpersand(s.replace("\n", "<BR>")));
+    return(Char.encodeAmpersand(s).replace("&#10;", "<BR>"));
   }
   
   /** Returns the chars of a String in hex */
@@ -1172,7 +1172,7 @@ public class Char {
   }
   
   /** Test routine */
-  public static void main(String argv[]) throws Exception {      
+  public static void main(String argv[]) throws Exception {         
     System.out.println("Enter a string with HTML ampersand codes, umlauts and/or UTF-8 codes and hit ENTER.");
     System.out.println("Press CTRL+C to abort");
     BufferedReader in=new BufferedReader(new InputStreamReader(System.in));
