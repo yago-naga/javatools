@@ -1,4 +1,5 @@
 package javatools.filehandlers;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,38 +12,38 @@ import javatools.administrative.Announce;
 import javatools.parsers.Char;
 
 /** 
-This class is part of the Java Tools (see http://mpii.de/~suchanek/downloads/javatools).
-It is licensed under the Creative Commons Attribution License 
-(see http://creativecommons.org/licenses/by/3.0) by 
-Fabian M. Suchanek (see http://mpii.de/~suchanek).
-  
-If you use the class for scientific purposes, please cite our paper
-  Fabian M. Suchanek, Georgiana Ifrim and Gerhard Weikum
-  "Combining Linguistic and Statistical Analysis to Extract Relations from Web Documents" (SIGKDD 2006)
+ This class is part of the Java Tools (see http://mpii.de/~suchanek/downloads/javatools).
+ It is licensed under the Creative Commons Attribution License 
+ (see http://creativecommons.org/licenses/by/3.0) by 
+ Fabian M. Suchanek (see http://mpii.de/~suchanek).
+ 
+ If you use the class for scientific purposes, please cite our paper
+ Fabian M. Suchanek, Georgiana Ifrim and Gerhard Weikum
+ "Combining Linguistic and Statistical Analysis to Extract Relations from Web Documents" (SIGKDD 2006)
 
-  This class can read characters from a file that is UTF8 encoded.<BR>
-  Example:
-  <PRE>
-     Reader f=new UTF8Reader(new File("blah.blb"));
-     int c;
-     while((c=f.read())!=-1) System.out.print(Char.normalize(c));
-     f.close();
-  </PRE>
-*/
+ This class can read characters from a file that is UTF8 encoded.<BR>
+ Example:
+ <PRE>
+ Reader f=new UTF8Reader(new File("blah.blb"));
+ int c;
+ while((c=f.read())!=-1) System.out.print(Char.normalize(c));
+ f.close();
+ </PRE>
+ */
 public class UTF8Reader extends Reader {
 
   /** Holds the input Stream */
   protected InputStream in;
-  
+
   /** number of chars for announce */
-  protected long numBytesRead=0;
-  
+  protected long numBytesRead = 0;
+
   /** tells whether we want a progress bar*/
-  protected boolean progressBar=false;
-  
+  protected boolean progressBar = false;
+
   /** Constructs a UTF8Reader from a Reader */
   public UTF8Reader(InputStream s) {
-    in=s;
+    in = s;
   }
 
   /** Constructs a UTF8Reader for an URL 
@@ -50,7 +51,7 @@ public class UTF8Reader extends Reader {
   public UTF8Reader(URL url) throws IOException {
     this(url.openStream());
   }
-  
+
   /** Constructs a UTF8Reader from a File */
   public UTF8Reader(File f) throws FileNotFoundException {
     this(new FileInputStream(f));
@@ -59,7 +60,7 @@ public class UTF8Reader extends Reader {
   /** Constructs a UTF8Reader from a File, makes a nice progress bar */
   public UTF8Reader(File f, String message) throws FileNotFoundException {
     this(new FileInputStream(f));
-    progressBar=true;
+    progressBar = true;
     Announce.progressStart(message, f.length());
   }
 
@@ -69,67 +70,97 @@ public class UTF8Reader extends Reader {
   }
 
   /** Constructs a UTF8Reader from a File, makes a nice progress bar */
-  public UTF8Reader(String f, String message) throws FileNotFoundException {    
+  public UTF8Reader(String f, String message) throws FileNotFoundException {
     this(new File(f), message);
   }
 
   @Override
   public void close() throws IOException {
-    if(in==null) return;
+    if (in == null) return;
     in.close();
-    in=null;
-    if(progressBar) Announce.progressDone();
-    progressBar=false;     
+    in = null;
+    if (progressBar) Announce.progressDone();
+    progressBar = false;
   }
 
   @Override
   public int read(char[] cbuf, int off, int len) throws IOException {
-    if(in==null) return(-1);
+    if (in == null) return (-1);
     int c;
-    int numRead=0;
-    while(numRead<len) {
-      c=read();
-      if(c==-1) {
+    int numRead = 0;
+    while (numRead < len) {
+      c = read();
+      if (c == -1) {
         close();
-        if(numRead>0) return(numRead);
-        else return(-1);
-      }      
-      cbuf[off++]=(char)c;
+        if (numRead > 0) return (numRead);
+        else return (-1);
+      }
+      cbuf[off++] = (char) c;
       numRead++;
     }
-    return numRead;  
+    return numRead;
   }
 
   @Override
   public int read() throws IOException {
-    if(in==null) return(-1);
-    int c=in.read(); 
-    if(c==-1) {
-      close();      
-      return(-1);
+    if (in == null) return (-1);
+    int c = in.read();
+    if (c == -1) {
+      close();
+      return (-1);
     }
-    int len=Char.Utf8Length((char)c);
-    numBytesRead+=len;
-    if(progressBar) Announce.progressAt(numBytesRead);    
-    switch(len) {
-      case 2: return(Char.eatUtf8(((char)c)+""+((char)in.read()),Char.eatLength));
-      case 3: return(Char.eatUtf8(((char)c)+""+((char)in.read())+((char)in.read()),Char.eatLength));
-      case 4: return(Char.eatUtf8(((char)c)+""+((char)in.read())+((char)in.read())+((char)in.read()),Char.eatLength));
-      default: return(c);
-    }    
+    int len = Char.Utf8Length((char) c);
+    numBytesRead += len;
+    if (progressBar) Announce.progressAt(numBytesRead);
+    switch (len) {
+      case 2:
+        return (Char.eatUtf8(((char) c) + "" + ((char) in.read()), Char.eatLength));
+      case 3:
+        return (Char.eatUtf8(((char) c) + "" + ((char) in.read()) + ((char) in.read()), Char.eatLength));
+      case 4:
+        return (Char.eatUtf8(((char) c) + "" + ((char) in.read()) + ((char) in.read()) + ((char) in.read()), Char.eatLength));
+      default:
+        return (c);
+    }
   }
-  
-  /** Returns the number of bytes read from the underlying stream*/ 
+
+  /** Returns the number of bytes read from the underlying stream*/
   public long numBytesRead() {
-    return(numBytesRead);
+    return (numBytesRead);
   }
-  
+
+  /** Reads a line */
+  public String readLine() throws IOException {
+    if (in == null) return (null);
+    StringBuilder result = new StringBuilder();
+    loop: while (true) {
+      int c = read();
+      switch (c) {
+        case -1:
+          close();
+          break loop;
+        case 13:
+          break;
+        case 0x85:
+        case 0x0C:
+        case 0x2028:
+        case 0x2029:
+        case 10:
+          break loop;
+        default:
+          result.append((char) c);
+      }
+    }
+    return (result.toString());
+  }
+
   /** Test method
    * @throws IOException   */
   public static void main(String[] args) throws IOException {
-    Reader f=new UTF8Reader(new File("blah.blb"));
+    Reader f = new UTF8Reader(new File("blah.blb"));
     int c;
-    while((c=f.read())!=-1) System.out.print(Char.normalize(c));
+    while ((c = f.read()) != -1)
+      System.out.print(Char.normalize(c));
     f.close();
   }
 

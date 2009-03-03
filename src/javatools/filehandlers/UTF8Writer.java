@@ -74,7 +74,12 @@ public class UTF8Writer extends Writer {
   /** Writes a line*/
   public void writeln(String s) throws IOException {
     write(s);
-    write("\n");
+    write('\n');
+  }
+  
+  /** Writes a string*/
+  public void write(String s) throws IOException {
+    for(int i=0;i<s.length();i++) write(s.charAt(i));
   }
   
 }
