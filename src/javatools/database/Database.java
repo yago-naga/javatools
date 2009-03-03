@@ -587,7 +587,12 @@ public class Database {
   
   /** Produces a CSV version of the table*/
   public void makeCSV(String table,File output, char separator) throws IOException, SQLException {
-    ResultSet r=query("SELECT * FROM "+table);
+    makeCSVForQuery("SELECT * FROM "+table,output, separator);
+  }
+  
+  /** Produces a CSV version of the query*/
+  public void makeCSVForQuery(String selectCommand,File output, char separator) throws IOException, SQLException {
+    ResultSet r=query(selectCommand);
     Writer out=new UTF8Writer(output);
     int columns = r.getMetaData().getColumnCount();
     for (int column = 1; column <= columns; column++) {
@@ -597,7 +602,8 @@ public class Database {
     }
     while(r.next()) {
       for (int column = 1; column <= columns; column++) {
-        out.write(r.getObject(column).toString());
+        Object o=r.getObject(column);
+        out.write(o==null?"null":o.toString());
         if(column==columns) out.write("\n");
         else out.write(separator+" ");
       }
