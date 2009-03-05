@@ -6,7 +6,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Set;
 
+import javatools.datatypes.FinalSet;
 import javatools.parsers.NumberFormatter;
 /** 
 This class is part of the Java Tools (see http://mpii.de/~suchanek/downloads/javatools).
@@ -461,6 +463,12 @@ public class Announce implements Closeable {
     current.printTimeO();
   }
 
+  protected static final Set<String> helpCommands=new FinalSet<String>("-help","--help","-h","--h","-?","/?","/help");
+  
+  /** Says whether a command line argument asks for help*/
+  public static boolean isHelp(String arg) {
+    return(helpCommands.contains(arg.toLowerCase()));
+  }
   /** Test routine */
   public static void main(String[] args) {
     Announce.startTimer();
