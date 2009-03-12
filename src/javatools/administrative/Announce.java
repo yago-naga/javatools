@@ -82,7 +82,9 @@ public class Announce implements Closeable {
   protected boolean printedEstimatedTime;
   /** Memorizes the timer */
   protected long timer;
-
+  /** TRUE if debugging is on*/
+  public static boolean debug;
+  
   /** Creates a new Announce object with default settings */
   public Announce() {
   }
@@ -344,6 +346,7 @@ public class Announce implements Closeable {
 
   /** Prints a debug message with the class and method name preceeding */
   public static void debug(Object... o) {
+    if(!debug) return;
     current.newLineO();
     current.printO(CallStack.toString(new CallStack().ret().top())+": ");
     current.printO(o);
@@ -469,6 +472,12 @@ public class Announce implements Closeable {
   public static boolean isHelp(String arg) {
     return(helpCommands.contains(arg.toLowerCase()));
   }
+  
+  /** Switch debugging*/
+  public static void setDebug(boolean b) {
+    debug=b;
+  }
+  
   /** Test routine */
   public static void main(String[] args) {
     Announce.startTimer();

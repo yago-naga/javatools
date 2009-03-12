@@ -1130,10 +1130,21 @@ public class Char {
   }
   
   /** Returns the chars of a String in hex */
-  public static String hex(String s) {
+  public static String hexAll(String s) {
     StringBuilder result=new StringBuilder();
     for(int i=0;i<s.length();i++) {
-      result.append(Integer.toHexString(s.charAt(i))).append(' ');
+      result.append(Integer.toHexString(s.charAt(i)).toUpperCase()).append(' ');
+    }
+    return(result.toString());
+  }
+  
+  /** Replaces special characters in the string by hex codes (cannot be undone)*/
+  public static String encodeHex(String s) {
+    StringBuilder result=new StringBuilder();
+    for(int i=0;i<s.length();i++) {
+      char c=s.charAt(i);
+      if(isAlphanumeric(c)) result.append(c);
+      else result.append(Integer.toHexString(s.charAt(i)).toUpperCase());
     }
     return(result.toString());
   }

@@ -40,6 +40,10 @@ public class UTF8Writer extends Writer {
     this(f,false);
   }
 
+  /** Writes nowhere*/
+  public UTF8Writer() {
+  }
+
   /** Writes to a file*/
   public UTF8Writer(String f) throws IOException{
     this(new File(f));
@@ -52,12 +56,12 @@ public class UTF8Writer extends Writer {
 
   @Override
   public void close() throws IOException {
-     out.close();    
+     if(out!=null) out.close();    
   }
 
   @Override
   public void flush() throws IOException {
-    out.flush();
+    if(out!=null) out.flush();
   }
 
   @Override
@@ -67,6 +71,7 @@ public class UTF8Writer extends Writer {
 
   @Override
   public void write(int c) throws IOException {
+    if(out==null) return;
     String s=Char.encodeUTF8(c);
     for(int i=0;i<s.length();i++) out.write((byte)s.charAt(i));
   }

@@ -3,10 +3,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
+
+import javatools.parsers.Char;
 /** 
 This class is part of the Java Tools (see http://mpii.de/~suchanek/downloads/javatools).
 It is licensed under the Creative Commons Attribution License 
@@ -172,6 +176,13 @@ public class D {
   public static void writeln(Writer out, Object s) throws IOException {
     out.write(s.toString());
     out.write("\n");
+  }
+
+  /** Writes a line to a writer. Yes, this is possible */
+  public static void writeln(OutputStream out, Object s) throws IOException {
+    String string=Char.encodeUTF8(s.toString());
+    for(int i=0;i<string.length();i++) out.write(string.charAt(i));
+    out.write('\n');
   }
 
   /** Writes a line silently to a writer. Yes, this is possible */
