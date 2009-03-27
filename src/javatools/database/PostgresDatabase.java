@@ -49,7 +49,7 @@ public class PostgresDatabase extends Database {
     type2SQL.put(Types.VARCHAR,varchar);    
   }
   
-  /** Constructs a new OracleDatabase from a user, a password and a host
+  /** Constructs a new Database from a user, a password and a host
    * @throws ClassNotFoundException 
    * @throws IllegalAccessException 
    * @throws InstantiationException 
@@ -70,6 +70,11 @@ public class PostgresDatabase extends Database {
     description="Postgres database for "+user+" at "+host+":"+port+", database "+database+" schema "+schema;
   }  
 
+  /** Constructs a new Database from a user, a password and a host*/
+  public PostgresDatabase(String user, String password, String database, String host, String port,String schema) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException  {
+    this(user,password,database,host,port);
+    setSchema(schema);
+  }
   /** Sets the default schema*/
   public void setSchema(String s) throws SQLException {
     executeUpdate("SET search_path TO "+s+", public");

@@ -1,15 +1,19 @@
 package javatools.administrative;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import basics.configuration.DBConfig.DatabaseParameters;
+
+import javatools.database.Database;
+import javatools.database.MySQLDatabase;
+import javatools.database.OracleDatabase;
+import javatools.database.PostgresDatabase;
 import javatools.datatypes.FinalSet;
-import javatools.filehandlers.DeepFileSet;
 import javatools.filehandlers.FileLines;
 
 /** 
@@ -75,7 +79,32 @@ public class Parameters {
   public static File getFile(String s) throws UndefinedParameterException {
     return(new File(get(s)));
   }
-  
+
+  /** Returns a value for a file or folder parameter, returning the default value if undefined*/
+  public static File getFile(String s, File defaultValue) throws UndefinedParameterException {
+    return(isDefined(s)?new File(get(s)):defaultValue);
+  }
+
+  /** Returns a value for an integer parameter*/
+  public static int getInt(String s) throws UndefinedParameterException {
+    return(Integer.parseInt(get(s)));
+  }
+
+  /** Returns a value for an integer parameter returning the default value if undefined*/
+  public static int getInt(String s, int defaultValue) throws UndefinedParameterException {
+    return(isDefined(s)?Integer.parseInt(get(s)):defaultValue);
+  }
+
+  /** Returns a value for an integer parameter*/
+  public static double getDouble(String s) throws UndefinedParameterException {
+    return(Double.parseDouble(get(s)));
+  }
+
+  /** Returns a value for an integer parameter returning the default value if undefined*/
+  public static double getDouble(String s, double defaultValue) throws UndefinedParameterException {
+    return(isDefined(s)?Double.parseDouble(get(s)):defaultValue);
+  }
+
   /** Returns a value for a boolean parameter */
   public static boolean getBoolean(String s) throws UndefinedParameterException  {
     String v=get(s);
@@ -121,20 +150,16 @@ public class Parameters {
     }
   }
   
-  /** Seeks the file in all subfolders of the current folder
-   * and initializes*/
-  public static void initAnywhere(String filename) throws IOException {
-    initAnywhere(new File("."),filename);
-  }
-  
-  /** Seeks the file (possibly given by wildcards) in all subfolders
-   * and initializes*/
-  public static void initAnywhere(File folder, String wildcard) throws IOException {
-    Iterator<File> i=new DeepFileSet(folder,wildcard);
-    if(!i.hasNext()) throw new FileNotFoundException(folder+":"+wildcard);
-    File f=i.next();
-    if(i.hasNext()) throw new FileNotFoundException("INI file occurs twice in folder tree "+folder+":"+wildcard);
-    init(f);
+  /** Seeks the file in all given folders*/
+  public static void init(String filename, File... folders) throws IOException {
+    boolean found=false;
+    for(File folder : folders) {
+      if(new File(folder,filename).exists()) {
+        if(found) throw new IOException("INI-file "+filename+"occurs twice in given folders");
+        init(new File(folder,filename));
+        found=true;
+      }
+    }
   }
   
   /** Tells whether a parameter is defined */
@@ -155,10 +180,7 @@ public class Parameters {
     if(values==null) throw new RuntimeException("Call init() before ensureParameters()!");
     boolean OK=true;
     for(String s : p) {
-      String pname=s.indexOf(' ')==-1?s:s.substring(0,s.indexOf(' '));
-      try {
-        get(pname);
-      } catch(Exception e) {
+      if(!isDefined(s)) {
         if(OK) System.err.println("\n\nError: The following parameters are undefined in "+iniFile);
         System.err.println("    "+s);
         OK=false;
@@ -193,6 +215,56 @@ public class Parameters {
   public static void reset() {
     iniFile=null;
     values=null;
+  }
+  
+  /** Returns the database defined in this ini-file*/
+  public static Database getDatabase() throws Exception {
+    Parameters.ensureParameters("databaseSystem - either Oracle, Postgres or MySQL",
+        "databaseUser - the user name for the database (also: databaseDatabase, databaseInst,databasePort,databaseHost,databaseSchema)",
+        "databasePassword - the password for the database"
+    );
+        
+    // Retrieve the obligatory parameters
+    String system=Parameters.get("databaseSystem").toUpperCase();
+    String user=Parameters.get("databaseUser");    
+    String password=Parameters.get("databasePassword");
+    String host=null;
+    String schema=null;
+    String inst=null;
+    String port=null;
+    String database=null;
+    
+    // Retrieve the optional parameters
+    try {
+      host=Parameters.get("databaseHost");
+    } catch(Exception e){};
+    try {
+      schema=Parameters.get("databaseSchema");
+    } catch(Exception e){};
+    try {
+      port=Parameters.get("databasePort");    
+    } catch(Exception e){};          
+    try {
+      inst=Parameters.get("databaseSID");
+    } catch(Parameters.UndefinedParameterException e) {}
+    try {
+      database=Parameters.get("databaseDatabase");
+    } catch(Parameters.UndefinedParameterException e) {}    
+    
+    // Initialize the database
+    // ------ ORACLE ----------
+    if(system.equals("ORACLE")) {
+      return(new OracleDatabase(user,password,host,port,inst));
+    }
+    //  ------ MySQL----------
+    if(system.equals("MYSQL")) {
+      return(new MySQLDatabase(user,password,database,host,port));
+    }
+    //  ------ Postgres----------
+    if(system.equals("POSTGRES")) {
+      return(new PostgresDatabase(user,password,database,host,port,schema));
+    }
+    throw new RuntimeException("Unsupported database system "+system);
   }
   
   /** Test routine */
