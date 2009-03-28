@@ -98,6 +98,7 @@ public class IntSet implements Set<Integer> {
     }
   }
   
+  /** Removes an item*/
   protected int removeIndex(int index) {
     isThere.set(index, false);
     numElements--; 

@@ -294,7 +294,7 @@ public class D {
   }
 
   /** Returns the index of a thing in an array or -1*/
-  public static int indexOf(Object o, Object[] os) {
+  public static int indexOf(Object o, Object... os) {
     for (int i = 0; i < os.length; i++) {
       if (D.equal(os[i], o)) return (i);
     }

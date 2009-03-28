@@ -1,13 +1,11 @@
 package javatools.administrative;
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import basics.configuration.DBConfig.DatabaseParameters;
 
 import javatools.database.Database;
 import javatools.database.MySQLDatabase;
@@ -67,12 +65,13 @@ public class Parameters {
   /** Holds the pattern used for ini-file-entries */
   public static Pattern INIPATTERN=Pattern.compile(" *(\\w+) *= *(.*) *");
 
-  /** Holds words that count as "yes" for boolean parameters */
-  public static FinalSet<String> yes=new FinalSet<String>(new String [] {
-        "active",
-        "on",
-        "true",
-        "yes"
+  /** Holds words that count as "no" for boolean parameters */
+  public static FinalSet<String> no=new FinalSet<String>(new String [] {
+        "inactive",
+        "off",
+        "false",
+        "no",
+        "none"
   });
 
   /** Returns a value for a file or folder parameter */
@@ -108,13 +107,13 @@ public class Parameters {
   /** Returns a value for a boolean parameter */
   public static boolean getBoolean(String s) throws UndefinedParameterException  {
     String v=get(s);
-    return(yes.contains(v.toLowerCase()));
+    return(!no.contains(v.toLowerCase()));
   }
 
   /** Returns a value for a boolean parameter, returning a default value by default */
   public static boolean getBoolean(String s, boolean defaultValue) {
     String v=get(s,defaultValue?"yes":"no");
-    return(yes.contains(v.toLowerCase()));
+    return(!no.contains(v.toLowerCase()));
   }
 
   /** Returns a value for a parameter*/
@@ -265,6 +264,11 @@ public class Parameters {
       return(new PostgresDatabase(user,password,database,host,port,schema));
     }
     throw new RuntimeException("Unsupported database system "+system);
+  }
+  
+  /** Returns all defined parameters*/
+  public static Set<String> parameters() {
+    return(values.keySet());
   }
   
   /** Test routine */
