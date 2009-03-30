@@ -193,6 +193,7 @@ public class Announce {
   /** Prints an error message and aborts (aborts even if log level is mute)*/
   public static void error(Object... o) {
     if (D.smaller(level, Level.ERROR)) System.exit(255);
+    if(!cursorAtPos1) failed();
     newLine();
     print("Error:");
     print(o);

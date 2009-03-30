@@ -32,7 +32,13 @@ public class CombinedIterator<T> implements  Iterator<T>, Iterable<T> {
     iterators.offer(i1);
     iterators.offer(i2);
   }  
-  /** Creates a CombinedIterator from some iterators */
+  /** Creates a CombinedIterator three iterators */
+  public CombinedIterator(Iterator<? extends T> i1, Iterator<? extends T> i2, Iterator<? extends T> i3) {
+    iterators.offer(i1);
+    iterators.offer(i2);
+    iterators.offer(i3);
+  }  
+  /** Creates a CombinedIterator from some iterators (may give a (useless) Java compiler warning)*/
   public CombinedIterator(Iterator<? extends T>... its) {
     for(Iterator<? extends T> i : its) iterators.offer(i);
   }
@@ -57,6 +63,8 @@ public class CombinedIterator<T> implements  Iterator<T>, Iterable<T> {
   public Iterator<T> iterator() {
     return(this);
   }
-  /** Does nothing */
-  public void remove(){}
+  /** Removes the current item*/
+  public void remove(){
+    iterators.peek().remove();
+  }
 }
