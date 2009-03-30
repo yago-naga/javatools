@@ -141,8 +141,12 @@ public class DateParser {
     new FindReplace(M+B+N+B+","+B+Y,newDate("$3", "$1", "$2")),
     // 23[rd] November 1998
     new FindReplace(N+B+M+B+Y,newDate("$3", "$2", "$1")),
+    // the 23[rd] of November 1998
+    new FindReplace("the "+N+B+"of"+B+M+B+Y,newDate("$3", "$2", "$1")),
     // 23[rd] of November 1998
     new FindReplace(N+B+"of"+B+M+B+Y,newDate("$3", "$2", "$1")),
+    // 1.11.1998
+    new FindReplace(N+"\\."+N+"\\."+Y,newDate("$3", "$2", "$1")),
     // 12-Sep-1970
     new FindReplace(N+H+M+H+Y,newDate("$3", "$2", "$1")),
 
@@ -207,7 +211,7 @@ public class DateParser {
     // Replace all the months
     Matcher m=monthPattern.matcher(s);
     while(m.find()) {
-        int monthNum=D.indexOf(m.group().substring(0,3), MONTHS)+1;
+        int monthNum=D.indexOf(m.group().substring(0,3), (Object[])MONTHS)+1;
         m.appendReplacement(in, "MONTH"+(monthNum/10)+(monthNum%10));                
     }
     m.appendTail(in);

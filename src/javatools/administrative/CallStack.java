@@ -36,7 +36,7 @@ Example:<BR>
 */
 public class CallStack {
   /** Holds the call stack */
-  public Stack<StackTraceElement> callstack=new Stack<StackTraceElement>();
+  protected Stack<StackTraceElement> callstack=new Stack<StackTraceElement>();
   
   /** Constructs a call stack from the current program position (without the constructor call)*/
   public CallStack() {
@@ -75,11 +75,11 @@ public class CallStack {
     return(callstack.peek());
   }
 
-  /** Gives the calling position as a nice String */
-  public static String here() {
+  /** Gives the calling position */
+  public static StackTraceElement here() {
     CallStack p=new CallStack();
     p.callstack.pop();
-    return(toString(p.callstack.peek()));
+    return(p.callstack.peek());
   }
   
   /** Returns the callstack */

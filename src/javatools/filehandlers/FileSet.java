@@ -64,8 +64,8 @@ public class FileSet extends ArrayList<File> {
           return(wildcard.matcher(pathname.getName()).matches());
         }
       });
-    // Stupid, but the internal array is inaccessible
     if(files==null) throw new RuntimeException("Can't find files in "+path);
+    // Stupid, but the internal array is inaccessible
     ensureCapacity(files.length);
     for(File f1 : files) add(f1);
   }

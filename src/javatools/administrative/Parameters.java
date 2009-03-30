@@ -178,15 +178,15 @@ public class Parameters {
   public static void ensureParameters(String... p) {
     if(values==null) throw new RuntimeException("Call init() before ensureParameters()!");
     boolean OK=true;
+    StringBuilder b=new StringBuilder("The following parameters are undefined in ").append(iniFile);
     for(String s : p) {
       if(!isDefined(s)) {
-        if(OK) System.err.println("\n\nError: The following parameters are undefined in "+iniFile);
-        System.err.println("    "+s);
+        b.append("\n       ").append(s);
         OK=false;
       }
     }
     if(OK) return;
-    System.exit(255);
+    Announce.error(b.toString());
   }
 
   /** Parses the arguments of the main method and tells whether a parameter is on or off */
