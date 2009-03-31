@@ -75,7 +75,7 @@ public class Announce {
   public static int MAXDOTS = 40;
 
   /** Where to write to (default: System.err) */
-  protected static Writer out = new BufferedWriter(new OutputStreamWriter(System.err));
+  protected static Writer out = new BufferedWriter(new OutputStreamWriter(System.out));
 
   /** Indentation level */
   protected static int doingLevel = -1;
