@@ -78,7 +78,7 @@ public class Announce {
   protected static Writer out = new BufferedWriter(new OutputStreamWriter(System.out));
 
   /** Indentation level */
-  protected static int doingLevel = -1;
+  protected static int doingLevel = 0;
 
   /** Are we at the beginning of a line?*/
   protected static boolean cursorAtPos1 = true;
@@ -124,30 +124,20 @@ public class Announce {
     level = l;
   }
 
+  /** Blanks*/
+  protected static final String blanks="                                                                  ";
+  
+  /** Returns blanks*/
+  protected static String blanks() {
+    if(doingLevel<=0) return("");
+    if(doingLevel*2>=blanks.length()) return(blanks);
+    return(blanks.substring(0, doingLevel*2));
+  }
   /** Internal printer */
   protected static void print(Object... o) {
     try {
-      if (cursorAtPos1) {
-        for (int i = 0; i <= doingLevel; i++) {
-          out.write("  ");
-        }
-      }
-      if (o == null) {
-        out.write("null");
-      } else {
-        for (int i = 0; i < o.length; i++) {
-          if (o[i] == null) {
-            out.write("null");
-            continue;
-          }
-          if (o[i].getClass().isArray()) {
-            out.write(Arrays.deepToString((Object[]) o[i]));
-          } else {
-            out.write(o[i].toString());
-          }
-          if (i != o.length - 1) out.write(" ");
-        }
-      }
+      if (cursorAtPos1) out.write(blanks());
+      out.write(D.toString(o).replace("\n", "\n"+blanks()));
       out.flush();
     } catch (IOException e) {
     }
@@ -176,7 +166,7 @@ public class Announce {
   /** Prints a debug message with the class and method name preceeding */
   public static void debug(Object... o) {
     if (D.smaller(level, Level.DEBUG)) return;
-    newLine();
+    newLine();    
     print(CallStack.toString(new CallStack().ret().top()) + ": ");
     print(o);
     newLine();
@@ -193,9 +183,9 @@ public class Announce {
   /** Prints an error message and aborts (aborts even if log level is mute)*/
   public static void error(Object... o) {
     if (D.smaller(level, Level.ERROR)) System.exit(255);
-    if(!cursorAtPos1) failed();
+    while(doingLevel>0) failed();
     newLine();
-    print("Error:");
+    print("Error: ");
     print(o);
     newLine();
     System.exit(255);
@@ -212,8 +202,10 @@ public class Announce {
   public static void warning(Object... o) {
     if (D.smaller(level, Level.WARNING)) return;
     newLine();
-    print("Warning: ");
+    print("Warning:");
+    doingLevel+=4;
     print(o);
+    doingLevel-=4;
     newLine();
   }
 
@@ -238,20 +230,20 @@ public class Announce {
 
   /** Writes "failed NEWLINE" */
   public static void failed() {
-    if (doingLevel >= 0) {
+    if (doingLevel > 0) {
       doingLevel--;
       if (D.smaller(level, Level.STATE)) return;
-      print("failed");
+      print(" failed");
       newLine();
     }
   }
 
   /** Writes "done NEWLINE"*/
   public static void done() {
-    if (doingLevel >= 0) {
+    if (doingLevel > 0) {
       doingLevel--;
       if (D.smaller(level, Level.STATE)) return;
-      print("done");
+      print(" done");
       newLine();
     }
   }
@@ -271,7 +263,7 @@ public class Announce {
     progressCounter=0;
     if (!D.smaller(level, Level.STATE)) {
       newLine();
-      print(s + "...");
+      print(s,"...");
     }
     doingLevel++;
   }

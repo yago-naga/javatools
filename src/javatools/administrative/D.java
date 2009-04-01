@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
@@ -74,27 +75,19 @@ public class D {
   public static Object p(Object... a) {
     pl(a);
     System.out.println("");
-    if(a==null||a.length==0) return(null);
-    if(a.length==1) return(a[0]);
-    return(a);
+    if (a == null || a.length == 0) return (null);
+    if (a.length == 1) return (a[0]);
+    return (a);
   }
 
   /** Prints some Objects */
   public static Object println(Object... a) {
-    return(p(a));
+    return (p(a));
   }
-  
+
   /** Prints some Objects on one line */
-  public static void pl(Object... a) {
-    if (a.length != 0) {
-      i();
-      if (a == null) {
-        System.out.print("null-array");
-        return;
-      }
-      for (Object o : a)
-        System.out.print(o + " ");
-    }
+  public static void pl(Object... a) {    
+    System.out.print(toString(a));
   }
 
   /** Prints an array of integers*/
@@ -149,7 +142,8 @@ public class D {
   public static void waitMS(long milliseconds) {
     try {
       Thread.sleep(milliseconds);
-    } catch(InterruptedException ex) {}
+    } catch (InterruptedException ex) {
+    }
   }
 
   /** Returns the intersection of two enumsets */
@@ -306,13 +300,30 @@ public class D {
     return (e1.ordinal() < e2.ordinal());
   }
 
-  /** Returns the String rep of an array */
-  public static String toString(Object[] os) {
-    StringBuilder b = new StringBuilder();
-    for (int i = 0; i < os.length - 1; i++) {
-      b.append(os[i]).append(", ");
+  /** Returns a reasonable String representation of a sequence of things. Handles arrays, deep arrays and NULL.*/
+  public static String toString(Object... o) {
+    if (o == null) {
+      return ("null");
     }
-    if (os.length > 0) b.append(os[os.length - 1]);
+    StringBuilder b = new StringBuilder();
+    for (int i = 0; i < o.length; i++) {
+      if (o[i] == null) {
+        b.append("null");
+        continue;
+      }
+      if (o[i].getClass().isArray()) {
+        b.append("[");
+        if (((Object[]) o[i]).length != 0) {
+          for (Object obj : (Object[]) o[i]) {
+            b.append(toString(obj)).append(", ");
+          }
+        }
+        b.append("]");
+      } else {
+        b.append(o[i].toString());
+      }
+      if (i != o.length - 1) b.append(" ");
+    }
     return (b.toString());
   }
 }

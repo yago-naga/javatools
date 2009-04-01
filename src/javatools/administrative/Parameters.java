@@ -1,6 +1,8 @@
 package javatools.administrative;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -114,6 +116,12 @@ public class Parameters {
   public static boolean getBoolean(String s, boolean defaultValue) {
     String v=get(s,defaultValue?"yes":"no");
     return(!no.contains(v.toLowerCase()));
+  }
+
+  /** Returns a value for a list parameter */
+  public static List<String> getList(String s) throws UndefinedParameterException  {
+    if(!isDefined(s)) return(null);
+    return(Arrays.asList(get(s).split("\\s*,\\s*")));
   }
 
   /** Returns a value for a parameter*/
