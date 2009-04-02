@@ -125,13 +125,18 @@ public class Announce {
   }
 
   /** Blanks*/
-  protected static final String blanks="                                                                  ";
+  public static final String blanks="                                                                  ";
+  
+  /** Returns blanks*/
+  public static String blanks(int n) {
+   if(n<=0) return("");
+    if(n>=blanks.length()) return(blanks);
+    return(blanks.substring(0, n));    
+  }
   
   /** Returns blanks*/
   protected static String blanks() {
-    if(doingLevel<=0) return("");
-    if(doingLevel*2>=blanks.length()) return(blanks);
-    return(blanks.substring(0, doingLevel*2));
+    return(blanks(doingLevel*2));
   }
   /** Internal printer */
   protected static void print(Object... o) {
@@ -202,10 +207,10 @@ public class Announce {
   public static void warning(Object... o) {
     if (D.smaller(level, Level.WARNING)) return;
     newLine();
-    print("Warning:");
-    doingLevel+=4;
+    print("Warning:  ");
+    doingLevel+=5;
     print(o);
-    doingLevel-=4;
+    doingLevel-=5;
     newLine();
   }
 

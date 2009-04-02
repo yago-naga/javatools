@@ -1124,6 +1124,12 @@ public class Char {
       return(s.length()==0?"":s.substring(0,s.length()-1));
   }
 
+  /** Cuts the last character */
+  public static StringBuilder cutLast(StringBuilder s) {
+    s.setLength(s.length()-1);
+    return(s);
+  }
+
   /** Returns an HTML-String of the String */
   public static String toHTML(String s) {
     return(Char.encodeAmpersand(s).replace("&#10;", "<BR>"));
