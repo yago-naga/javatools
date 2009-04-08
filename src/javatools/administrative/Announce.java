@@ -1,5 +1,4 @@
 package javatools.administrative;
-
 import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.IOException;
@@ -13,16 +12,16 @@ import java.util.Set;
 import javatools.datatypes.FinalSet;
 import javatools.parsers.NumberFormatter;
 
-/** 
+/**
  This class is part of the Java Tools (see http://mpii.de/~suchanek/downloads/javatools).
- It is licensed under the Creative Commons Attribution License 
- (see http://creativecommons.org/licenses/by/3.0) by 
- Fabian M. Suchanek (see http://mpii.de/~suchanek).
- 
- If you use the class for scientific purposes, please cite our paper
- Fabian M. Suchanek, Georgiana Ifrim and Gerhard Weikum
- "Combining Linguistic and Statistical Analysis to Extract Relations from Web Documents" (SIGKDD 2006)
- 
+ It is licensed under the Creative Commons Attribution License
+ (see http://creativecommons.org/licenses/by/3.0) by
+ the YAGO-NAGA team (see http://mpii.de/yago-naga).
+
+
+
+
+
  This class can make progress announcements. The announcements are handled by an object,
  but static methods exist to simplify the calls.<BR>
  Example:
@@ -126,14 +125,14 @@ public class Announce {
 
   /** Blanks*/
   public static final String blanks="                                                                  ";
-  
+
   /** Returns blanks*/
   public static String blanks(int n) {
    if(n<=0) return("");
     if(n>=blanks.length()) return(blanks);
-    return(blanks.substring(0, n));    
+    return(blanks.substring(0, n));
   }
-  
+
   /** Returns blanks*/
   protected static String blanks() {
     return(blanks(doingLevel*2));
@@ -171,7 +170,7 @@ public class Announce {
   /** Prints a debug message with the class and method name preceeding */
   public static void debug(Object... o) {
     if (D.smaller(level, Level.DEBUG)) return;
-    newLine();    
+    newLine();
     print(CallStack.toString(new CallStack().ret().top()) + ": ");
     print(o);
     newLine();
@@ -293,7 +292,7 @@ public class Announce {
   public static void progressStep() {
     progressAt(progressCounter++);
   }
-  
+
   /** Fills missing dots and writes "done NEWLINE"*/
   public static void progressDone() {
     progressAt(progressEnd);

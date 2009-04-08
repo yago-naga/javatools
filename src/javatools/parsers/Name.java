@@ -11,11 +11,11 @@ import javatools.datatypes.FinalSet;
 This class is part of the Java Tools (see http://mpii.de/~suchanek/downloads/javatools).
 It is licensed under the Creative Commons Attribution License 
 (see http://creativecommons.org/licenses/by/3.0) by 
-Fabian M. Suchanek (see http://mpii.de/~suchanek).
+the YAGO-NAGA team (see http://mpii.de/yago-naga).
   
-If you use the class for scientific purposes, please cite our paper
-  Fabian M. Suchanek, Georgiana Ifrim and Gerhard Weikum
-  "Combining Linguistic and Statistical Analysis to Extract Relations from Web Documents" (SIGKDD 2006)
+
+  
+ 
 
 The class Name represents a name. There are three sub-types (subclasses) of names:
 Abbreviations, person names and company names. These subclasses provide methods to

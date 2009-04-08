@@ -16,9 +16,9 @@ import javatools.administrative.D;
 This class is part of the Java Tools (see http://mpii.de/~suchanek/downloads/javatools).
 It is licensed under the Creative Commons Attribution License 
 (see http://creativecommons.org/licenses/by/3.0) by 
-Fabian M. Suchanek (see http://mpii.de/~suchanek).
+the YAGO-NAGA team (see http://mpii.de/yago-naga).
 
-If you use the class for scientific purposes, please cite our paper
+
   
   Fabian M. Suchanek, Milan Vojnovic, Dinan Gunawardena
   "Social Tags: Meaning and Suggestions" (pdf, bib)
