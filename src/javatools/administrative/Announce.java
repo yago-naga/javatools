@@ -237,7 +237,7 @@ public class Announce {
     if (doingLevel > 0) {
       doingLevel--;
       if (D.smaller(level, Level.STATE)) return;
-      print(" failed");
+      print("failed");
       newLine();
     }
   }
@@ -247,7 +247,7 @@ public class Announce {
     if (doingLevel > 0) {
       doingLevel--;
       if (D.smaller(level, Level.STATE)) return;
-      print(" done");
+      print("done");
       newLine();
     }
   }

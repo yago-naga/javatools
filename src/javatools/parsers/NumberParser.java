@@ -540,8 +540,7 @@ public class NumberParser {
   }
   
   /** Test method*/
-  public static void main(String[] argv) throws Exception {    
-    D.p(different("100.7","10000"));
+  public static void main(String[] argv) throws Exception {        
     System.out.println("Enter a string that contains a number and hit ENTER. Press CTRL+C to abort");
     while(true) {
      String in=D.r();
