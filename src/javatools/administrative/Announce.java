@@ -252,6 +252,16 @@ public class Announce {
     }
   }
 
+  /** Writes "done with problems NEWLINE"*/
+  public static void doneWithProbs() {
+    if (doingLevel > 0) {
+      doingLevel--;
+      if (D.smaller(level, Level.STATE)) return;
+      print("done with problems");
+      newLine();
+    }
+  }
+
   /** Calls done() and doing(...)*/
   public static void doneDoing(Object... s) {
     done();
