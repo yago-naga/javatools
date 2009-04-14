@@ -23,36 +23,37 @@ import javatools.filehandlers.UTF8Reader;
 import javatools.filehandlers.UTF8Writer;
 
 /** 
-This class is part of the Java Tools (see http://mpii.de/~suchanek/downloads/javatools).
+This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
 It is licensed under the Creative Commons Attribution License 
 (see http://creativecommons.org/licenses/by/3.0) by 
 the YAGO-NAGA team (see http://mpii.de/yago-naga).
-  
-
-  
- 
-
  * 
  * This abstract class provides a simple Wrapper for an SQL data base. It is
- * implemented by OracleDatabase and MySQLDatabase. <BR>
+ * implemented by OracleDatabase, PostgresDatabase and MySQLDatabase. <BR>
  * Example:
  * 
  * <PRE>
  * 
  * Database d=new OracleDatabase("user","password"); 
- * d.queryColumn("SELECT foodname FROM food WHERE origin=\"Italy\"") 
- * -> [ "Pizza Romana", "Spaghetti alla Bolognese", "Saltimbocca"]
+ * for(String food : d.query("SELECT foodname FROM food", ResultIterator.StringWrapper)) {
+ *   System.out.print(food);
+ * } 
+ * -> Pizza Spaghetti Saltimbocca
+ * </PRE>
  *  
- * Database.describe(d.query("SELECT * FROM food WHERE origin=\"Italy\"") 
- * -> 
- * foodname |origin |calories |
- * ------------------------------ 
- * Pizza Rom|Italy |10000 | 
- * Spaghetti|Italy |8000 |
- * Saltimboc|Italy |8000 |
- * 
+ * It is possible to execute multiple INSERT statements by a bulk loader: 
+ * <PRE>
+ *   d=new OracleDatabase(...);
+ *   Database.Inserter i=d.newInserter(tableName, Types.INTEGER, Types.VARCHAR);
+ *   i.insert(7,"Hallo");
+ *   i.insert(8,"Ciao");   
+ *   ...
+ *   i.close();
  * </PRE>
  * 
+ * The inserters are automatically flushed every 1000 insertions and when
+ * closed. They are flushed and closed when the database is closed.
+ * <P>
  * Unfortunately, the same datatype is called differently on different database
  * systems, behaves differently and is written down differently. There is an
  * ANSI standard, but of course nobody cares. This is why Database.java provides
@@ -87,18 +88,7 @@ the YAGO-NAGA team (see http://mpii.de/yago-naga).
  * facilitate modifying the ANSI types for subclasses, the getSQLType-method is
  * non-static. Implementations of this class should have a noarg-constructor to
  * enable calls to getSQLType without establishing a database connection.
- * 
- * It is possible to execute multiple INSERT statements by a bulk loader: 
- * <PRE>
- *   d=new OracleDatabase(...);
- *   Database.Inserter i=d.newInserter(tableName, Types.INTEGER, Types.VARCHAR);
- *   i.insert(7,"Hallo");
- *   ...
- *   i.close();
- * </PRE>
- * 
- * The inserters are automatically flushed every 1000 insertions and when
- * closed. They are flushed and closed when the database is closed.
+
  */
 public class Database {
 

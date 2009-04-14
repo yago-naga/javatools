@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import javatools.administrative.D;
 import javatools.datatypes.FinalMap;
 /** 
-This class is part of the Java Tools (see http://mpii.de/~suchanek/downloads/javatools).
+This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
 It is licensed under the Creative Commons Attribution License 
 (see http://creativecommons.org/licenses/by/3.0) by 
 the YAGO-NAGA team (see http://mpii.de/yago-naga).
@@ -516,17 +516,24 @@ public class NumberParser {
   }
 
   /** Converts a String that contains a (non-normalized) number to a double or null */
-  public static Double toDouble(CharSequence d) {
+  public static Double getDouble(CharSequence d) {
     String number=getNumber(normalize(d));
     if(number==null) return(null);
     return(new Double(number));
   }
 
   /** Converts a String that contains a (non-normalized) number to a long or null */
-  public static Long toLong(CharSequence d) {
+  public static Long getLong(CharSequence d) {
     String number=getNumber(normalize(d));
     if(number==null) return(null);
     return(new Double(number).longValue());
+  }
+  
+  /** Converts a String that contains a (non-normalized) number to a int or null */
+  public static Integer getInt(CharSequence d) {
+    String number=getNumber(normalize(d));
+    if(number==null) return(null);
+    return(new Double(number).intValue());
   }
   
   /** TRUE if the numbers differ in the unit and or by more than 10% */
@@ -545,7 +552,7 @@ public class NumberParser {
     while(true) {
      String in=D.r();
      System.out.println(normalize(in));
-     System.out.println(toDouble(in));
+     System.out.println(getDouble(in));
     }
   }
 
