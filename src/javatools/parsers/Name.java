@@ -1,4 +1,5 @@
 package javatools.parsers;
+import java.io.File;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -7,6 +8,7 @@ import java.util.regex.Pattern;
 import javatools.administrative.D;
 import javatools.datatypes.FinalMap;
 import javatools.datatypes.FinalSet;
+import javatools.filehandlers.FileLines;
 /** 
 This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
 It is licensed under the Creative Commons Attribution License 
@@ -1722,10 +1724,9 @@ public class Name {
   }
   
   /** Test routine */
-  public static void main(String[] argv) throws Exception {
-    D.p(Name.of("Prof. Dr. Gerard de Melo").describe());
-//    for(String s :new FileLines("./testdata/NameParserTest.txt")) {            
-//        D.p(Name.of(s).describe());
-//    }    
+  public static void main(String[] argv) throws Exception {  
+    for(String s :new FileLines("./javatools/testdata/NameParserTest.txt")) {            
+        D.p(Name.of(s).describe());
+    }    
   }
 }

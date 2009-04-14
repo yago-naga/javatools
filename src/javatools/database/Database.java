@@ -18,7 +18,7 @@ import java.util.Map;
 
 import javatools.administrative.Announce;
 import javatools.administrative.D;
-import javatools.filehandlers.FileLines;
+import javatools.filehandlers.CSVLines;
 import javatools.filehandlers.UTF8Reader;
 import javatools.filehandlers.UTF8Writer;
 
@@ -611,20 +611,19 @@ public class Database {
     close(r);
     Inserter bulki=newInserter(table, types);
     boolean start=true;
-    for(String line : new FileLines(new UTF8Reader(input))) {
-      String[] values=line.split(separator+"\\s*");
+    for(List<String> values : new CSVLines(input)) {
       if(start) {
-        if(values.length!=types.length) {          
-          throw new SQLException("File "+input.getName()+" has "+values.length+" columns, but table "+table+" has "+types.length);
+        if(values.size()!=types.length) {          
+          throw new SQLException("File "+input.getName()+" has "+values.size()+" columns, but table "+table+" has "+types.length);
         }
         start=false;
         continue;
       }
-      if(values.length!=types.length) {
-        Announce.warning("Line cannot be read from file",input.getName(),"into table",table,":\n",line);
+      if(values.size()!=types.length) {
+        Announce.warning("Line cannot be read from file",input.getName(),"into table",table,":\n",values);
         continue;
       }
-      bulki.insert((Object[])values);
+      bulki.insert((Object[])values.toArray());
     }
     bulki.close();
   }

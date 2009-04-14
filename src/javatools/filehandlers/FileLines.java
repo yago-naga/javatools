@@ -15,10 +15,6 @@ It is licensed under the Creative Commons Attribution License
 (see http://creativecommons.org/licenses/by/3.0) by 
 the YAGO-NAGA team (see http://mpii.de/yago-naga).
   
-
-  
- 
-
 The class provides an iterator over the lines in a file<BR>
 Example:
 <PRE>
