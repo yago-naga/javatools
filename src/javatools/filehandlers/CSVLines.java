@@ -19,8 +19,8 @@ This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
   The class provides an iterator over the lines in a comma-separated file<BR>
   Example:
   <PRE>
-      for(String[] columns : new CSVFile("c:\\autoexec.csv")) {
-         System.out.println(column[0],column[1]);
+      for(List<String> columns : new CSVFile("c:\\autoexec.csv")) {
+         System.out.println(columns);
       }
   </PRE>
   Recognizes column headers if introduced by '#'. Recognizes all types of encodings (see Char.decode()).
