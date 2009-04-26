@@ -7,6 +7,7 @@ import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 import javatools.administrative.Announce;
 import javatools.administrative.D;
+import javatools.filehandlers.CSVFile;
 import javatools.filehandlers.CSVLines;
 import javatools.filehandlers.UTF8Reader;
 import javatools.filehandlers.UTF8Writer;
@@ -44,7 +46,7 @@ the YAGO-NAGA team (see http://mpii.de/yago-naga).
  * It is possible to execute multiple INSERT statements by a bulk loader: 
  * <PRE>
  *   d=new OracleDatabase(...);
- *   Database.Inserter i=d.newInserter(tableName, Types.INTEGER, Types.VARCHAR);
+ *   Database.Inserter i=d.newInserter(tableName);
  *   i.insert(7,"Hallo");
  *   i.insert(8,"Ciao");   
  *   ...
@@ -486,32 +488,16 @@ public class Database {
     protected int batchCounter = 0;
     /** Tells after how many commands we will flush the batch*/
     protected static final int BatchSize = 1000;
-    
-    /** Creates a bulk loader for a table with column types given by Java classes*/ 
-    public Inserter(String table, Class... columnTypes) throws SQLException {
-      this.columnTypes = new SQLType[columnTypes.length];
-      for (int i = 0; i < columnTypes.length; i++) {
-        this.columnTypes[i] = getSQLType(columnTypes[i]);
-      }
+        
+    /** Creates a bulk loader*/
+    public Inserter(String table) throws SQLException {
+      ResultSet r=query(limit("SELECT * FROM "+table,1));
+      int[] types=new int[r.getMetaData().getColumnCount()];
+      for(int i=0;i<types.length;i++) columnTypes[i]=getSQLType(r.getMetaData().getColumnType(i+1));
+      Database.close(r);
       tableName = table;
       table = "INSERT INTO " + table + " VALUES(";
-      for (int i = 0; i < columnTypes.length - 1; i++)
-        table = table + "?, ";
-      table += "?)";
-      preparedStatement = connection.prepareStatement(table);
-      inserters.add(this);      
-    }
-    
-    /** Creates a bulk loader with column types from java.sql.Type */
-    public Inserter(String table, int... columnTypes) throws SQLException {
-      this.columnTypes = new SQLType[columnTypes.length];
-      for (int i = 0; i < columnTypes.length; i++) {
-        this.columnTypes[i] = getSQLType(columnTypes[i]);
-      }
-      tableName = table;
-      table = "INSERT INTO " + table + " VALUES(";
-      for (int i = 0; i < columnTypes.length - 1; i++)
-        table = table + "?, ";
+      for (int i = 0; i < columnTypes.length - 1; i++) table = table + "?, ";
       table += "?)";
       preparedStatement = connection.prepareStatement(table);
       inserters.add(this);      
@@ -524,17 +510,21 @@ public class Database {
     
     /** Inserts a row*/
     public void insert(Object... values) throws SQLException {
+      insert(Arrays.asList(values));
+    }
+
+    public void insert(List<Object> values) throws SQLException {
       try {
-        for (int i = 0; i < values.length; i++) {    	 
-          preparedStatement.setObject(i+1, values[i], columnTypes[i].getTypeCode());
+        for (int i = 0; i < values.size(); i++) {      
+          preparedStatement.setObject(i+1, values.get(i), columnTypes[i].getTypeCode());
         }
         preparedStatement.addBatch();
       }catch(SQLException e) {
-        throw new SQLException("Bulk-insert into "+tableName+" "+Arrays.toString(values)+ "\n" + e.getMessage());
+        throw new SQLException("Bulk-insert into "+tableName+" "+values+ "\n" + e.getMessage());
       }
       if (batchCounter++ % BatchSize == 0) flush();      
     }
-
+    
     /** Flushes the batch*/
     public void flush() throws SQLException {
       try {
@@ -559,6 +549,11 @@ public class Database {
       inserters.remove(this);
     }
 
+    /** Returns the number of columns*/
+    public int numColumns() {
+      return(columnTypes.length);
+    }
+    
     @Override
     protected void finalize() {
       close();      
@@ -566,64 +561,46 @@ public class Database {
   }
 
   /** Returns an inserter for a table with specific column types*/
-  public Inserter newInserter(String table, Class... argumentTypes) throws SQLException{
-    return(new Inserter(table,argumentTypes));
-  }
-  
-  /** Returns an inserter for a table with specific column types given as java.sql.Type constants*/
-  public Inserter newInserter(String table, int... argumentTypes) throws SQLException{
-    return(new Inserter(table,argumentTypes));
+  public Inserter newInserter(String table) throws SQLException{
+    return(new Inserter(table));
   }
   
   /** Produces a CSV version of the table*/
-  public void makeCSV(String table,File output, char separator) throws IOException, SQLException {
-    makeCSVForQuery("SELECT * FROM "+table,output, separator);
+  public void dumpCSV(String table,File output, char separator) throws IOException, SQLException {
+    dumpQueryAsCSV("SELECT * FROM "+table,output, separator);
   }
   
   /** Produces a CSV version of the query*/
-  public void makeCSVForQuery(String selectCommand,File output, char separator) throws IOException, SQLException {
+  public void dumpQueryAsCSV(String selectCommand,File output, char separator) throws IOException, SQLException {
     ResultSet r=query(selectCommand);
-    Writer out=new UTF8Writer(output);
-    int columns = r.getMetaData().getColumnCount();
-    for (int column = 1; column <= columns; column++) {
-      out.write(r.getMetaData().getColumnLabel(column));
-      if(column==columns) out.write("\n");
-      else out.write(separator+" ");
-    }
+    ResultSetMetaData meta=r.getMetaData();
+    int numCols=meta.getColumnCount();
+    List<String> labels=new ArrayList<String>();
+    for(int i=1;i<=numCols;i++) labels.add(meta.getColumnLabel(i));
+    CSVFile csv=new CSVFile(output, false, separator+"",labels);
     while(r.next()) {
-      for (int column = 1; column <= columns; column++) {
-        Object o=r.getObject(column);
-        out.write(o==null?"null":o.toString());
-        if(column==columns) out.write("\n");
-        else out.write(separator+" ");
-      }
+      Object[] cols=new String[numCols];
+      for (int column = 0; column < numCols; column++) cols[column]=r.getObject(column+1);
+      csv.write(cols);
     }
     close(r);
-    out.close();
+    csv.close();
   }
 
   /** Loads a CSV file into a table*/
   public void loadCSV(String table,File input,boolean clearTable,char separator) throws IOException, SQLException {
-    if(clearTable) executeUpdate("DELETE FROM "+table);
-    ResultSet r=query(limit("SELECT * FROM "+table,1));
-    int[] types=new int[r.getMetaData().getColumnCount()];
-    for(int i=0;i<types.length;i++) types[i]=r.getMetaData().getColumnType(i+1);
-    close(r);
-    Inserter bulki=newInserter(table, types);
-    boolean start=true;
-    for(List<String> values : new CSVLines(input)) {
-      if(start) {
-        if(values.size()!=types.length) {          
-          throw new SQLException("File "+input.getName()+" has "+values.size()+" columns, but table "+table+" has "+types.length);
-        }
-        start=false;
-        continue;
-      }
-      if(values.size()!=types.length) {
+    if(clearTable) executeUpdate("DELETE FROM "+table);    
+    Inserter bulki=newInserter(table);
+    CSVLines csv=new CSVLines(input);
+    if(csv.numColumns()!=null && csv.numColumns()!=bulki.numColumns()) {          
+       throw new SQLException("File "+input.getName()+" has "+csv.numColumns()+" columns, but table "+table+" has "+bulki.numColumns());
+    }
+    for(List<String> values: csv) {
+      if(values.size()!=bulki.numColumns()) {
         Announce.warning("Line cannot be read from file",input.getName(),"into table",table,":\n",values);
         continue;
       }
-      bulki.insert((Object[])values.toArray());
+      bulki.insert(values);
     }
     bulki.close();
   }

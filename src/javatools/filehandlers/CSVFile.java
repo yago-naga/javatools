@@ -14,14 +14,23 @@ import java.util.*;
 public class CSVFile implements Closeable {
   /** The output writer */
   protected Writer out;
+  /** Holds the separator */
+  protected String separator=", ";
+  /** quote all components*/
+  protected boolean quoteAll=false;
   
-  public CSVFile(File f, boolean append, List<String> columns) throws IOException {
+  public CSVFile(File f, boolean append, String separator, List<String> columns) throws IOException {
+    this.separator=separator;
     if(append && !f.exists()) append=false;
     out=new UTF8Writer(f,append);
     if(append==false && columns!=null && columns.size()>0) {
       out.write("# ");
       write(columns);
     }
+  }
+  
+  public CSVFile(File f, boolean append, List<String> columns) throws IOException {
+    this(f,append,", ",columns);
   }
   
   public CSVFile(File f, boolean append, String... columns) throws IOException {
@@ -68,11 +77,16 @@ public class CSVFile implements Closeable {
     this(f,Arrays.asList(columns));
   }
   
+  /**Sets optional quoting on/off (off by default)*/
+  public void setQuoting(boolean q) {
+    quoteAll=q;
+  }
+
   /** Writes the columns to the file*/
   public void write(List<? extends Object> columns) throws IOException {
     for(int i=0;i<columns.size();i++) {
       out.write(column(columns.get(i)));
-      if(i!=columns.size()-1) out.write(", ");   
+      if(i!=columns.size()-1) out.write(separator);   
     }
     out.write("\n");
   }
@@ -83,12 +97,12 @@ public class CSVFile implements Closeable {
   }
   
   /** Formats an entry*/
-  protected static String column(Object c) {
+  protected String column(Object c) {
     String col=c.toString();  
     if(col.indexOf('"')!=-1) {
       return('"'+col.replaceAll("\"","\"\"")+'"');
     }
-    if(col.matches(".*\\s.*")) return('"'+col+'"');
+    if(quoteAll || col.matches(".*\\s.*")) return('"'+col+'"');
     return(col.trim());
   }
   
