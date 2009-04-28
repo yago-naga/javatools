@@ -308,7 +308,7 @@ public class D {
     StringBuilder b = new StringBuilder();
     for (int i = 0; i < o.length; i++) {
       if (o[i] == null) {
-        b.append("null");
+        b.append("null ");
         continue;
       }
       if (o[i].getClass().isArray()) {

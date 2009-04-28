@@ -492,8 +492,11 @@ public class Database {
     /** Creates a bulk loader*/
     public Inserter(String table) throws SQLException {
       ResultSet r=query(limit("SELECT * FROM "+table,1));
-      int[] types=new int[r.getMetaData().getColumnCount()];
-      for(int i=0;i<types.length;i++) columnTypes[i]=getSQLType(r.getMetaData().getColumnType(i+1));
+      ResultSetMetaData meta=r.getMetaData();
+      columnTypes=new SQLType[meta.getColumnCount()];
+      for(int i=0;i<columnTypes.length;i++) {
+        columnTypes[i]=getSQLType(meta.getColumnType(i+1));
+      }
       Database.close(r);
       tableName = table;
       table = "INSERT INTO " + table + " VALUES(";
