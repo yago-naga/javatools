@@ -146,6 +146,7 @@ public class Database {
     type2SQL.put(Types.BOOLEAN, SQLType.ansiboolean);
     type2SQL.put(Types.CHAR, SQLType.ansichar);
     type2SQL.put(Types.BIGINT, SQLType.ansibigint);
+    type2SQL.put(Types.NUMERIC, SQLType.ansifloat);
   };
 
   /**
