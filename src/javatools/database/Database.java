@@ -196,7 +196,7 @@ public class Database {
     try {
       return (connection.createStatement(resultSetType, resultSetConcurrency).executeQuery(sql));
     } catch (SQLException e) {
-      throw new SQLException(sql + "\n" + e.getMessage());
+      throw e;
     }
   }
 
