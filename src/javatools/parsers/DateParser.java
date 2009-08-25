@@ -323,6 +323,7 @@ public class DateParser {
   public static boolean isEarlier(int[] date1, int[] date2) {
     for(int i=0;i<3;i++) {
       if(date1[i]==Integer.MAX_VALUE || date2[i]==Integer.MAX_VALUE) return(false);
+      if(date1[i]>date2[i]) return(false);
       if(date1[i]<date2[i]) return(true);
     }
     return(false);
