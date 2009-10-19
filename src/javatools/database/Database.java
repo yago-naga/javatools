@@ -488,7 +488,11 @@ public class Database {
     /** Counts how many commands are in the batch*/
     protected int batchCounter = 0;
     /** Tells after how many commands we will flush the batch*/
-    protected static final int BatchSize = 1000;
+    private int batchSize = 1000;
+    
+    public void setBatchSize(int size){
+      batchSize = size;
+    }
         
     /** Creates a bulk loader*/
     public Inserter(String table) throws SQLException {
@@ -526,7 +530,7 @@ public class Database {
       }catch(SQLException e) {
         throw new SQLException("Bulk-insert into "+tableName+" "+values+ "\n" + e.getMessage());
       }
-      if (batchCounter++ % BatchSize == 0) flush();      
+      if (batchCounter++ % batchSize == 0) flush();      
     }
     
     /** Flushes the batch*/
