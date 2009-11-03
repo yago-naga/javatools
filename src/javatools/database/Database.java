@@ -3,7 +3,6 @@ package javatools.database;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,8 +20,6 @@ import javatools.administrative.Announce;
 import javatools.administrative.D;
 import javatools.filehandlers.CSVFile;
 import javatools.filehandlers.CSVLines;
-import javatools.filehandlers.UTF8Reader;
-import javatools.filehandlers.UTF8Writer;
 
 /** 
 This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
@@ -112,7 +109,7 @@ public class Database {
   }
 
   /** Holds all active inserters to close them in the end*/
-  protected List<Inserter> inserters=new ArrayList<Inserter>();  
+  protected List<Inserter> inserters = new ArrayList<Inserter>();
 
   /** The mapping from Java to SQL */
   public Map<Class, SQLType> java2SQL = new HashMap<Class, SQLType>();
@@ -236,7 +233,7 @@ public class Database {
 
   /** Returns a single value (or null) */
   public <T> T queryValue(CharSequence sql, ResultIterator.ResultWrapper<T> rc) throws SQLException {
-    ResultIterator<T> results = new ResultIterator<T>(query(sql), rc);    
+    ResultIterator<T> results = new ResultIterator<T>(query(sql), rc);
     T result = results.nextOrNull();
     results.close();
     return (result);
@@ -244,12 +241,12 @@ public class Database {
 
   /** Returns TRUE if the resultset is not empty */
   public boolean exists(CharSequence sql) throws SQLException {
-    ResultSet rs=query(sql);
-    boolean result=rs.next();
+    ResultSet rs = query(sql);
+    boolean result = rs.next();
     close(rs);
-    return(result);
+    return (result);
   }
-  
+
   /** The minal column width for describe() */
   public static final int MINCOLUMNWIDTH = 3;
 
@@ -339,7 +336,8 @@ public class Database {
 
   /** Closes the connection */
   public void close() {
-    while(inserters.size()!=0) inserters.get(0).close();     
+    while (inserters.size() != 0)
+      inserters.get(0).close();
     close(connection);
   }
 
@@ -391,7 +389,7 @@ public class Database {
     StringBuilder b = new StringBuilder("CREATE TABLE ").append(name).append(" (");
     for (int i = 0; i < attributes.length; i += 2) {
       b.append(attributes[i]).append(' ');
-      if(attributes[i + 1] instanceof Integer) {
+      if (attributes[i + 1] instanceof Integer) {
         b.append(getSQLType((Integer) attributes[i + 1])).append(", ");
       } else {
         b.append(getSQLType((Class) attributes[i + 1])).append(", ");
@@ -404,12 +402,29 @@ public class Database {
 
   /** Creates an index name*/
   public String indexName(String table, String... attributes) {
-    StringBuilder indexName=new StringBuilder(table);
-    for (String a : attributes) indexName.append(a);    
-    indexName.append("Index");
-    return(indexName.toString());
+    StringBuilder indexName = new StringBuilder(table);
+    int length = table.length() + 5;
+    for (String a : attributes)
+      length = length + a.length();
+    if (length > 30) {
+      int min = 30 - (attributes.length * 2) - 2;
+      if (min < 5) min = 5;
+      if (min > table.length()) min = table.length();
+      indexName = new StringBuilder(indexName.substring(0, min));
+      for (String a : attributes)
+        indexName.append(a.substring(0, 2));
+      indexName.append("_I");
+    } else {
+      for (String a : attributes)
+        indexName.append(a);
+      indexName.append("Index");
+    }
+    if (indexName.length() > 30) {
+      return indexName.substring(0, 30);
+    }
+    return (indexName.toString());
   }
-  
+
   /** Returns the command to create one index on a table */
   public String createIndexCommand(String table, boolean unique, String... attributes) {
     StringBuilder sql = new StringBuilder("CREATE ");
@@ -421,15 +436,15 @@ public class Database {
       sql.append(a).append(", ");
     sql.setLength(sql.length() - 2);
     sql.append(")");
-    return(sql.toString());
+    return (sql.toString());
   }
-  
+
   public void createIndex(String table, boolean unique, String... attributes) throws SQLException {
-    String comand=createIndexCommand(table, unique, attributes);
+    String comand = createIndexCommand(table, unique, attributes);
     try {
-      executeUpdate("DROP INDEX " + indexName(table,attributes)+"Index");
-    } catch (SQLException e) {     
-    }    
+      executeUpdate("DROP INDEX " + indexName(table, attributes) + "Index");
+    } catch (SQLException e) {
+    }
     executeUpdate(comand);
   }
 
@@ -446,9 +461,9 @@ public class Database {
 
   /** Makes an SQL query limited to n results */
   public String limit(String sql, int n) {
-    return(sql+" LIMIT "+n);
+    return (sql + " LIMIT " + n);
   }
-  
+
   /** Runs a user-interface and closes */
   public void runInterface() {
     Announce.message("Connected to", this);
@@ -479,43 +494,49 @@ public class Database {
 
   /** Represents a bulk loader*/
   public class Inserter implements Closeable {
+
     /** Holds the prepared statement*/
     protected PreparedStatement preparedStatement;
+
     /** Table where the data will be inserted*/
     protected String tableName;
+
     /** Column types*/
     protected SQLType[] columnTypes;
+
     /** Counts how many commands are in the batch*/
     protected int batchCounter = 0;
+
     /** Tells after how many commands we will flush the batch*/
     private int batchSize = 1000;
-    
-    public void setBatchSize(int size){
+
+    public void setBatchSize(int size) {
       batchSize = size;
     }
-        
+
     /** Creates a bulk loader*/
     public Inserter(String table) throws SQLException {
-      ResultSet r=query(limit("SELECT * FROM "+table,1));
-      ResultSetMetaData meta=r.getMetaData();
-      columnTypes=new SQLType[meta.getColumnCount()];
-      for(int i=0;i<columnTypes.length;i++) {
-        columnTypes[i]=getSQLType(meta.getColumnType(i+1));
+      ResultSet r = query(limit("SELECT * FROM " + table, 1));
+      ResultSetMetaData meta = r.getMetaData();
+      columnTypes = new SQLType[meta.getColumnCount()];
+      for (int i = 0; i < columnTypes.length; i++) {
+        columnTypes[i] = getSQLType(meta.getColumnType(i + 1));
       }
       Database.close(r);
       tableName = table;
       table = "INSERT INTO " + table + " VALUES(";
-      for (int i = 0; i < columnTypes.length - 1; i++) table = table + "?, ";
+      for (int i = 0; i < columnTypes.length - 1; i++)
+        table = table + "?, ";
       table += "?)";
       preparedStatement = connection.prepareStatement(table);
-      inserters.add(this);      
+      inserters.add(this);
     }
-    
+
     /** Returns the table name*/
     public String getTableName() {
       return tableName;
     }
-    
+
     /** Inserts a row*/
     public void insert(Object... values) throws SQLException {
       insert(Arrays.asList(values));
@@ -523,24 +544,24 @@ public class Database {
 
     public void insert(List<Object> values) throws SQLException {
       try {
-        for (int i = 0; i < values.size(); i++) {      
-          preparedStatement.setObject(i+1, values.get(i), columnTypes[i].getTypeCode());
+        for (int i = 0; i < values.size(); i++) {
+          preparedStatement.setObject(i + 1, values.get(i), columnTypes[i].getTypeCode());
         }
         preparedStatement.addBatch();
-      }catch(SQLException e) {
-        throw new SQLException("Bulk-insert into "+tableName+" "+values+ "\n" + e.getMessage());
+      } catch (SQLException e) {
+        throw new SQLException("Bulk-insert into " + tableName + " " + values + "\n" + e.getMessage());
       }
-      if (batchCounter++ % batchSize == 0) flush();      
+      if (batchCounter++ % batchSize == 0) flush();
     }
-    
+
     /** Flushes the batch*/
     public void flush() throws SQLException {
       try {
         preparedStatement.executeBatch();
         preparedStatement.clearBatch();
-      } catch(SQLException e) {
-        String details=e.getNextException()==null?"":e.getNextException().getMessage();
-        throw new SQLException(e.getMessage()+"\n\n"+details);
+      } catch (SQLException e) {
+        String details = e.getNextException() == null ? "" : e.getNextException().getMessage();
+        throw new SQLException(e.getMessage() + "\n\n" + details);
       }
     }
 
@@ -559,36 +580,38 @@ public class Database {
 
     /** Returns the number of columns*/
     public int numColumns() {
-      return(columnTypes.length);
+      return (columnTypes.length);
     }
-    
+
     @Override
     protected void finalize() {
-      close();      
+      close();
     }
   }
 
   /** Returns an inserter for a table with specific column types*/
-  public Inserter newInserter(String table) throws SQLException{
-    return(new Inserter(table));
+  public Inserter newInserter(String table) throws SQLException {
+    return (new Inserter(table));
   }
-  
+
   /** Produces a CSV version of the table*/
-  public void dumpCSV(String table,File output, char separator) throws IOException, SQLException {
-    dumpQueryAsCSV("SELECT * FROM "+table,output, separator);
+  public void dumpCSV(String table, File output, char separator) throws IOException, SQLException {
+    dumpQueryAsCSV("SELECT * FROM " + table, output, separator);
   }
-  
+
   /** Produces a CSV version of the query*/
-  public void dumpQueryAsCSV(String selectCommand,File output, char separator) throws IOException, SQLException {
-    ResultSet r=query(selectCommand);
-    ResultSetMetaData meta=r.getMetaData();
-    int numCols=meta.getColumnCount();
-    List<String> labels=new ArrayList<String>();
-    for(int i=1;i<=numCols;i++) labels.add(meta.getColumnLabel(i));
-    CSVFile csv=new CSVFile(output, false, separator+"",labels);
-    while(r.next()) {
-      Object[] cols=new String[numCols];
-      for (int column = 0; column < numCols; column++) cols[column]=r.getObject(column+1);
+  public void dumpQueryAsCSV(String selectCommand, File output, char separator) throws IOException, SQLException {
+    ResultSet r = query(selectCommand);
+    ResultSetMetaData meta = r.getMetaData();
+    int numCols = meta.getColumnCount();
+    List<String> labels = new ArrayList<String>();
+    for (int i = 1; i <= numCols; i++)
+      labels.add(meta.getColumnLabel(i));
+    CSVFile csv = new CSVFile(output, false, separator + "", labels);
+    while (r.next()) {
+      Object[] cols = new String[numCols];
+      for (int column = 0; column < numCols; column++)
+        cols[column] = r.getObject(column + 1);
       csv.write(cols);
     }
     close(r);
@@ -596,16 +619,16 @@ public class Database {
   }
 
   /** Loads a CSV file into a table*/
-  public void loadCSV(String table,File input,boolean clearTable,char separator) throws IOException, SQLException {
-    if(clearTable) executeUpdate("DELETE FROM "+table);    
-    Inserter bulki=newInserter(table);
-    CSVLines csv=new CSVLines(input);
-    if(csv.numColumns()!=null && csv.numColumns()!=bulki.numColumns()) {          
-       throw new SQLException("File "+input.getName()+" has "+csv.numColumns()+" columns, but table "+table+" has "+bulki.numColumns());
+  public void loadCSV(String table, File input, boolean clearTable, char separator) throws IOException, SQLException {
+    if (clearTable) executeUpdate("DELETE FROM " + table);
+    Inserter bulki = newInserter(table);
+    CSVLines csv = new CSVLines(input);
+    if (csv.numColumns() != null && csv.numColumns() != bulki.numColumns()) {
+      throw new SQLException("File " + input.getName() + " has " + csv.numColumns() + " columns, but table " + table + " has " + bulki.numColumns());
     }
-    for(List<String> values: csv) {
-      if(values.size()!=bulki.numColumns()) {
-        Announce.warning("Line cannot be read from file",input.getName(),"into table",table,":\n",values);
+    for (List<String> values : csv) {
+      if (values.size() != bulki.numColumns()) {
+        Announce.warning("Line cannot be read from file", input.getName(), "into table", table, ":\n", values);
         continue;
       }
       bulki.insert(values);
@@ -614,6 +637,6 @@ public class Database {
   }
 
   /** Test routine */
-  public static void main(String[] args) throws Exception {  
+  public static void main(String[] args) throws Exception {
   }
 }
