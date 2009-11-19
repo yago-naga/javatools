@@ -3,6 +3,7 @@ package javatools.database;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,6 +21,7 @@ import javatools.administrative.Announce;
 import javatools.administrative.D;
 import javatools.filehandlers.CSVFile;
 import javatools.filehandlers.CSVLines;
+import javatools.filehandlers.UTF8Writer;
 
 /** 
 This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
@@ -532,6 +534,36 @@ public class Database {
       inserters.add(this);
     }
 
+    /** Creates a bulk loader for a table with column types given by Java classes*/
+    public Inserter(String table, Class... columnTypes) throws SQLException {
+      this.columnTypes = new SQLType[columnTypes.length];
+      for (int i = 0; i < columnTypes.length; i++) {
+        this.columnTypes[i] = getSQLType(columnTypes[i]);
+      }
+      tableName = table;
+      table = "INSERT INTO " + table + " VALUES(";
+      for (int i = 0; i < columnTypes.length - 1; i++)
+        table = table + "?, ";
+      table += "?)";
+      preparedStatement = connection.prepareStatement(table);
+      inserters.add(this);
+    }
+
+    /** Creates a bulk loader with column types from java.sql.Type */
+    public Inserter(String table, int... columnTypes) throws SQLException {
+      this.columnTypes = new SQLType[columnTypes.length];
+      for (int i = 0; i < columnTypes.length; i++) {
+        this.columnTypes[i] = getSQLType(columnTypes[i]);
+      }
+      tableName = table;
+      table = "INSERT INTO " + table + " VALUES(";
+      for (int i = 0; i < columnTypes.length - 1; i++)
+        table = table + "?, ";
+      table += "?)";
+      preparedStatement = connection.prepareStatement(table);
+      inserters.add(this);
+    }
+
     /** Returns the table name*/
     public String getTableName() {
       return tableName;
@@ -593,12 +625,49 @@ public class Database {
   public Inserter newInserter(String table) throws SQLException {
     return (new Inserter(table));
   }
+  
+  /** Returns an inserter for a table with specific column types*/
+  public Inserter newInserter(String table, Class... argumentTypes) throws SQLException {
+    return (new Inserter(table, argumentTypes));
+  }
+
+  /** Returns an inserter for a table with specific column types given as java.sql.Type constants*/
+  public Inserter newInserter(String table, int... argumentTypes) throws SQLException {
+    return (new Inserter(table, argumentTypes));
+  }
+
+  /** Produces a CSV version of the table*/
+  public void makeCSV(String table, File output, char separator) throws IOException, SQLException {
+    makeCSVForQuery("SELECT * FROM " + table, output, separator);
+  }
 
   /** Produces a CSV version of the table*/
   public void dumpCSV(String table, File output, char separator) throws IOException, SQLException {
     dumpQueryAsCSV("SELECT * FROM " + table, output, separator);
   }
 
+  /** Produces a CSV version of the query*/
+  public void makeCSVForQuery(String selectCommand,File output, char separator) throws IOException, SQLException {
+    ResultSet r=query(selectCommand);
+    Writer out=new UTF8Writer(output);
+    int columns = r.getMetaData().getColumnCount();
+    for (int column = 1; column <= columns; column++) {
+      out.write(r.getMetaData().getColumnLabel(column));
+      if(column==columns) out.write("\n");
+      else out.write(separator+" ");
+    }
+    while(r.next()) {
+      for (int column = 1; column <= columns; column++) {
+        Object o=r.getObject(column);
+        out.write(o==null?"null":o.toString());
+        if(column==columns) out.write("\n");
+        else out.write(separator+" ");
+      }
+    }
+    close(r);
+    out.close();
+  }
+  
   /** Produces a CSV version of the query*/
   public void dumpQueryAsCSV(String selectCommand, File output, char separator) throws IOException, SQLException {
     ResultSet r = query(selectCommand);
