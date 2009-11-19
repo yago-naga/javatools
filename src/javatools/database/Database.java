@@ -623,7 +623,7 @@ public class Database {
     if (clearTable) executeUpdate("DELETE FROM " + table);
     Inserter bulki = newInserter(table);
     CSVLines csv = new CSVLines(input);
-    if (csv.numColumns() != null && csv.numColumns() != bulki.numColumns()) {
+    if (csv.numColumns() != bulki.numColumns()) {
       throw new SQLException("File " + input.getName() + " has " + csv.numColumns() + " columns, but table " + table + " has " + bulki.numColumns());
     }
     for (List<String> values : csv) {

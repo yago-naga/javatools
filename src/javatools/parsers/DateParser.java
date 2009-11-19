@@ -1,5 +1,7 @@
 package javatools.parsers;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -222,8 +224,8 @@ public class DateParser {
       m=p.pattern.matcher(in);
       if (m.find()) {
         out.setLength(0);
-        do {
-            m.appendReplacement(out, p.replacement);              
+        do {  
+            m.appendReplacement(out, p.replacement);
         } while (m.find());
         m.appendTail(out);
         StringBuffer temp=out;
@@ -244,6 +246,72 @@ public class DateParser {
     }
     out=null;
     return(in.toString());
+  }
+  
+  /** Normalizes all dates in a String */
+  public static Collection<String> getAllDates(CharSequence s) {
+    
+    ArrayList<String> dates = new ArrayList<String>();
+    // If it does not contain years or months, return it unchanged
+    if(!monthPattern.matcher(s).find() && !yearPattern.matcher(s).find()) return(null);
+    
+    StringBuffer in=new StringBuffer((int) (s.length()*1.1));
+    
+    // Replace all the months
+    Matcher m=monthPattern.matcher(s);
+    while(m.find()) {
+        int monthNum=D.indexOf(m.group().substring(0,3), (Object[])MONTHS)+1;
+        m.appendReplacement(in, "MONTH"+(monthNum/10)+(monthNum%10));                
+    }
+    m.appendTail(in);
+    StringBuffer out=new StringBuffer((int) (in.length()*1.1));
+    
+    // Apply the patterns
+    for(FindReplace p : patterns) {
+      m=p.pattern.matcher(in);
+      if (m.find()) {
+        out.setLength(0);
+        do {
+          String retrivel = m.group();
+            StringBuffer tem= new StringBuffer(retrivel);
+            m.appendReplacement(out, p.replacement);
+            Matcher tt = p.pattern.matcher(tem);
+            StringBuffer o1 = new StringBuffer();
+            if(tt.find()){
+              tt.appendReplacement(o1, p.replacement);
+              dates.add(o1.toString());
+            }
+
+        } while (m.find());
+        m.appendTail(out);
+        StringBuffer temp=out;
+        out=in;
+        in=temp;
+      }
+    }
+    
+    m=Pattern.compile("&DEC(\\d++)").matcher(in);
+    if(m.find()) {
+      out.setLength(0);
+      do {
+        String retrivel = m.group();
+          StringBuffer tem= new StringBuffer(retrivel);
+          m.appendReplacement(out, ""+(Integer.parseInt(m.group(1))-1));  
+          Matcher tt = Pattern.compile("&DEC(\\d++)").matcher(tem);
+          StringBuffer o1 = new StringBuffer();
+          if(tt.find()){
+            tt.appendReplacement(o1, ""+(Integer.parseInt(m.group(1))-1));
+            dates.add(o1.toString());
+          }
+        
+                     
+      } while (m.find());      
+      m.appendTail(out);
+      in=null;
+//      return(out.toString());
+    }
+    out=null;
+    return dates;
   }
 
   /** Returns the components of the date (year, month, day) in a normalized date string (or null)
@@ -311,8 +379,14 @@ public class DateParser {
    * This looses partial information in the year!! (e.g. 18## -> ####)*/
   public static int[] asInts(String[] yearMonthDay) {
     int[] result=new int[3];
+    
     for(int i=0;i<3;i++) {
-      if(yearMonthDay[i].contains("#")) result[i]=Integer.MAX_VALUE;
+      if(yearMonthDay == null)//changed because yearMonthDay is ####-##-##
+        {
+        result[i]=Integer.MAX_VALUE;
+        }
+      else if(yearMonthDay[i].contains("#")) 
+        result[i]=Integer.MAX_VALUE;
       else result[i]=Integer.parseInt(yearMonthDay[i]);        
     }
     return(result);
@@ -368,6 +442,9 @@ public class DateParser {
   }
   
   public static boolean equal(String[] date1, String[] date2) {
+    if(date1 == null||date2 == null)//changed because of ####-##-##
+      return false;
+    
     for(int i=0;i<3;i++) {
       if(!date1[i].equals(date2[i])) return(false);
     }

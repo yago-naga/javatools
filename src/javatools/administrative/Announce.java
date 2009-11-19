@@ -1,12 +1,10 @@
 package javatools.administrative;
 import java.io.BufferedWriter;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.Set;
 
 import javatools.datatypes.FinalSet;

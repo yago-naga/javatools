@@ -2,7 +2,6 @@ package javatools.filehandlers;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PushbackReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +34,6 @@ public class CSVLines extends PeekIterator<List<String>> {
   protected List<String> columns=null;
   /** Holds the next char in line */
   protected int nextChar;
-  /** Holds the spearator */
-  protected char separator;
   
   /** Constructs a CSVReader*/
   public CSVLines(File f) throws IOException {
@@ -52,11 +49,6 @@ public class CSVLines extends PeekIterator<List<String>> {
   /** Constructs a CSVReader*/
   public CSVLines(String file) throws IOException {
     this(new File(file));
-  }
-  
-  /** Sets the separator (comma by default)*/
-  public void setSeparator(char s) {
-    separator=s;
   }
   
   /** Reads a component and the following comma*/
@@ -83,14 +75,14 @@ public class CSVLines extends PeekIterator<List<String>> {
       }      
     } else {
       // For unquoted components
-      while(nextChar!=-1 && nextChar!=separator && nextChar!=10) {
+      while(nextChar!=-1 && nextChar!=',' && nextChar!=10) {
         component.append((char)nextChar);
         nextChar=in.read();
       }
       while(Character.isWhitespace(Char.last(component))) component.setLength(component.length()-1);
     }
     // Skip following comma
-    if(nextChar==separator) nextChar=in.read();
+    if(nextChar==',') nextChar=in.read();
     return(Char.decode(component.toString()));
   }
   
@@ -111,17 +103,16 @@ public class CSVLines extends PeekIterator<List<String>> {
   public List<String> columnNames() {
     return(columns);
   }
-
-  /** returns the number of columns (or NULL)*/
-  public Integer numColumns() {
-    return(columns==null?null: columns.size());
-  }
-
+  
   @Override
   public void close() {   
     try {
       in.close();
     }catch(Exception e) {}
+  }
+  
+  public int numColumns(){
+    return columns.size();
   }
   
   /** Test method*/

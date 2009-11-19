@@ -292,7 +292,7 @@ public class WordNet implements Serializable {
         }
         int senseNumber = Integer.parseInt(m.group(SENSENUMGROUP));
         if (senseNumber <= sensesPerWord) {
-          String word = m.group(WORDGROUP).replace("''", "'");     
+          String word = m.group(WORDGROUP).replace("''", "'");
           currentSS.words.add(word);
           List<Synset> synsets = word2synsets.get(word);
           if (synsets == null) {
@@ -439,20 +439,21 @@ public class WordNet implements Serializable {
   /** Removes a synset*/
   public void remove(Synset s) {
     id2synset.remove(s.id);
-    for(String w : s.getWords()) {
-      Collection<Synset> synsets=word2synsets.get(w);
-      if(synsets!=null) {
-        synsets.remove(s);      
-        if(synsets.size()==0) word2synsets.remove(w);
+    for (String w : s.getWords()) {
+      Collection<Synset> synsets = word2synsets.get(w);
+      if (synsets != null) {
+        synsets.remove(s);
+        if (synsets.size() == 0) word2synsets.remove(w);
       }
     }
-    for(Synset up : s.getUps()) {
+    for (Synset up : s.getUps()) {
       up.downs.remove(s);
     }
-    for(Synset down : s.getDowns()) {
+    for (Synset down : s.getDowns()) {
       down.ups.remove(s);
     }
   }
+
   /** Test routine, requires the Prolog version of WordNet and the paths adjusted. */
   public static void main(String[] argv) throws Exception {
     Announce.doing("Loading");

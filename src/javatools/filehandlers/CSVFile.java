@@ -1,7 +1,10 @@
 package javatools.filehandlers;
-import javatools.*;
-import java.io.*;
-import java.util.*;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
 
 /**
   This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).

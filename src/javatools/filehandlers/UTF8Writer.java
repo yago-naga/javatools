@@ -56,24 +56,33 @@ public class UTF8Writer extends Writer {
 
   @Override
   public void close() throws IOException {
-     if(out!=null) out.close();    
+    synchronized(lock){
+     if(out!=null) out.close();
+    }
   }
 
   @Override
   public void flush() throws IOException {
+    synchronized(lock){
     if(out!=null) out.flush();
+    }
   }
 
   @Override
   public void write(char[] cbuf, int off, int len) throws IOException {
+    synchronized(lock){
     for(int i=off;i<off+len;i++) write(cbuf[i]);
+    }
   }
 
   @Override
   public void write(int c) throws IOException {
+    
+    synchronized(lock){
     if(out==null) return;
     String s=Char.encodeUTF8(c);
     for(int i=0;i<s.length();i++) out.write((byte)s.charAt(i));
+    }
   }
   
   /** Writes a line*/

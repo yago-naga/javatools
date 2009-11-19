@@ -112,13 +112,19 @@ public class UTF8Reader extends Reader {
     int len = Char.Utf8Length((char) c);
     numBytesRead += len;
     if (progressBar) Announce.progressAt(numBytesRead);
+    
+  int[] eatLength = new int[1];// add this in order to multithread safe
+    
     switch (len) {
       case 2:
-        return (Char.eatUtf8(((char) c) + "" + ((char) in.read()), Char.eatLength));
+//        return (Char.eatUtf8(((char) c) + "" + ((char) in.read()), Char.eatLength));
+        return (Char.eatUtf8(((char) c) + "" + ((char) in.read()), eatLength));
       case 3:
-        return (Char.eatUtf8(((char) c) + "" + ((char) in.read()) + ((char) in.read()), Char.eatLength));
+//        return (Char.eatUtf8(((char) c) + "" + ((char) in.read()) + ((char) in.read()), Char.eatLength));
+        return (Char.eatUtf8(((char) c) + "" + ((char) in.read()) + ((char) in.read()), eatLength));
       case 4:
-        return (Char.eatUtf8(((char) c) + "" + ((char) in.read()) + ((char) in.read()) + ((char) in.read()), Char.eatLength));
+//        return (Char.eatUtf8(((char) c) + "" + ((char) in.read()) + ((char) in.read()) + ((char) in.read()), Char.eatLength));
+        return (Char.eatUtf8(((char) c) + "" + ((char) in.read()) + ((char) in.read()) + ((char) in.read()), eatLength));
       default:
         return (c);
     }

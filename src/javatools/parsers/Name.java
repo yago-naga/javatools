@@ -1,5 +1,4 @@
 package javatools.parsers;
-import java.io.File;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -296,6 +295,11 @@ public class Name {
   //                 Names
   // -----------------------------------------------------------------------------------
 
+  /**team name   */
+  public static final String teamName=BD+U+"[\\w\\s\\.]+"+BD;
+  
+  public static final Pattern teamNamePattern=Pattern.compile(teamName);
+  
   /** Contains prepositions*/
   public static final String prep="(?:on|of|for)";
   
@@ -1282,7 +1286,7 @@ public class Name {
           "ga", "Irish",
           "gd", "Scottish",
           "gl", "Galician",
-          "gn", "Guaraní",
+          "gn", "Guaranï¿½",
           "gu", "Gujarati",
           "gv", "Manx",
           "ha", "Hausa",
@@ -1408,7 +1412,7 @@ public class Name {
           "uz", "Uzbek",
           "ve", "Venda",
           "vi", "Vietnamese",
-          "vo", "Volapük",
+          "vo", "Volapï¿½k",
           "wa", "Walloon",
           "wo", "Wolof",
           "xh", "Xhosa",
@@ -1508,7 +1512,7 @@ public class Name {
         "Congolese", "Democratic Republic of the Congo",
         "Cook Island", "Cook Islands",
         "Costa Rican", "Costa Rica",
-        "Ivorian", "Côte d'Ivoire",
+        "Ivorian", "Cï¿½te d'Ivoire",
         "Croatian", "Croatia",
         "Cuban", "Cuba",
         "Cypriot", "Cyprus",
@@ -1595,7 +1599,7 @@ public class Name {
         "Mexican", "Mexico",
         "Micronesian", "Micronesia",
         "Moldovan", "Moldova",
-        "Monégasque", "Monaco",
+        "Monï¿½gasque", "Monaco",
         "Mongolian", "Mongolia",
         "Montenegrin", "Montenegro",
         "Montserratian", "Montserrat",
@@ -1631,7 +1635,7 @@ public class Name {
         "Puerto Rican", "Puerto Rico",
         "Qatari", "Qatar",
         "Irish", "Republic of Ireland",
-        "Réunionese", "Réunion",
+        "Rï¿½unionese", "Rï¿½union",
         "Romanian", "Romania",
         "Russian", "Russia",
         "Rwandan", "Rwanda",
@@ -1642,7 +1646,7 @@ public class Name {
         "St. Vincentian", "St. Vincent and the Grenadines",
         "Samoan", "Samoa",
         "Sammarinese", "San Marino",
-        "São Toméan", "São Tomé and Príncipe",
+        "Sï¿½o Tomï¿½an", "Sï¿½o Tomï¿½ and Prï¿½ncipe",
         "Saudi", "Saudi Arabia",
         "Scottish", "Scotland",
         "Senegalese", "Senegal",

@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Iterator;
+import java.util.List;
 
 import javatools.administrative.Announce;
 import javatools.datatypes.PeekIterator;
@@ -140,7 +141,7 @@ public class FileLines extends PeekIterator<String> implements Iterable<String>,
   }
   
   /** Maximum chars to read by readTo (or -1)*/
-  public static int maxChars=-1;
+  public static long maxChars=-1;
   
   /** Reads to a specific character, returns the text in between 
    * @throws IOException */
@@ -156,6 +157,7 @@ public class FileLines extends PeekIterator<String> implements Iterable<String>,
     return(result);
   }
   
+  
   /** Reads to a specific String, returns the text up to there, including the limit 
    * @throws IOException */
   public static CharSequence readTo(Reader in, String limit) throws IOException {    
@@ -164,6 +166,7 @@ public class FileLines extends PeekIterator<String> implements Iterable<String>,
     int position=0;    
     while((c=in.read())!=-1) {      
       result.append((char)c);
+ 
       if(c==limit.charAt(position)) {
         if(++position==limit.length()) break;
       } else {
@@ -173,4 +176,25 @@ public class FileLines extends PeekIterator<String> implements Iterable<String>,
     }
     return(result);
   }
+  
+  /** Reads to a specific String, returns the text up to there, including the limit 
+   * @throws IOException */
+  public static CharSequence readTo(Reader in, String limit, List<Integer> results) throws IOException {    
+    StringBuilder result=new StringBuilder();
+    int c;
+    int position=0;    
+    while((c=in.read())!=-1) {      
+      result.append((char)c);
+      results.add(c);
+      if(c==limit.charAt(position)) {
+        if(++position==limit.length()) break;
+      } else {
+        position=0;
+      }      
+      if(maxChars!=-1 && result.length()>maxChars) break;      
+    }
+    return(result);
+  }
+  
+  
 }
