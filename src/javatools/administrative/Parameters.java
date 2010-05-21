@@ -147,6 +147,9 @@ public class Parameters {
     if (f.equals(iniFile)) return;
     values = new TreeMap<String, String>();
     iniFile = f;
+    if (!iniFile.exists()) {
+      Announce.error("Required the initialisation file: " + iniFile.getCanonicalPath());
+    }
     for (String l : new FileLines(iniFile)) {
       Matcher m = INIPATTERN.matcher(l);
       if (!m.matches()) continue;
@@ -287,29 +290,10 @@ public class Parameters {
     return (values.keySet());
   }
 
-  public static void check(String[] arg) throws RuntimeException {
-    Announce.doing("Checking Config File");
-    int count = 0;
-    for (int i = 0; i < arg.length; i++) {
-      try {
-        Parameters.get(arg[i]);
-      } catch (UndefinedParameterException ue) {
-        count++;
-        Announce.warning("Missing parameter " + arg[i] + " in " + iniFile);
-      }
-    }
-    Announce.done();
-    if (count > 0) {
-      throw new RuntimeException("Missing " + count + " paramters in " + iniFile);
-    }
-  }
-
   /** Test routine */
   public static void main(String args[]) throws Exception {
     String initFile = args == null || args.length == 0 ? "yago.ini" : args[0];
     Parameters.init(initFile);
-    String[] requiredPara = { "yagoDefinitionsFolder", "yagoFolder", "yagoFolder2" };
-    Parameters.check(requiredPara);
     D.p(values);
   }
 }
