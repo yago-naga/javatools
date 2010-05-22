@@ -77,14 +77,12 @@ public class OracleDatabase extends Database {
   }
 
   /** Constructs a new OracleDatabase from a user, a password and a host*/
-  public OracleDatabase(String user, String password, String host) throws InstantiationException, IllegalAccessException, ClassNotFoundException,
-      SQLException {
+  public OracleDatabase(String user, String password, String host) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
     this(user, password, host, null);
   }
 
   /** Constructs a new OracleDatabase from a user, a password and a host*/
-  public OracleDatabase(String user, String password, String host, String port) throws InstantiationException, IllegalAccessException,
-      ClassNotFoundException, SQLException {
+  public OracleDatabase(String user, String password, String host, String port) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
     this(user, password, host, null, null);
   }
 
@@ -93,8 +91,7 @@ public class OracleDatabase extends Database {
    * @throws IllegalAccessException
    * @throws InstantiationException
    * @throws SQLException */
-  public OracleDatabase(String user, String password, String host, String port, String inst) throws InstantiationException, IllegalAccessException,
-      ClassNotFoundException, SQLException {
+  public OracleDatabase(String user, String password, String host, String port, String inst) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
     this();
     if (password == null) password = "";
     if (host == null) host = "localhost";
@@ -188,11 +185,23 @@ public class OracleDatabase extends Database {
 
   public static Bigint bigint = new Bigint();
 
+  /**
+   * Returns true if the oracle jdbc is provided
+   * @return 
+   */
+  public static boolean checkJar() {
+    try {
+      Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
+      return true;
+    } catch (Exception e) {
+    }
+    return false;
+  }
+
   public static void main(String[] args) {
     OracleDatabase database = new OracleDatabase();
     String sql = "SELECT arg2 FROM facts WHERE relation=something AND arg1= something";
     System.out.println(database.limit(sql, 7));
-    
   }
-  
+
 };

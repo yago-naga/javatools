@@ -99,7 +99,21 @@ public class PostgresDatabase extends Database {
     } 
   }
   public static Varchar varchar=new Varchar();
-  /**  */
+
+
+  /**
+   * Returns true if the postgres jdbc is provided
+   * @return 
+   */
+  public static boolean checkJar() {
+    try {
+      Class.forName("org.postgresql.Driver").newInstance();
+      return true;
+    } catch (Exception e) {
+    }
+    return false;
+  }
+  
   public static void main(String[] args) throws Exception {
     Database d=new PostgresDatabase("postgres","postgres","postgres",null,null);
     //d.executeUpdate("CREATE table test (a integer, b varchar)");
