@@ -1017,7 +1017,7 @@ public class Char {
 
   /** Encodes a character to a backslash code (if necessary)*/
   public static String encodeBackslash(char c) {
-    if (isAlphanumeric(c) || c == ' ') return ("" + c);
+    if (isAlphanumeric(c) || c == ' ' || c=='_') return ("" + c);
     String hex = Integer.toHexString(c);
     while (hex.length() < 4)
       hex = "0" + hex;
