@@ -1017,7 +1017,25 @@ public class Char {
 
   /** Encodes a character to a backslash code (if necessary)*/
   public static String encodeBackslash(char c) {
-    if (isAlphanumeric(c) || c == ' ' || c=='_') return ("" + c);
+    if (isAlphanumeric(c) || c == ' ') return ("" + c);
+    String hex = Integer.toHexString(c);
+    while (hex.length() < 4)
+      hex = "0" + hex;
+    return ("\\u" + hex);
+  }
+
+  /** Encodes a character to a backslash code (if not alphanumeric)*/
+  public static String encodeBackslashToAlphanumeric(char c) {
+    if (isAlphanumeric(c) || c=='_') return ("" + c);
+    String hex = Integer.toHexString(c);
+    while (hex.length() < 4)
+      hex = "0" + hex;
+    return ("\\u" + hex);
+  }
+
+  /** Encodes a character to a backslash code (if not ASCII)*/
+  public static String encodeBackslashToASCII(char c) {
+    if (c>=32 && c<128) return ("" + c);
     String hex = Integer.toHexString(c);
     while (hex.length() < 4)
       hex = "0" + hex;
@@ -1141,6 +1159,24 @@ public class Char {
     return (r.toString());
   }
 
+  /** Replaces non-normal characters in a String by Backslash codes (if not alphanumeric)*/
+  public static String encodeBackslashToAlphanumeric(String c) {
+    StringBuilder r = new StringBuilder();
+    for (int i = 0; i < c.length(); i++) {
+      r.append(encodeBackslashToAlphanumeric(c.charAt(i)));
+    }
+    return (r.toString());
+  }
+
+  /** Replaces non-normal characters in a String by Backslash codes (if not ASCII)*/
+  public static String encodeBackslashToASCII(String c) {
+    StringBuilder r = new StringBuilder();
+    for (int i = 0; i < c.length(); i++) {
+      r.append(encodeBackslashToASCII(c.charAt(i)));
+    }
+    return (r.toString());
+  }
+
   /** Replaces non-normal characters in a String by HTML Ampersand codes */
   public static String encodeAmpersand(String c) {
     StringBuilder r = new StringBuilder();
@@ -1249,6 +1285,11 @@ public class Char {
     return (result.toString());
   }
 
+  /** TRUE if the Charsequence ends with the string */
+  public static boolean endsWith(CharSequence s, String end) {
+	  return(s.length()>=end.length() && s.subSequence(s.length()-end.length(),s.length()).equals(end));
+  }
+  
   /** Test routine */
   public static void main(String argv[]) throws Exception {
     System.out.println("Enter a string with HTML ampersand codes, umlauts and/or UTF-8 codes and hit ENTER.");
