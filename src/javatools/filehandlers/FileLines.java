@@ -304,4 +304,23 @@ public class FileLines extends PeekIterator<String> implements
 		return (result);
 	}
 
+	/** returns number of lines in file*/
+	public static int numFileLines(File f)throws IOException  {
+		int counter=0;
+		for(@SuppressWarnings("unused") String l : new FileLines(f,"Counting lines in"+f)) counter++;
+		return(counter);
+	}
+	
+	/** returns number of lines in file*/
+	public static int numAllFileLines(File f,String ext)throws IOException  {
+		if(f.isFile()) return(f.getName().endsWith(ext)?numFileLines(f):0);
+		int counter=0;
+		Announce.doing("Counting in",f);
+		for(File f2 : f.listFiles()) {
+			counter+=numAllFileLines(f2,ext);
+		}
+		Announce.done();
+		return(counter);
+	}
+	
 }

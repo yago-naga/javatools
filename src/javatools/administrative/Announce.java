@@ -117,8 +117,10 @@ public class Announce {
   }
 
   /** Switches announcing on or off */
-  public static void setLevel(Level l) {
+  public static Level setLevel(Level l) {
+	  Level oldLevel=level;
     level = l;
+    return(oldLevel);
   }
 
   /** Blanks*/
