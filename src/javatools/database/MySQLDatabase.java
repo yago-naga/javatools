@@ -48,12 +48,13 @@ public class MySQLDatabase extends Database {
     connection.setAutoCommit(true);
   }
 
-  /**
-   * Returns true if the mysql jdbc is provided
-   * @return 
-   */
-  public static boolean checkJar() {
-    try {
+  public MySQLDatabase() {
+	// TODO Auto-generated constructor stub
+}
+
+@Override
+  public boolean jarAvailable() {
+  try {
       Class.forName("com.mysql.jdbc.Driver").newInstance();
       return true;
     } catch (Exception e) {

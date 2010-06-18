@@ -176,6 +176,9 @@ public class Database {
     this.resultSetType = resultSetType;
   }
 
+  /** TRUE if the required JAR is there*/
+  public boolean jarAvailable() { return(true);}
+  
   /**
    * Returns the results for a query as a ResultSet with given type and
    * concurrency. The preferred way to execute a query is by the query(String,

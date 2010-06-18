@@ -101,12 +101,9 @@ public class PostgresDatabase extends Database {
   public static Varchar varchar=new Varchar();
 
 
-  /**
-   * Returns true if the postgres jdbc is provided
-   * @return 
-   */
-  public static boolean checkJar() {
-    try {
+  @Override
+  public boolean jarAvailable() {
+   try {
       Class.forName("org.postgresql.Driver").newInstance();
       return true;
     } catch (Exception e) {

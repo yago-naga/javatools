@@ -185,11 +185,8 @@ public class OracleDatabase extends Database {
 
   public static Bigint bigint = new Bigint();
 
-  /**
-   * Returns true if the oracle jdbc is provided
-   * @return 
-   */
-  public static boolean checkJar() {
+  @Override
+  public boolean jarAvailable() {
     try {
       Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
       return true;
