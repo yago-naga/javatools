@@ -1729,7 +1729,7 @@ public class Name {
   
   /** Test routine */
   public static void main(String[] argv) throws Exception {  
-    for(String s :new FileLines("./javatools/testdata/NameParserTest.txt")) {            
+    for(String s :new FileLines("./testdata/NameParserTest.txt")) {            
         D.p(Name.of(s).describe());
     }    
   }
