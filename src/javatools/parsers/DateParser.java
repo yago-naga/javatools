@@ -48,7 +48,7 @@ public class DateParser {
 
   /** A Date as a capturing RegEx */
   public static final String DATE=newDate("(-?[0-9#]++)","([0-9#]{2})","([0-9#]{2})");
-  public static final Pattern DATEPATTERN=Pattern.compile("\\b"+DATE); // No trailing boundary because of '#'
+  public static final Pattern DATEPATTERN=Pattern.compile(DATE); // No trailing boundary because of '#'
 
   /** A year as a pattern */
   public static final Pattern SIMPLEYEARPATTERN=Pattern.compile("\\b(\\d{3,4})\\b");
@@ -469,14 +469,13 @@ public class DateParser {
 
   /** Test routine */
   public static void main(String[] argv) throws Exception {
-    /*
     System.out.println(NumberFormatter.ISOtime(DateParser.asCalendar(DateParser.normalize("November 24th 1998"))));         
     System.out.println("Enter a string containing a date expression and hit ENTER. Press CTRL+C to abort");
     while(true) {
       String in=D.r();
       System.out.println(normalize(in));
       System.out.println(NumberFormatter.ISOtime(asCalendar(normalize(in))));
-    }*/
+    }
   }
 
 }
