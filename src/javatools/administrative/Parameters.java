@@ -216,10 +216,15 @@ public class Parameters {
 			File f = new File(fn);
 			if (f.exists())
 				return (f);
-			D.println("File not found");
+			D.println("File not found",fn);
+			remove(s);
 		}
 	}
 
+	/** Removes a value from the mapping (NOT: from the file) */
+	public static String remove(String parameter) {
+		return(values.remove(parameter.toLowerCase()));
+	}
 	/** Returns a value for a parameter. If not present, asks the user for it */
 	public static boolean getOrRequestBoolean(String s, String description) {
 		while (true) {
@@ -238,6 +243,7 @@ public class Parameters {
 			try {
 				return(Integer.parseInt(fn));
 			} catch(Exception e) {}
+			remove(s);
 		}
 	}
 	

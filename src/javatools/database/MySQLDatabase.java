@@ -49,8 +49,7 @@ public class MySQLDatabase extends Database {
   }
 
   public MySQLDatabase() {
-	// TODO Auto-generated constructor stub
-}
+  }
 
 @Override
   public boolean jarAvailable() {

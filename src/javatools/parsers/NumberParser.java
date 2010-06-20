@@ -323,20 +323,42 @@ public class NumberParser {
     new FindReplace("³","^3"),
     
     // --------- Times and inches ------------------
-    new FindReplace(POSINT+':'+POSINT+B+"pm"+WB,null) {      
-      public void apply(StringBuilder s, StringBuilder result) {
-        result.setLength(0);
-        Matcher m=pattern.matcher(s);
-        if(!m.find()) return;
-        int pos=0;
-        do{
-          for(int i=pos;i<m.start();i++) result.append(s.charAt(i));
-          pos=m.end();
-          result.append(newNumber((Integer.parseInt(m.group(1))+12)+"."+m.group(2),"oc"));
-        }while(m.find());      
-        for(int i=pos;i<s.length();i++) result.append(s.charAt(i));      
-      }
-    },
+    new FindReplace("-?"+B+"(\\d+)"+B+"(°|degrees?)"+B+"(\\d+)"+B+"('|min|mn|minutes|m)"+B+"(\\d+\\.?\\d*)?(''|s|sec|seconds|\")?"+B+"(N|E|W|S)",null) {      
+        public void apply(StringBuilder s, StringBuilder result) {
+          result.setLength(0);
+          Matcher m=pattern.matcher(s);
+          if(!m.find()) return;
+          int pos=0;
+          do{
+            for(int i=pos;i<m.start();i++) result.append(s.charAt(i));
+            pos=m.end();
+            double num=Integer.parseInt(m.group(1));
+            num+=Integer.parseInt(m.group(3))/60.0;
+            if(m.group(5)!=null) num+=Integer.parseInt(m.group(5))/60.0/60.0;
+            char loc=m.group(7).charAt(0);
+            if(m.group().startsWith("-") && loc=='E') loc='W';
+            if(m.group().startsWith("-") && loc=='N') loc='S';
+            if(loc=='W') { num=-num; loc='E';}
+            if(loc=='S') { num=-num; loc='N';}
+            result.append(newNumber(num,""+loc));
+          }while(m.find());      
+          for(int i=pos;i<s.length();i++) result.append(s.charAt(i));      
+        }
+      },
+      new FindReplace(POSINT+':'+POSINT+B+"pm"+WB,null) {      
+          public void apply(StringBuilder s, StringBuilder result) {
+              result.setLength(0);
+              Matcher m=pattern.matcher(s);
+              if(!m.find()) return;
+              int pos=0;
+              do{
+                for(int i=pos;i<m.start();i++) result.append(s.charAt(i));
+                pos=m.end();
+                result.append(newNumber((Integer.parseInt(m.group(1))+12)+"."+m.group(2),"oc"));
+              }while(m.find());      
+              for(int i=pos;i<s.length();i++) result.append(s.charAt(i));      
+            }
+          },
     new FindReplace("(\\d+):(\\d{2})(?::(\\d{2})(?:\\.(\\d+))?)?\\s*h",null) {      
       public void apply(StringBuilder s, StringBuilder result) {
         result.setLength(0);
@@ -397,8 +419,8 @@ public class NumberParser {
     new FindReplace("(?i:eur|euro|euros)"+B+FLOAT,newNumber("$1","euro")),    
     new FindCompute("((?i:dollars|dollar|\\$|US\\$|USD|\\$US))","dollar"),       
     new FindCompute("((?i:euro?s?))","euro"),
-    new FindCompute("(metres|meters|meter|metre|m)\\^2","m^2"),
-    new FindCompute("(metres|meters|meter|metre|m)\\^3","m^3"),
+    new FindCompute("(metres|meters|meter|metre|m)(\\^)?2","m^2"),
+    new FindCompute("(metres|meters|meter|metre|m)(\\^)?3","m^3"),
     new FindCompute("(metres|meters|meter|metre|m)","m"),
     new FindCompute("(square|sq)"+B+P+"(metres|meters|meter|metre|m)","m^2"),
     new FindCompute("(cubic|cu)"+B+P+"(metres|meters|meter|metre|m)","m^3"),

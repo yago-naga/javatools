@@ -83,7 +83,8 @@ public class NounGroup {
         "with",
         "who",
         "-",
-        "\u2248"
+        "\u2248",
+        "under"
   );
 
   /** Holds the original noun group */

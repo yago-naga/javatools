@@ -577,9 +577,9 @@ public class Name {
         myGivenNames=myFamilyName;
         myFamilyName=null;
       }
-      // Postprocessing: If we have no given name and a roman number, familyname is given name
-      if(myGivenNames==null && myRoman!=null) {
-        myGivenNames=myFamilyName;
+      // Postprocessing: If we have a roman number, familyname is given name
+      if(myRoman!=null && myFamilyName!=null) {
+        myGivenNames=myGivenNames==null?myFamilyName:myGivenNames+" "+myFamilyName;
         myFamilyName=null;
       }
       // Postprocessing: if familyname is a familynamesuffix, rearrange
@@ -616,6 +616,11 @@ public class Name {
     public String familyName() {
       return myFamilyName;
     }
+    /**Returns the familyName with prefix */
+    public String familyNameWithAffixes() {
+    	if(myFamilyName==null) return(null);
+        return (myFamilyNamePrefix==null?"":myFamilyNamePrefix+" ")+myFamilyName+(myFamilyNameSuffix==null?"":" "+myFamilyNameSuffix);
+      }
     /**Returns the familyNamePrefix.*/
     public String familyNamePrefix() {
       return myFamilyNamePrefix;

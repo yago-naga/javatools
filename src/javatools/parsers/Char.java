@@ -1050,6 +1050,12 @@ public class Char {
     else return ("&#" + ((int) c) + ";");
   }
 
+  /** Encodes a character to an HTML-Ampersand code (if necessary)*/
+  public static String encodeAmpersandToAlphanumeric(char c) {
+	  if (isAlphanumeric(c) || c=='_') return ("" + c);
+	  return ("&#" + ((int) c) + ";");
+  }
+  
   /** Encodes a character to an Percentage code (if necessary).
    * If the character is greater than 0x80, the character is converted to
    * a UTF8-sequence and this sequence is encoded as percentage codes. */
@@ -1186,6 +1192,15 @@ public class Char {
     return (r.toString());
   }
 
+  /** Replaces non-normal characters in a String by HTML Ampersand codes */
+  public static String encodeAmpersandToAlphanumeric(String c) {
+    StringBuilder r = new StringBuilder();
+    for (int i = 0; i < c.length(); i++) {
+      r.append(encodeAmpersandToAlphanumeric(c.charAt(i)));
+    }
+    return (r.toString());
+  }
+  
   /** Replaces non-normal characters in a String by Percentage codes.
    * If a character is greater than 0x80, the character is converted to
    * a UTF8-sequence and this sequence is encoded as percentage codes. */
