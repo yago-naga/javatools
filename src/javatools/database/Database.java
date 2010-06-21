@@ -447,7 +447,7 @@ public class Database {
   public void createIndex(String table, boolean unique, String... attributes) throws SQLException {
     String comand = createIndexCommand(table, unique, attributes);
     try {
-      executeUpdate("DROP INDEX " + indexName(table, attributes) + "Index");
+      executeUpdate("DROP INDEX " + indexName(table, attributes));
     } catch (SQLException e) {
     }
     executeUpdate(comand);

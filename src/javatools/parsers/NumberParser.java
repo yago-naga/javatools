@@ -334,7 +334,7 @@ public class NumberParser {
             pos=m.end();
             double num=Integer.parseInt(m.group(1));
             num+=Integer.parseInt(m.group(3))/60.0;
-            if(m.group(5)!=null) num+=Integer.parseInt(m.group(5))/60.0/60.0;
+            if(m.group(5)!=null) num+=Double.parseDouble(m.group(5))/60.0/60.0;
             char loc=m.group(7).charAt(0);
             if(m.group().startsWith("-") && loc=='E') loc='W';
             if(m.group().startsWith("-") && loc=='N') loc='S';
