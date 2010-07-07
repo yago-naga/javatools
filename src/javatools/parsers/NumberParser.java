@@ -316,33 +316,31 @@ public class NumberParser {
     // 1st
     new FindReplace(NTH,newNumber("$1","th")),
     // ^1 
-    new FindReplace("¹",""),
+    new FindReplace("ï¿½",""),
     // ^2
-    new FindReplace("²","^2"),
+    new FindReplace("ï¿½","^2"),
     // ^3
-    new FindReplace("³","^3"),
+    new FindReplace("ï¿½","^3"),
     
-    // --------- Times and inches ------------------
-    new FindReplace("-?"+B+"(\\d+)"+B+"(°|degrees?)"+B+"(\\d+)"+B+"('|min|mn|minutes|m)"+B+"(\\d+\\.?\\d*)?(''|s|sec|seconds|\")?"+B+"(N|E|W|S)",null) {      
+    // --------- Location coordinates, times and inches ----------------
+    new FindReplace("-?"+B+"(\\d+)"+B+"(ï¿½|degrees?)"+B+"(\\d+)?"+B+"('|minutes|min|mn|m)"+B+"(\\d+)?"+B+"(''|seconds|sec|s|\")"+B+"(N|E|W|S)",null) {      
         public void apply(StringBuilder s, StringBuilder result) {
           result.setLength(0);
           Matcher m=pattern.matcher(s);
-          if(!m.find()) return;
+          if (!m.find()) return;
           int pos=0;
-          do{
+          do {
             for(int i=pos;i<m.start();i++) result.append(s.charAt(i));
             pos=m.end();
             double num=Integer.parseInt(m.group(1));
-            num+=Integer.parseInt(m.group(3))/60.0;
+            if(m.group(3)!=null) num+=Integer.parseInt(m.group(3))/60.0;
             if(m.group(5)!=null) num+=Double.parseDouble(m.group(5))/60.0/60.0;
             char loc=m.group(7).charAt(0);
-            if(m.group().startsWith("-") && loc=='E') loc='W';
-            if(m.group().startsWith("-") && loc=='N') loc='S';
-            if(loc=='W') { num=-num; loc='E';}
-            if(loc=='S') { num=-num; loc='N';}
-            result.append(newNumber(num,""+loc));
-          }while(m.find());      
-          for(int i=pos;i<s.length();i++) result.append(s.charAt(i));      
+            if(loc=='W') { num=-num;}
+            if(loc=='S') { num=-num;}
+            result.append(Double.toString(num));
+          } while(m.find());      
+          for(int i=pos;i<s.length();i++) result.append(s.charAt(i));
         }
       },
       new FindReplace(POSINT+':'+POSINT+B+"pm"+WB,null) {      
