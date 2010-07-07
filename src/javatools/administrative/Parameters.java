@@ -266,9 +266,9 @@ public class Parameters {
 		values = new TreeMap<String, String>();
 		iniFile = f;
 		if (!iniFile.exists()) {
-			Announce.error("Required the initialisation file: "
-					+ iniFile.getCanonicalPath()
-					+ "\nSee the associated readme file for help");
+			Announce.error("The initialisation file",
+					iniFile.getCanonicalPath(),
+					"was not found.");
 		}
 		for (String l : new FileLines(iniFile)) {
 			Matcher m = INIPATTERN.matcher(l);
