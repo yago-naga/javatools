@@ -410,6 +410,12 @@ public class DateParser {
 		while (m.find()) {
 			result.add(m.group());
 		}
+		if(result.size()==0) {
+			m = SIMPLEYEARPATTERN.matcher(d);
+			while (m.find()) {
+				result.add(newDate(m.group(),"##","##"));
+			}
+		}
 		return (result);
 	}
 
