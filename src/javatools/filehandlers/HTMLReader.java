@@ -166,6 +166,18 @@ public class HTMLReader extends Reader {
     return(result.toString());
   }
 
+  /** Returns the entire text */
+  public StringBuilder text() throws IOException {
+    StringBuilder result=new StringBuilder();
+    while(true) {
+      int c=read();
+      if(c==-1) break;
+      if(c==-2) continue;      
+      result.append((char)c);
+    }
+    return(result);
+  }
+
   /** Seeks a specific string and scrolls to it, returns TRUE if found 
    * @throws IOException */
   public boolean scrollTo(String s) throws IOException {
