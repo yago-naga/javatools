@@ -77,6 +77,7 @@ public class Trie extends AbstractSet<CharSequence> {
 	public int containedLength(CharSequence s, int startPos) {
 		if (isWord)
 			return (0);
+		if(s.length()<=startPos) return(-1);
 		Character c = s.charAt(startPos);
 		if (children.get(c) == null)
 			return (-1);

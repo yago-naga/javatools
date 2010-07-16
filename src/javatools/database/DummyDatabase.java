@@ -1,5 +1,7 @@
 package javatools.database;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -30,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javatools.administrative.Announce;
+import javatools.filehandlers.FileLines;
 
 /**
  * This class is part of the Java Tools (see
@@ -91,6 +94,30 @@ public class DummyDatabase extends Database {
 			}
 		}
 		description="Dummy database with schema "+columnNames+" and "+numRows+" rows";
+	}
+	
+	/** Creates a dummy database with values from a TSV file 
+	 * @throws IOException */
+	public DummyDatabase(List<String> columnNames, File values) throws SQLException {
+		for(String columnName : columnNames) {
+			this.columnNames.add(columnName.toLowerCase());
+			columns.add(new ArrayList<String>());
+		}
+		int col=0;
+		try {
+			for(String line : new FileLines(values,"Loading "+values)) {
+				String[] split=line.split("\t");
+				for(int i=0;i<columns.size();i++) {
+					if(split.length>i)
+					columns.get(col).add(split[i]);
+					else columns.get(col).add(null);
+				}
+					numRows++;
+			}
+		} catch (IOException e) {
+			throw new SQLException(e);
+		}
+		description="Dummy database with schema "+columnNames+" and "+numRows+" rows from file "+values;
 	}
 	
 	/** Executes a query */
