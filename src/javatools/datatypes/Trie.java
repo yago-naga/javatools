@@ -103,6 +103,7 @@ public class Trie extends AbstractSet<CharSequence> {
 		});
 	}
 
+	/** Test method */
 	public static void main(String[] args) {
 		Trie t = new Trie();
 		t.add("hallo");

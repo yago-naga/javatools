@@ -167,13 +167,13 @@ public class HTMLReader extends Reader {
   }
 
   /** Returns the entire text */
-  public StringBuilder text() throws IOException {
+  public StringBuilder text(String forTag) throws IOException {
     StringBuilder result=new StringBuilder();
     while(true) {
       int c=read();
       if(c==-1) break;
-      if(c==-2) continue;      
-      result.append((char)c);
+      if(c==-2) result.append(forTag);      
+      else result.append((char)c);
     }
     return(result);
   }
