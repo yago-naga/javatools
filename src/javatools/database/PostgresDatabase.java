@@ -54,25 +54,26 @@ public class PostgresDatabase extends Database {
    * @throws IllegalAccessException 
    * @throws InstantiationException 
    * @throws SQLException */
-  public PostgresDatabase(String user, String password, String database, String host, String port) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException  {
+  public PostgresDatabase(String user, String password, String database, String host, String port, boolean useSSL) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException  {
     this();
     if(password==null) password="";
     if(host==null) host="localhost";
     if(port==null) port="5432";
     Driver driver= (Driver)Class.forName("org.postgresql.Driver").newInstance();
     DriverManager.registerDriver( driver );
-    connection = DriverManager.getConnection(
-          "jdbc:postgresql://"+host+":"+port+(database==null?"":"/"+database),
-        user,
-        password
-      );
+    String url = "jdbc:postgresql://"+host+":"+port+(database==null?"":"/"+database)+(useSSL?"?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory":"");
+    connection = DriverManager.getConnection(url, user, password);
     connection.setAutoCommit( true );
     description="Postgres database for "+user+" at "+host+":"+port+", database "+database+" schema "+schema;
   }  
+  
+  public PostgresDatabase(String user, String password, String database, String host, String port) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+    this(user,password,database,host,port,false);
+  }
 
   /** Constructs a new Database from a user, a password and a host*/
   public PostgresDatabase(String user, String password, String database, String host, String port,String schema) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException  {
-    this(user,password,database,host,port);
+    this(user,password,database,host,port,false);
     setSchema(schema);
   }
   /** Sets the default schema*/
