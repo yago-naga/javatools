@@ -36,6 +36,10 @@ import javatools.administrative.D;
  *          NumberFormatter.ISOtime(DateParser.getCalendar("November 24th 1998"))
  *          --> 1998-12-24 T 00:00:00.00
  * </PRE>
+ * 
+ * TODO 1st century transformed to 0##-##-##. Should be 00##-##-##. Just padding
+ * doesn't work because millenium would then be padded too much (need to distinguish
+ * between centuries and millenias).
  */
 
 public class DateParser {
