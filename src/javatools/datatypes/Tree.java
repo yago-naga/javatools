@@ -19,7 +19,7 @@ the YAGO-NAGA team (see http://mpii.de/yago-naga).
  
 
    The class represents the simple datatype of a Tree.*/
-public class Tree<T> implements Iterable<T>, Visitable<T>{
+public class Tree<T> implements Iterable<T>, Visitable<Tree<T>>{
   /** Holds the children */
   protected List<Tree<T>> children=new ArrayList<Tree<T>>();;
   /** Holds the node */
@@ -127,7 +127,6 @@ public class Tree<T> implements Iterable<T>, Visitable<T>{
   }
 
   /** Receives a visitor for a depth first traversal */
-
   public boolean receive(Visitor<Tree<T>> visitor) throws Exception {
     if(!visitor.visit(this)) return(false);
     for(Tree<T> child : children) {

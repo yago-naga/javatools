@@ -710,5 +710,6 @@ public class Database {
 
   /** Test routine */
   public static void main(String[] args) throws Exception {
+	  new PostgresDatabase("postgres", "postgres", null, null, null).runInterface();
   }
 }

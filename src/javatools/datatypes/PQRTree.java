@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javatools.administrative.CallStack;
 import javatools.administrative.D;
@@ -43,7 +43,7 @@ public class PQRTree<E> implements Iterable<E> {
   };
 
   /** Serves to find out where an element is in the tree */
-  protected Map<E, Leaf> leafMap = new TreeMap<E, Leaf>();
+  protected Map<E, Leaf> leafMap = new HashMap<E, Leaf>();
 
   /** TRUE if the tree has an R-node (and is thus unsolveable)*/
   protected boolean hasRNode = false;

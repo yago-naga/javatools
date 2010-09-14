@@ -92,6 +92,11 @@ public class ArrayQueue<T> extends AbstractQueue<T> {
     }
   }
   
+  public ArrayQueue(int size) {
+    data=new ArrayList<T>(size+1);
+    data.add(null);
+  }
+
   /** Test routine */
   public static void main(String[] args) {
     Queue<Integer> a=new ArrayQueue<Integer>();

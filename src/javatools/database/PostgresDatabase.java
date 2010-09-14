@@ -57,8 +57,8 @@ public class PostgresDatabase extends Database {
   public PostgresDatabase(String user, String password, String database, String host, String port, boolean useSSL) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException  {
     this();
     if(password==null) password="";
-    if(host==null) host="localhost";
-    if(port==null) port="5432";
+    if(host==null|| host.length()==0) host="localhost";
+    if(port==null|| port.length()==0) port="5432";
     Driver driver= (Driver)Class.forName("org.postgresql.Driver").newInstance();
     DriverManager.registerDriver( driver );
     String url = "jdbc:postgresql://"+host+":"+port+(database==null?"":"/"+database)+(useSSL?"?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory":"");

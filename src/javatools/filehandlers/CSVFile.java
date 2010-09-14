@@ -21,6 +21,8 @@ public class CSVFile implements Closeable {
   protected String separator=", ";
   /** quote all components*/
   protected boolean quoteAll=false;
+  /** never quote */
+  protected boolean quoteNever=false;
   
   public CSVFile(File f, boolean append, String separator, List<String> columns) throws IOException {
     this.separator=separator;
@@ -85,6 +87,11 @@ public class CSVFile implements Closeable {
     quoteAll=q;
   }
 
+  /**Sets quoting on/off (off by default)*/
+  public void neverQuote(boolean q) {
+    quoteNever=q;
+  }
+
   /** Writes the columns to the file*/
   public void write(List<? extends Object> columns) throws IOException {
     for(int i=0;i<columns.size();i++) {
@@ -102,6 +109,7 @@ public class CSVFile implements Closeable {
   /** Formats an entry*/
   protected String column(Object c) {
     String col=c.toString();  
+    if(quoteNever) return(col);
     if(col.indexOf('"')!=-1) {
       return('"'+col.replaceAll("\"","\"\"")+'"');
     }

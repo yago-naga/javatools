@@ -94,9 +94,9 @@ public class OracleDatabase extends Database {
   public OracleDatabase(String user, String password, String host, String port, String inst) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
     this();
     if (password == null) password = "";
-    if (host == null) host = "localhost";
-    if (port == null) port = "1521";
-    if (inst == null) inst = "oracle";
+    if (host == null || host.length()==0) host = "localhost";
+    if (port == null || port.length()==0) port = "1521";
+    if (inst == null|| inst.length()==0) inst = "oracle";
     connectionString = "jdbc:oracle:thin:" + user + "/" + password + "@" + host + ":" + port + ":" + inst;
     Driver driver;
     driver = (Driver) Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();

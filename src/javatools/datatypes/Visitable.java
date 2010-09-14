@@ -13,5 +13,5 @@ This interface is for the common visitor design pattern.
 */
 public interface Visitable<T>   {
   /** Sends a visitor through all elements. Returns whatever the visitor returned. */
-  public boolean receive(Visitor<Tree<T>> visitor) throws Exception ;
+  public boolean receive(Visitor<T> visitor) throws Exception ;
 }

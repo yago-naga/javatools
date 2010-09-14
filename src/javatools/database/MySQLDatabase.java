@@ -40,8 +40,8 @@ public class MySQLDatabase extends Database {
   public MySQLDatabase(String user, String password, String database, String host, String port) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
     Driver driver = (Driver) Class.forName("com.mysql.jdbc.Driver").newInstance();
     DriverManager.registerDriver(driver);
-    if (host == null) host = "localhost";
-    if (database == null) database = "test";
+    if (host == null || host.length()==0) host = "localhost";
+    if (database == null) database = "";
     if (port == null) port = "";
     else port = ":" + port;
     connection = DriverManager.getConnection("jdbc:mysql://" + host + port + "/" + database + "?user=" + user + "&password=" + password);
