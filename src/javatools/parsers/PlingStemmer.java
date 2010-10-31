@@ -91,7 +91,7 @@ public class PlingStemmer {
 
   /** Stems an English noun */
   public static String stem(String s) {
-    String stem = null;
+    String stem = s;
 
      // Handle irregular ones
      String irreg=irregular.get(s);
