@@ -139,7 +139,8 @@ public class HTMLReader extends Reader {
         String a="&";        
         while(!Character.isWhitespace((char)(c=in.read())) && c!=';' && c!=-1) a+=(char)c;
         a+=';';
-        c=Char.eatAmpersand(a,Char.eatLength);
+        int[] eatLength = new int[1];
+        c=Char.eatAmpersand(a,eatLength);
         if(announceChars!=-1) Announce.progressAt(announceChars+=a.length());
         return(c);
       }

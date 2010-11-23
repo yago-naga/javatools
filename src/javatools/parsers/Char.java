@@ -134,9 +134,6 @@ public class Char {
   /** String returned by the default implementation of defaultNormalizer, "[?]"*/
   public static String UNKNOWN = "[?]";
 
-  /** An integer array that can be used to hold the length of the eaten String*/
-  public static int[] eatLength = new int[1];
-
   /** Maps a special character to a HTML ampersand sequence */
   public static Map<Character, String> charToAmpersand = new FinalMap<Character, String>('&', "&amp;", '\'', "&apos;", '<', "&lt;", '>', "&gt;", '"',
       "&quot;");
@@ -696,6 +693,7 @@ public class Char {
       }
     }
     // Try to decode the UTF8
+    int[] eatLength = new int[1];
     char utf8 = eatUtf8(dec, eatLength);
     if (eatLength[0] != len) return (c);
     n[0] = len * 3;
@@ -790,6 +788,7 @@ public class Char {
   /** Decodes all UTF8 characters in the string*/
   public static String decodeUTF8(String s) {
     StringBuilder result = new StringBuilder();
+    int[] eatLength = new int[1];
     while (s.length() != 0) {
       char c = eatUtf8(s, eatLength);
       if (eatLength[0] != -1) {
@@ -806,6 +805,7 @@ public class Char {
   /** Decodes all percentage characters in the string*/
   public static String decodePercentage(String s) {
     StringBuilder result = new StringBuilder();
+    int[] eatLength = new int[1];
     while (s.length() != 0) {
       char c = eatPercentage(s, eatLength);
       if (eatLength[0] > 1) {
@@ -895,6 +895,7 @@ public class Char {
   /** Decodes all backslash characters in the string */
   public static String decodeBackslash(String s) {
     StringBuilder result = new StringBuilder();
+    int[] eatLength = new int[1];
     while (s.length() != 0) {
       char c = eatBackslash(s, eatLength);
       if (eatLength[0] > 1) {
@@ -986,6 +987,7 @@ public class Char {
   /** Replaces all codes in a String by the 16 bit Unicode characters */
   public static String decode(String s) {
     StringBuilder b = new StringBuilder();
+    int[] eatLength = new int[1];
     while (s.length() > 0) {
       char c = eatPercentage(s, eatLength);
       if (eatLength[0] <= 0) {
