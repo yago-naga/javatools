@@ -224,6 +224,26 @@ public abstract class PeekIterator<T> implements Iterator<T>, Iterable<T>, Close
     return((PeekIterator<K>)EMPTY);
   }
   
+  /** Counts the number of elements in an iterator (and destroys it)*/
+  public static<S> int numElements(Iterator<S> it) {
+    int num=0;
+    while(it.hasNext()) {
+      it.next();
+      num++;
+    }
+    return(num);
+  }
+
+  /** Lists the elements in an iterator (and destroys it)*/
+  public static<S> StringBuilder toString(Iterator<S> it) {
+    StringBuilder res=new StringBuilder();
+    while(it.hasNext()) {
+      res.append(", ").append(it.next());
+    }
+    res.setCharAt(0, '[');
+    return(res.append("]"));
+  }
+
   /** test routine*/
   public static void main(String[] args) throws Exception {
     PeekIterator<Integer> it=new SimplePeekIterator<Integer>(1,2,3,4);
