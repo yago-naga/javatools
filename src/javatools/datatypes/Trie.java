@@ -2,7 +2,7 @@ package javatools.datatypes;
 
 import java.util.AbstractSet;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javatools.administrative.D;
@@ -18,16 +18,45 @@ import javatools.administrative.D;
 public class Trie extends AbstractSet<CharSequence> {
 
 	/** Holds the children */
-	protected Map<Character, Trie> children = new TreeMap<Character, Trie>();
+	protected TreeMap<Character, Trie> children = new TreeMap<Character, Trie>();
 
 	/** true if this is a word */
 	protected boolean isWord = false;
 
+	/** number of elements */
+	protected int size=0;
+	
+	/** maps to parent*/
+	protected Trie parent;
+	
+  /** Constructs a Trie*/
+  public Trie() {
+    
+  }
+  /** Constructs a Trie*/
+  protected Trie(Trie p) {
+    parent=p;
+  }
+	
 	@Override
 	public boolean add(CharSequence s) {
-		return (add(s, 0));
+	  boolean a=add(s, 0);
+	  if(a) size++;
+		return (a);
 	}
 
+	@Override
+	public void clear() {
+	  children.clear();
+	  isWord=false;
+	  size=0;
+	}
+	
+	@Override
+	public boolean isEmpty() {
+	   return(size==0);
+	}
+	
 	/** Adds a sequence starting from start position */
 	protected boolean add(CharSequence s, int start) {
 		if (s.length() == start) {
@@ -38,7 +67,7 @@ public class Trie extends AbstractSet<CharSequence> {
 		}
 		Character c = s.charAt(start);
 		if (children.get(c) == null)
-			children.put(c, new Trie());
+			children.put(c, new Trie(this));
 		return (children.get(c).add(s, start + 1));
 	}
 
@@ -59,15 +88,43 @@ public class Trie extends AbstractSet<CharSequence> {
 
 	@Override
 	public Iterator<CharSequence> iterator() {
-		throw new UnsupportedOperationException("Iterator for Trie");
+	  if(isEmpty()) return(PeekIterator.emptyIterator());
+		return(new PeekIterator<CharSequence>() {
+
+		  StringBuilder currentString=new StringBuilder();
+		  Trie currentTrie=Trie.this;
+      @Override
+      protected CharSequence internalNext() throws Exception {
+        do {
+          SortedMap<Character,Trie> chars=currentTrie.children;
+          // If we cannot go down
+          while(chars.isEmpty()) {
+            // If we cannot go up, we give up
+            if(currentTrie.parent==null) return(null);
+            // Go up
+            currentTrie=currentTrie.parent;
+            // Take next neighbor
+            chars=currentTrie.children.headMap(currentString.charAt(currentString.length()-1));
+            currentString.setLength(currentString.length()-1);
+          }
+          // Finally, we can go down
+          Character c=chars.lastKey();
+          currentString.append(c.charValue());
+          currentTrie=currentTrie.children.get(c);
+        } while(!currentTrie.isWord);
+        return(currentString.toString());
+      }
+		  
+		});
 	}
 
 	@Override
+	public String toString() {
+	  return "Trie with "+size()+" elements and "+children.size()+" children";
+	}
+	@Override
 	public int size() {
-		int num = isWord ? 1 : 0;
-		for (Trie child : children.values())
-			num += child.size();
-		return (num);
+		return (size);
 	}
 
 	/**
@@ -108,6 +165,11 @@ public class Trie extends AbstractSet<CharSequence> {
 		Trie t = new Trie();
 		t.add("hallo");
 		t.add("du");
+		for(String s : new IterableForIterator<String>(t.stringIterator())) D.p(s);
 		D.p(t.wordsIn("Blah hallo blub hallo fasel du").asList());
 	}
+
+  public Iterator<String> stringIterator() {
+    return(new MappedIterator<CharSequence, String>(iterator(), MappedIterator.stringMapper));
+  }
 }

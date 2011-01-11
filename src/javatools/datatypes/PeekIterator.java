@@ -99,7 +99,7 @@ public abstract class PeekIterator<T> implements Iterator<T>, Iterable<T>, Close
   }
 
   /** Returns the next element and advances. Overwrite internalNext instead! */
-  public T nextOrNull() {
+  public final T nextOrNull() {
     if(hasNext()) return(next());
     return(null);
   }
@@ -109,7 +109,7 @@ public abstract class PeekIterator<T> implements Iterator<T>, Iterable<T>, Close
   }
 
   /** returns the next element without advancing*/
-  public T peek() {
+  public final T peek() {
     if(hasNext()) return(next);
     throw new NoSuchElementException();
   }
