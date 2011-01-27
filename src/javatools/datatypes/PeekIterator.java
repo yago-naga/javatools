@@ -234,12 +234,18 @@ public abstract class PeekIterator<T> implements Iterator<T>, Iterable<T>, Close
     return(num);
   }
 
+  /** Counts the number of elements in an iterable*/
+  public static<S> int numElements(Iterable<S> it) {
+   return(numElements(it.iterator()));
+  }
+  
   /** Lists the elements in an iterator (and destroys it)*/
   public static<S> StringBuilder toString(Iterator<S> it) {
     StringBuilder res=new StringBuilder();
     while(it.hasNext()) {
       res.append(", ").append(it.next());
-    }
+    } 
+    if(res.length()==0) return(res.append("[]"));
     res.setCharAt(0, '[');
     return(res.append("]"));
   }

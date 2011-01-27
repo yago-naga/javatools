@@ -51,7 +51,7 @@ public class DateParser {
 
 	/** Creates a date-string from a day, month and year as ints */
 	public static final String newDate(int y, int m, int d) {
-		return (newDate("" + d, "" + m, "" + y));
+		return (newDate("" + y, m<10?"0" + m:""+m, d<10?"0" + d:""+d));
 	}
 
 	/** A Date as a capturing RegEx */

@@ -87,7 +87,7 @@ public class Trie extends AbstractSet<CharSequence> {
 	}
 
 	@Override
-	public Iterator<CharSequence> iterator() {
+	public PeekIterator<CharSequence> iterator() {
 	  if(isEmpty()) return(PeekIterator.emptyIterator());
 		return(new PeekIterator<CharSequence>() {
 
@@ -171,5 +171,8 @@ public class Trie extends AbstractSet<CharSequence> {
 
   public Iterator<String> stringIterator() {
     return(new MappedIterator<CharSequence, String>(iterator(), MappedIterator.stringMapper));
+  }
+  public Iterable<String> strings() {
+    return(new IterableForIterator<String>(stringIterator()));
   }
 }
