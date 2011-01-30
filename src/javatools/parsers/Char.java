@@ -1037,7 +1037,7 @@ public class Char {
 
   /** Encodes a character to a backslash code (if not ASCII)*/
   public static String encodeBackslashToASCII(char c) {
-    if (c>=32 && c<128) return ("" + c);
+    if (c>=32 && c<128 && c!='\\' && c!='"') return ("" + c);
     String hex = Integer.toHexString(c);
     while (hex.length() < 4)
       hex = "0" + hex;

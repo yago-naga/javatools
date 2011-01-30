@@ -240,6 +240,11 @@ public abstract class PeekIterator<T> implements Iterator<T>, Iterable<T>, Close
   }
   
   /** Lists the elements in an iterator (and destroys it)*/
+  public static<S> StringBuilder toString(Iterable<S> it) {
+    return(toString(it.iterator()));
+  }
+  
+  /** Lists the elements in an iterator (and destroys it)*/
   public static<S> StringBuilder toString(Iterator<S> it) {
     StringBuilder res=new StringBuilder();
     while(it.hasNext()) {
