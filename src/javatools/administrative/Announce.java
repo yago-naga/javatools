@@ -285,15 +285,16 @@ public class Announce {
   /** Notes that the progress is at d, prints dots if necessary,
    * calculates and displays the estimated time after 20sec of the progress */
   public static void progressAt(double d) {
-    if (d > progressEnd || d * MAXDOTS / progressEnd <= progressDots) return;
+    if (d > progressEnd) return;
+    if (!D.smaller(level, Level.STATE) && !printedEstimatedTime && System.currentTimeMillis() - progressStart > 20000) {
+      print("("+NumberFormatter.formatMS((long) ((System.currentTimeMillis() - progressStart) * (progressEnd - d) / d))+" to go)");
+      printedEstimatedTime = true;
+    }
+    if(d * MAXDOTS / progressEnd <= progressDots) return;
     StringBuilder b = new StringBuilder();
     while (d * MAXDOTS / progressEnd > progressDots) {
       progressDots++;
       b.append(".");
-    }
-    if (!printedEstimatedTime && System.currentTimeMillis() - progressStart > 20000) {
-      b.append('(').append(NumberFormatter.formatMS((long) ((System.currentTimeMillis() - progressStart) * (progressEnd - d) / d))).append(" to go)");
-      printedEstimatedTime = true;
     }
     if (!D.smaller(level, Level.STATE)) print(b);
   }

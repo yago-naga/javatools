@@ -45,7 +45,7 @@ public class CombinedIterator<T> implements  Iterator<T>, Iterable<T> {
     iterators.offer(i3);
   }  
   /** Adds a set */
-  public CombinedIterator(Collection<? extends T> i) {
+  public CombinedIterator(Iterable<? extends T> i) {
     this(i.iterator());
   }
   /** Adds a set */
@@ -56,6 +56,10 @@ public class CombinedIterator<T> implements  Iterator<T>, Iterable<T> {
   /** Creates a CombinedIterator from some iterators (may give a (useless) Java compiler warning)*/
   public CombinedIterator(Iterator<? extends T>... its) {
     for(Iterator<? extends T> i : its) iterators.offer(i);
+  }
+  /** Creates a CombinedIterator from some iterators */
+  public CombinedIterator(Collection<Iterable<? extends T>>  its) {
+    for(Iterable<? extends T> i : its) iterators.offer(i.iterator());
   }
   /** Adds an iterator */
   public CombinedIterator<T> add(Iterator<? extends T> i) {
@@ -68,7 +72,7 @@ public class CombinedIterator<T> implements  Iterator<T>, Iterable<T> {
     return(add(Arrays.asList(i)));
   }
   /** Adds a set */
-  public CombinedIterator<T> add(Collection<? extends T> i) {
+  public CombinedIterator<T> add(Iterable<? extends T> i) {
     iterators.offer(i.iterator());
     return(this);
   }
