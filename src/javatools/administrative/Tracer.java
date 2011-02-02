@@ -43,7 +43,12 @@ public class Tracer {
 
     /** Receiving a signal*/
     public void signal(Object... s) {
-      if(announced && lastSignalTime!=0) Announce.message("Hang resolved after "+(System.currentTimeMillis()-lastSignalTime)+" ms");
+      if(announced && lastSignalTime!=0) {
+        StringBuilder b=new StringBuilder();
+        for(Object o : s) b.append(o).append(' ');
+        b.append("resolved hang after ").append(System.currentTimeMillis()-lastSignalTime).append(" ms");
+        Announce.message(b);
+      }
       lastSignal=s;
       lastSignalTime=System.currentTimeMillis();
       announced=false;

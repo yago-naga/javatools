@@ -282,13 +282,20 @@ public class Announce {
     doingLevel++;
   }
 
+  /** Shows remaining time*/
+  public static void progressShowTime() {
+    print("("+NumberFormatter.formatMS((long) ((System.currentTimeMillis() - progressStart) * (progressEnd - progressCounter) / progressCounter))+" to go)");
+    printedEstimatedTime = true;    
+  }
+  
   /** Notes that the progress is at d, prints dots if necessary,
    * calculates and displays the estimated time after 20sec of the progress */
   public static void progressAt(double d) {
+    //progressCounter=d;
     if (d > progressEnd) return;
     if (!D.smaller(level, Level.STATE) && !printedEstimatedTime && System.currentTimeMillis() - progressStart > 20000) {
       print("("+NumberFormatter.formatMS((long) ((System.currentTimeMillis() - progressStart) * (progressEnd - d) / d))+" to go)");
-      printedEstimatedTime = true;
+      printedEstimatedTime = true;    
     }
     if(d * MAXDOTS / progressEnd <= progressDots) return;
     StringBuilder b = new StringBuilder();
