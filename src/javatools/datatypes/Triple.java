@@ -1,20 +1,16 @@
 package javatools.datatypes;
 
+/** Represents a triple*/
 public class Triple<F, S, T> extends Pair<F, S> {
 
   /** Holds the second component */
-  private T third;
+  public T third;
 
   /** Returns the second */
   public T third() {
     return third;
   }
-
-  /** Sets the second */
-  public void setThird(T third) {
-    this.third = third;
-  }
-
+  
   /** Constructs a Pair*/
   public Triple(F first, S second, T third) {
     super(first, second);
@@ -25,7 +21,6 @@ public class Triple<F, S, T> extends Pair<F, S> {
     return (super.hashCode() ^ third.hashCode());
   }
 
-  @SuppressWarnings("unchecked")
   public boolean equals(Object obj) {
     return (obj instanceof Triple) && ((Triple) obj).first().equals(first) && ((Triple) obj).second().equals(second)
         && ((Triple) obj).third().equals(third);
