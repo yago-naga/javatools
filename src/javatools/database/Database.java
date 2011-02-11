@@ -177,8 +177,10 @@ public class Database {
   }
 
   /** TRUE if the required JAR is there*/
-  public boolean jarAvailable() { return(true);}
-  
+  public boolean jarAvailable() {
+    return (true);
+  }
+
   /**
    * Returns the results for a query as a ResultSet with given type and
    * concurrency. The preferred way to execute a query is by the query(String,
@@ -190,8 +192,8 @@ public class Database {
    */
   public ResultSet query(CharSequence sqlcs, int resultSetType, int resultSetConcurrency) throws SQLException {
     String sql = prepareQuery(sqlcs.toString());
-    if (sql.toUpperCase().startsWith("INSERT") || sql.toUpperCase().startsWith("UPDATE") || sql.toUpperCase().startsWith("DELETE")
-        || sql.toUpperCase().startsWith("CREATE") || sql.toUpperCase().startsWith("DROP") || sql.toUpperCase().startsWith("ALTER")) {
+    if (sql.toUpperCase().startsWith("INSERT") || sql.toUpperCase().startsWith("UPDATE") || sql.toUpperCase().startsWith("DELETE") || sql.toUpperCase().startsWith("CREATE") || sql.toUpperCase().startsWith("DROP")
+        || sql.toUpperCase().startsWith("ALTER")) {
       executeUpdate(sql);
       return (null);
     }
@@ -409,18 +411,28 @@ public class Database {
   public String indexName(String table, String... attributes) {
     StringBuilder indexName = new StringBuilder(table);
     int length = table.length() + 5;
-    for (String a : attributes)
+    //removes brackets for mysql the (160)
+    String[] use = new String[attributes.length];
+    for (int i = 0; i < attributes.length; i++) {
+      int index = attributes[i].indexOf("(");
+      if (index > 0) {
+        use[i] = attributes[i].substring(0, index);
+      } else {
+        use[i] = attributes[i];
+      }
+    }
+    for (String a : use)
       length = length + a.length();
     if (length > 30) {
-      int min = 30 - (attributes.length * 2) - 2;
+      int min = 30 - (use.length * 2) - 2;
       if (min < 5) min = 5;
       if (min > table.length()) min = table.length();
       indexName = new StringBuilder(indexName.substring(0, min));
-      for (String a : attributes)
+      for (String a : use)
         indexName.append(a.substring(0, 2));
       indexName.append("_I");
     } else {
-      for (String a : attributes)
+      for (String a : use)
         indexName.append(a);
       indexName.append("Index");
     }
@@ -628,7 +640,7 @@ public class Database {
   public Inserter newInserter(String table) throws SQLException {
     return (new Inserter(table));
   }
-  
+
   /** Returns an inserter for a table with specific column types*/
   public Inserter newInserter(String table, Class... argumentTypes) throws SQLException {
     return (new Inserter(table, argumentTypes));
@@ -650,27 +662,27 @@ public class Database {
   }
 
   /** Produces a CSV version of the query*/
-  public void makeCSVForQuery(String selectCommand,File output, char separator) throws IOException, SQLException {
-    ResultSet r=query(selectCommand);
-    Writer out=new UTF8Writer(output);
+  public void makeCSVForQuery(String selectCommand, File output, char separator) throws IOException, SQLException {
+    ResultSet r = query(selectCommand);
+    Writer out = new UTF8Writer(output);
     int columns = r.getMetaData().getColumnCount();
     for (int column = 1; column <= columns; column++) {
       out.write(r.getMetaData().getColumnLabel(column));
-      if(column==columns) out.write("\n");
-      else out.write(separator+" ");
+      if (column == columns) out.write("\n");
+      else out.write(separator + " ");
     }
-    while(r.next()) {
+    while (r.next()) {
       for (int column = 1; column <= columns; column++) {
-        Object o=r.getObject(column);
-        out.write(o==null?"null":o.toString());
-        if(column==columns) out.write("\n");
-        else out.write(separator+" ");
+        Object o = r.getObject(column);
+        out.write(o == null ? "null" : o.toString());
+        if (column == columns) out.write("\n");
+        else out.write(separator + " ");
       }
     }
     close(r);
     out.close();
   }
-  
+
   /** Produces a CSV version of the query*/
   public void dumpQueryAsCSV(String selectCommand, File output, char separator) throws IOException, SQLException {
     ResultSet r = query(selectCommand);
@@ -709,7 +721,7 @@ public class Database {
   }
 
   /** Test routine */
-  public static void main(String[] args) throws Exception {
-	  new PostgresDatabase("postgres", "postgres", null, null, null).runInterface();
-  }
+    public static void main(String[] args) throws Exception {
+      new PostgresDatabase("postgres", "postgres", null, null, null).runInterface();
+    }
 }

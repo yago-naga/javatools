@@ -41,84 +41,93 @@ inner quotes as doublequotes.*/
 public class PostgresDatabase extends Database {
 
   /** Holds the default schema*/
-  protected String schema=null;
-  
+  protected String schema = null;
+
   /** Constructs a non-functional OracleDatabase for use of getSQLType*/
   public PostgresDatabase() {
-    java2SQL.put(String.class,varchar);
-    type2SQL.put(Types.VARCHAR,varchar);    
+    java2SQL.put(String.class, varchar);
+    type2SQL.put(Types.VARCHAR, varchar);
   }
-  
+
   /** Constructs a new Database from a user, a password and a host
    * @throws ClassNotFoundException 
    * @throws IllegalAccessException 
    * @throws InstantiationException 
    * @throws SQLException */
-  public PostgresDatabase(String user, String password, String database, String host, String port, boolean useSSL) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException  {
+  public PostgresDatabase(String user, String password, String database, String host, String port, boolean useSSL) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
     this();
-    if(password==null) password="";
-    if(host==null|| host.length()==0) host="localhost";
-    if(port==null|| port.length()==0) port="5432";
-    Driver driver= (Driver)Class.forName("org.postgresql.Driver").newInstance();
-    DriverManager.registerDriver( driver );
-    String url = "jdbc:postgresql://"+host+":"+port+(database==null?"":"/"+database)+(useSSL?"?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory":"");
+    if (password == null) password = "";
+    if (host == null || host.length() == 0) host = "localhost";
+    if (port == null || port.length() == 0) port = "5432";
+    Driver driver = (Driver) Class.forName("org.postgresql.Driver").newInstance();
+    DriverManager.registerDriver(driver);
+    String url = "jdbc:postgresql://" + host + ":" + port + (database == null ? "" : "/" + database) + (useSSL ? "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory" : "");
     connection = DriverManager.getConnection(url, user, password);
-    connection.setAutoCommit( true );
-    description="Postgres database for "+user+" at "+host+":"+port+", database "+database+" schema "+schema;
-  }  
-  
+    connection.setAutoCommit(true);
+    description = "Postgres database for " + user + " at " + host + ":" + port + ", database " + database + " schema " + schema;
+  }
+
   public PostgresDatabase(String user, String password, String database, String host, String port) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-    this(user,password,database,host,port,false);
+    this(user, password, database, host, port, false);
   }
 
   /** Constructs a new Database from a user, a password and a host*/
-  public PostgresDatabase(String user, String password, String database, String host, String port,String schema) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException  {
-    this(user,password,database,host,port,false);
+  public PostgresDatabase(String user, String password, String database, String host, String port, String schema) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+    this(user, password, database, host, port, false);
     setSchema(schema);
   }
+
   /** Sets the default schema*/
   public void setSchema(String s) throws SQLException {
-    executeUpdate("SET search_path TO "+s+", public");
-    schema=s;
-    description=description.substring(0,description.lastIndexOf(' '))+" "+schema;
+    executeUpdate("SET search_path TO " + s + ", public");
+    schema = s;
+    description = description.substring(0, description.lastIndexOf(' ')) + " " + schema;
   }
-  
+
   public static class Varchar extends SQLType.ANSIvarchar {
+
     public Varchar(int size) {
       super(size);
-    }  
+    }
+
     public Varchar() {
       super();
-    } 
-    public String toString() {
-      return("VARCHAR("+scale+")");
     }
-    public String format(Object o) {
-      String s=o.toString().replace("'", "''").replace("\\", "\\\\");
-      if(s.length()>scale) s=s.substring(0,scale);
-      return("'"+s+"'");
-    } 
-  }
-  public static Varchar varchar=new Varchar();
 
+    public String toString() {
+      return ("VARCHAR(" + scale + ")");
+    }
+
+    public String format(Object o) {
+      String s = o.toString().replace("'", "''").replace("\\", "\\\\");
+      if (s.length() > scale) s = s.substring(0, scale);
+      return ("'" + s + "'");
+    }
+  }
+
+  public static Varchar varchar = new Varchar();
 
   @Override
   public boolean jarAvailable() {
-   try {
+    try {
       Class.forName("org.postgresql.Driver").newInstance();
       return true;
     } catch (Exception e) {
     }
     return false;
   }
-  
-  public static void main(String[] args) throws Exception {
-    Database d=new PostgresDatabase("postgres","postgres","postgres",null,null);
-    //d.executeUpdate("CREATE table test (a integer, b varchar)");
-    d.executeUpdate("INSERT into test values (1,2)");
-    ResultSet s=d.query("select * from test");
-    s.next();
-    D.p(s.getString(1));
+
+  public static void main(String[] args) {
+    try {
+      Database d = new PostgresDatabase("postgres", "postgres", "postgres", null, null);
+      //d.executeUpdate("CREATE table test (a integer, b varchar)");
+      d.executeUpdate("INSERT into test values (1,2)");
+      ResultSet s = d.query("select * from test");
+      s.next();
+      D.p(s.getString(1));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
 }
