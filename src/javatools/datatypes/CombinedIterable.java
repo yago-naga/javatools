@@ -66,4 +66,13 @@ public class CombinedIterable<T> implements  Iterable<T> {
   public Iterator<T> iterator() {
    return(new CombinedIterator<T>(iterables));
   }
+  
+  @Override
+  public String toString() {
+    StringBuilder b=new StringBuilder("[");
+    for(T t : this) b.append(t).append(", ");
+    if(b.length()>2) b.setLength(b.length()-2);
+    b.append("]");
+    return(b.toString());
+  }
 }

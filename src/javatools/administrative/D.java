@@ -209,7 +209,7 @@ public class D {
   }
 
   /** Given a map that maps to collections, adds a new key/value pair or introduces the key*/
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public static <K, V, C extends Collection<V>, L extends Collection> void addKeyValue(Map<K, C> map, K key, V value, Class<L> collectionType) {
     C coll = map.get(key);
     if (coll == null) {
@@ -222,6 +222,12 @@ public class D {
     coll.add(value);
   }
 
+  /** Given a map that maps to collections, adds a new key/value pair or introduces the key*/
+  @SuppressWarnings({ "rawtypes" })
+  public static <K, V, C extends Collection<V>, L extends Collection> void addKeyValues(Map<K, C> map, K key, C values, Class<L> collectionType) {
+    for(V val : values) addKeyValue(map,key,val,collectionType);
+  }
+  
   /** Given a map that maps to integers, adds a new key/value pair or increases the counter*/
   public static <K> void addKeyValue(Map<K, Integer> map, K key, int value) {
     Integer coll = map.get(key);
