@@ -167,13 +167,14 @@ public class Announce {
     newLine();
   }
 
-  /** Prints a debug message with the class and method name preceeding */
-  public static void debug(Object... o) {
-    if (D.smaller(level, Level.DEBUG)) return;
+  /** Prints a debug message with the class and method name preceding. Always returns TRUE so that it can be used in assert */
+  public static boolean debug(Object... o) {
+    if (D.smaller(level, Level.DEBUG)) return(true);
     newLine();
     print(CallStack.toString(new CallStack().ret().top()) + ": ");
     print(o);
     newLine();
+    return(true);
   }
 
   /** Prints a debug message */

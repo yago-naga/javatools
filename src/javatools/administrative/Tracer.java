@@ -76,10 +76,11 @@ public class Tracer {
   /** Internal trace thread*/
   protected static TracerThread tracer;
 
-  /** Start the tracer, accept millisDelay milliseconds between two signals before issuing a warning*/
-  public static void start(long millisDelay) {
+  /** Start the tracer, accept millisDelay milliseconds between two signals before issuing a warning. Returns TRUE so that it can be used in an assert statement*/
+  public static boolean start(long millisDelay) {
         tracer=new TracerThread(millisDelay);
         tracer.start();
+        return(true);
   }
 
   /** Stop the tracer*/
@@ -90,9 +91,10 @@ public class Tracer {
     }
   }
 
-  /** Send a signal to the tracer*/
-  public static void signal(Object... s) {
+  /** Send a signal to the tracer. Always returns TRUE so that it can be used in assert*/
+  public static boolean signal(Object... s) {
     if(tracer!=null) tracer.signal(s);
+    return(true);
   }
 
   // ------------------ Test Purposes ------------------
