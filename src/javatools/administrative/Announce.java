@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Set;
 
+
+
 import javatools.datatypes.FinalSet;
 import javatools.parsers.NumberFormatter;
 
@@ -62,7 +64,7 @@ public class Announce {
 
   /** Log level*/
   public enum Level {
-    MUTE, ERROR, WARNING, STATE, MESSAGES, DEBUG
+    MUTE, ERROR, WARNING, STATE, MESSAGES, DETAILSTATE, DEBUG
   };
 
   /** Current log level*/
@@ -94,6 +96,9 @@ public class Announce {
 
   /** Did we print the estimated time? */
   protected static boolean printedEstimatedTime;
+  
+  /** last time we printed estimated time */
+  protected static long lastEstimation;
 
   /** Memorizes the timer */
   protected static long timer;
@@ -121,6 +126,11 @@ public class Announce {
 	  Level oldLevel=level;
     level = l;
     return(oldLevel);
+  }
+  
+  /** Switches debug prefix with method an code line on or off */
+  public static void setDebugMode(boolean set) {
+    debug = set;
   }
 
   /** Blanks*/
@@ -161,20 +171,22 @@ public class Announce {
 
   /** Prints an (indented) message */
   public static void message(Object... o) {
-    if (D.smaller(level, Level.MESSAGES)) return;
+    if (D.smaller(level, Level.MESSAGES)) return;  
     newLine();
+    if(debug)
+      print("["+CallStack.toString(new CallStack().ret().top()) + "] ");
     print(o);
     newLine();
   }
 
-  /** Prints a debug message with the class and method name preceding. Always returns TRUE so that it can be used in assert */
+  /** Prints a debug message with the class and method name preceeding */
   public static boolean debug(Object... o) {
-    if (D.smaller(level, Level.DEBUG)) return(true);
+    if (D.smaller(level, Level.DEBUG)) return (true);
     newLine();
-    print(CallStack.toString(new CallStack().ret().top()) + ": ");
+    print("["+CallStack.toString(new CallStack().ret().top()) + "] ");
     print(o);
     newLine();
-    return(true);
+    return (true);
   }
 
   /** Prints a debug message */
@@ -190,7 +202,10 @@ public class Announce {
     if (D.smaller(level, Level.ERROR)) System.exit(255);
     while(doingLevel>0) failed();
     newLine();
-    print("Error: ");
+    if(debug)
+      print("[!Error: "+CallStack.toString(new CallStack().ret().top()) + "] ");
+    else
+      print("Error: ");
     print(o);
     newLine();
     System.exit(255);
@@ -207,7 +222,10 @@ public class Announce {
   public static void warning(Object... o) {
     if (D.smaller(level, Level.WARNING)) return;
     newLine();
-    print("Warning:  ");
+    if(debug)
+      print("[!Warning:  "+CallStack.toString(new CallStack().ret().top()) + "] ");
+    else
+      print("Warning: ");
     doingLevel+=5;
     print(o);
     doingLevel-=5;
@@ -224,14 +242,29 @@ public class Announce {
     out = new BufferedWriter(new OutputStreamWriter(s));
   }
 
-  /** Writes "s..."*/
-  public static void doing(Object... o) {
+  protected static void writeDoing(Object... o) {
     if (D.smaller(level, Level.STATE)) return;
     newLine();
+    if(debug)
+      print("["+CallStack.toString(new CallStack().ret().ret().top()) + "] ");
     print(o);
     print("... ");
     doingLevel++;
   }
+  
+  /** Writes "s..."*/
+  public static void doing(Object... o) {
+    if (D.smaller(level, Level.STATE)) return;
+    writeDoing(o);
+  }
+  
+  /** Writes "s..."*/
+  public static void doingDetailed(Object... o) {
+    if (D.smaller(level, Level.DETAILSTATE)) return;
+    writeDoing(o);
+  }
+  
+  
 
   /** Writes "failed NEWLINE" */
   public static void failed() {
@@ -243,6 +276,18 @@ public class Announce {
     }
   }
 
+ 
+  /** Writes "done NEWLINE"*/
+  public static void doneDetailed() {
+    if (doingLevel > 0) {
+      doingLevel--;
+      if (D.smaller(level, Level.DETAILSTATE)) return;
+      print("done");
+      newLine();
+    }
+  }
+  
+  
   /** Writes "done NEWLINE"*/
   public static void done() {
     if (doingLevel > 0) {
@@ -278,6 +323,8 @@ public class Announce {
     progressCounter=0;
     if (!D.smaller(level, Level.STATE)) {
       newLine();
+      if(debug)
+        print("["+CallStack.toString(new CallStack().ret().top()) + "] ");
       print(s,"...");
     }
     doingLevel++;
@@ -292,13 +339,18 @@ public class Announce {
   /** Notes that the progress is at d, prints dots if necessary,
    * calculates and displays the estimated time after 20sec of the progress */
   public static void progressAt(double d) {
-    //progressCounter=d;
     if (d > progressEnd) return;
     if (!D.smaller(level, Level.STATE) && !printedEstimatedTime && System.currentTimeMillis() - progressStart > 20000) {
       print("("+NumberFormatter.formatMS((long) ((System.currentTimeMillis() - progressStart) * (progressEnd - d) / d))+" to go)");
-      printedEstimatedTime = true;    
+      printedEstimatedTime = true;
+      lastEstimation=System.currentTimeMillis();
     }
-    if(d * MAXDOTS / progressEnd <= progressDots) return;
+    if(!D.smaller(level, Level.STATE) && printedEstimatedTime && (System.currentTimeMillis()-lastEstimation) > 1800000){
+      print("("+(NumberFormatter.formatMS((long) ((System.currentTimeMillis() - progressStart) * (progressEnd - d) / d)))+" to go)");
+      lastEstimation=System.currentTimeMillis();
+    }
+    if(d * MAXDOTS / progressEnd <= progressDots)return;
+
     StringBuilder b = new StringBuilder();
     while (d * MAXDOTS / progressEnd > progressDots) {
       progressDots++;

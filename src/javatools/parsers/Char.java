@@ -856,6 +856,70 @@ public class Char {
     }
     return sb.toString();
   }
+  
+  public static String decodeAmpersand(String s,PositionTracker posTracker) {
+    if (s == null) {
+      return null;
+    }
+    int pos=0;
+    int difference;
+    StringBuffer sb = new StringBuffer(s.length());
+    while (s != null && s.length() != 0) {
+      int i = s.indexOf("&");
+      if (i == -1) {
+        sb.append(s);
+        s = null;
+      } else {
+        boolean space = false;
+        boolean end = false;
+        sb.append(s.substring(0, i));
+        s = s.substring(i);
+        pos+=i;
+        int j1 = s.indexOf(";");
+        int j2 = s.indexOf(" ");
+        int j = -1;
+        if (j1 == -1 || j2 == -1) {
+          if (j1 == -1 && j2 == -1) {
+            end = true;
+            j = s.length();            
+          } else if (j1 == -1) {
+            j = j2;
+          } else if (j2 == -1) {
+            j = j1;
+          }
+        } else if (j1 < j2) {
+          j = j1;
+        } else if (j1 > j2) {
+          j = j2;
+          space = true;
+        }
+        pos+=(j+1);
+        String a = s.substring(1, j);
+        if (ampersandMap.get(a) != null) {
+          sb.append(ampersandMap.get(a));
+          difference=1-(j+1);             
+          if (space) {
+            sb.append(' ');
+            difference++;
+          }
+          posTracker.addPositionChange(pos, difference);
+        } else {
+          if (end) {
+            sb.append(s.substring(0, j));
+          } else {
+            sb.append(s.substring(0, j + 1));
+          }
+        }
+        if (end) {
+          s = s.substring(j);
+        } else {
+          s = s.substring(j + 1);
+        }
+      }
+    }
+    posTracker.closeRun();
+    return sb.toString();
+  }
 
   /** Decodes all ampersand sequences in the string*/
   public static String decodeAmpersand2(String s) {

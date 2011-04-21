@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javatools.parsers.Language;
+import javatools.parsers.PositionTracker;
+
+
 import javatools.administrative.D;
 
 /**
@@ -89,6 +93,11 @@ public class DateParser {
 	/** Contains the month short names */
 	private static final String[] MONTHS = new String[] { "Jan", "Feb", "Mar",
 			"Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+  private static final String[] MONTHS_EN=new String[]{"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+  private static final String[] MONTHS_DE=new String[]{"Jan","Feb","M\u00E4r","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"};
+  private static final String[] MONTHS_ES=new String[]{"ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"};
+  private static final String[] MONTHS_FR=new String[]{"janv","f\u00E9vr","mars","avr","mai","juin","juil","ao\u00FBt","sept","oct","nov","d\u00E9c"};
+  private static final String[] MONTHS_IT=new String[]{"gen","feb","mar","apr","mag","giu","lug","ago","sep","ott","nov","dic"};
 
 	/** A blank as a RegEx */
 	private static final String B = "[\\W_&&[^-]]*+";
@@ -98,15 +107,15 @@ public class DateParser {
 	private static final String WB = "\\b";
 	/** A hyphen as a RegEx with blanks */
 	private static final String H = B + "(?:-+|to|until)" + B;
-	/** BC as a RegEx with blank */
+	/** BC as a RegEx with blank */ // TODO: could also be internationalized
 	private static final String BC = B + "(?:BC|B\\.C\\.|BCE|AC|A\\.C\\.)";
-	/** AD as a RegEx with blank */
+	/** AD as a RegEx with blank */ // TODO: could also be internationalized
 	private static final String AD = "AD|A\\.D\\." + B;
-	/** CE as a RegEx with blank */
+	/** CE as a RegEx with blank */ // TODO: could also be internationalized
 	private static final String CE = B + "CE|C\\.E\\.";
-	/** ##th as a capturing RegEx with blank */
+	/** ##th as a capturing RegEx with blank */ // TODO: could also be internationalized
 	private static final String NTH = "(\\d{1,2})(?:[a-z]{2}|\\#th)" + B;
-	/** ##[th] as a capturing RegEx */
+	/** ##[th] as a capturing RegEx */ // TODO: could also be internationalized
 	private static final String N = "(\\d{1,2})[a-z]{0,2}";
 	/** #### as a capturing RegEx */
 	private static final String Y4 = "(\\d{4})";
@@ -114,11 +123,11 @@ public class DateParser {
 	private static final String Y = "(-?\\d{1,10})";
 	/** MONTH## as a capturing RegEx */
 	private static final String M = "MONTH(\\d\\d)";
-	/** A "the" as a RegEx with blank */
+	/** A "the" as a RegEx with blank */  // TODO: could also be internationalized
 	private static final String THE = "(?:the)?" + B;
-	/** century as a RegEx */
+	/** century as a RegEx */  // TODO: could also be internationalized
 	private static final String CENTURY = "[cC]entur(?:y|(?:ies))";
-	/** millenium as a RegEx */
+	/** millenium as a RegEx */  // TODO: could also be internationalized
 	private static final String MILENNIUM = "[mM]ill?enn?ium";
 
 	/** Holds the date patterns */
@@ -251,6 +260,22 @@ public class DateParser {
 			.compile(WB
 					+ "(Jan|January|Feb|February|Febr|Mar|March|Apr|April|May|Jun|June|Jul|July|Aug|August|Sep|September|Sept"
 					+ "|Oct|October|Nov|November|Dec|December)" + WB);
+  private static final Pattern monthPatternEn=Pattern.compile(
+      WB+"(Jan|January|Feb|February|Febr|Mar|March|Apr|April|May|Jun|June|Jul|July|Aug|August|Sep|September|Sept"+
+      "|Oct|October|Nov|November|Dec|December)"+WB);
+    private static final Pattern monthPatternDe=Pattern.compile(
+    WB+"(Jan|Januar|Feb|Februar|Febr|M\u00E4r|M\u00E4rz|Apr|April|Mai|Jun|Juni|Jul|Juli|Aug|August|Sep|September|Sept"+
+    "|Okt|Oktober|Nov|November|Dez|Dezember)"+WB);
+    private static final Pattern monthPatternEs=Pattern.compile(
+    WB+"(ene|enero|feb|febrero|febr|mar|marzo|abr|abril|may|mayo|jun|junio|julio|ago|agosto|sep|septiembre"+
+    "|oct|octubre|nov|noviembre|dic|diciembre)"+WB);
+    private static final Pattern monthPatternFr=Pattern.compile(
+    WB+"(janv|janvier|f\u00E9vr|f\u00E9vrier|mars|avr|avril|mai|juin|juil|juillet|ao\u00FBt|sept|septembre"+
+    "|oct|octobre|nov|novembre|d\u00E9c|d\u00E9cembre)"+WB);
+    private static final Pattern monthPatternIt=Pattern.compile(
+    WB+"(gen|gennaio|feb|febbraio|febr|mar|marzo|apr|aprile|mag|maggio|giu|giugno|lug|luglio|ago|agosto|set|settembre"+
+    "|ott|ottobre|nov|novembre|dic|dicembre)"+WB);
+	
 
 	/**
 	 * Holds the pattern that determines whether a string contains a year
@@ -260,8 +285,10 @@ public class DateParser {
 			.compile("\\d{2,4}|\\d{4}s|B\\.?C\\.?|A\\.?C\\.?|A\\.?D\\.?|"
 					+ CENTURY + "|\\d{2,4}s");
 
-	/** Normalizes all dates in a String */
-	public static String normalize(CharSequence s) {
+	/** Normalizes all dates in a String 
+	 * DEPRECATED - can go away when multilingual version accepted */
+	/*
+	 * public static String normalize(CharSequence s) {
 
 		// If it does not contain years or months, return it unchanged
 		if (!monthPattern.matcher(s).find() && !yearPattern.matcher(s).find())
@@ -310,9 +337,284 @@ public class DateParser {
 		out = null;
 		return (in.toString());
 	}
+	*/
 
-	/** Normalizes all dates in a String */
-	public static Collection<String> getAllDates(CharSequence s) {
+  /** Normalizes all dates in a String */
+  public static String normalize(CharSequence s) {
+    return normalize(s, Language.ENGLISH);
+  }
+  
+  /** Normalizes all dates in a String 
+   * Note: If you bugfix something in this version, 
+   * please check for applying the same fix at the position change tracking function below */
+  public static String normalize(CharSequence s, Language language) {
+    
+  Pattern monthPattern;
+  String[] months = null;
+  if (language.equals(Language.ENGLISH)) {
+    months = MONTHS_EN;
+    monthPattern = monthPatternEn;
+  } else if (language.equals(Language.GERMAN)) {
+    months = MONTHS_DE;
+    monthPattern = monthPatternDe;
+  } else if (language.equals(Language.SPANISH)) {
+    months = MONTHS_ES;
+    monthPattern = monthPatternEs;
+  } else if (language.equals(Language.FRENCH)) {
+    months = MONTHS_FR;
+    monthPattern = monthPatternFr;
+  } else if (language.equals(Language.ITALIAN)) {
+    months = MONTHS_IT;
+    monthPattern = monthPatternIt;
+  } else {
+    throw new IllegalArgumentException("Unsupported language: " + language);
+  }
+
+  // If it does not contain years or months, return it unchanged
+    if(!monthPattern.matcher(s).find() && !yearPattern.matcher(s).find()) return(s.toString());
+    
+    StringBuffer in=new StringBuffer((int) (s.length()*1.1));
+    
+    // Replace all the months
+    Matcher m=monthPattern.matcher(s);
+    while(m.find()) {
+        int monthNum=D.indexOf(m.group().substring(0,3), (Object[])months);
+        if (monthNum == -1)
+          monthNum=D.indexOf(m.group().substring(0,4), (Object[])months);
+        monthNum++; // convert from 0-based to 1-based
+        m.appendReplacement(in, "MONTH"+(monthNum/10)+(monthNum%10));                
+    }
+    m.appendTail(in);
+    StringBuffer out=new StringBuffer((int) (in.length()*1.1));
+    
+    // Apply the patterns
+    for(FindReplace p : patterns) {
+      m=p.pattern.matcher(in);
+      if (m.find()) {
+        out.setLength(0);
+        do {  
+            m.appendReplacement(out, p.replacement);
+        } while (m.find());
+        m.appendTail(out);
+        StringBuffer temp=out;
+        out=in;
+        in=temp;
+      }
+    }
+    
+    m=Pattern.compile("&DEC(\\d++)").matcher(in);
+    if(m.find()) {
+      out.setLength(0);
+      do {
+          m.appendReplacement(out, ""+(Integer.parseInt(m.group(1))-1));              
+      } while (m.find());      
+      m.appendTail(out);
+      in=null;
+      return(out.toString());
+    }
+    out=null;
+    return(in.toString());
+  }
+  
+  public static String normalize(CharSequence s, PositionTracker posTracker) {
+    return normalize(s, Language.ENGLISH, posTracker);
+  }
+  
+  /** Normalizes all dates in a String keeping track of the position changes with respect to the newly created string 
+   * Note: If you bugfix something in this version, please try and check for applying the same fix at the non-tracking function */
+  public static String normalize(CharSequence s, Language language, PositionTracker posTracker) {
+    
+  Pattern monthPattern;
+  String[] months = null;
+  if (language.equals(Language.ENGLISH)) {
+    months = MONTHS_EN;
+    monthPattern = monthPatternEn;
+  } else if (language.equals(Language.GERMAN)) {
+    months = MONTHS_DE;
+    monthPattern = monthPatternDe;
+  } else if (language.equals(Language.SPANISH)) {
+    months = MONTHS_ES;
+    monthPattern = monthPatternEs;
+  } else if (language.equals(Language.FRENCH)) {
+    months = MONTHS_FR;
+    monthPattern = monthPatternFr;
+  } else if (language.equals(Language.ITALIAN)) {
+    months = MONTHS_IT;
+    monthPattern = monthPatternIt;
+  } else {
+    throw new IllegalArgumentException("Unsupported language: " + language);
+  }
+    
+  Integer difference=0;
+    
+    // If it does not contain years or months, return it unchanged
+    if(!monthPattern.matcher(s).find() && !yearPattern.matcher(s).find()) return(s.toString());
+    
+    StringBuffer in=new StringBuffer((int) (s.length()*1.1));
+    
+    // Replace all the months
+    Matcher m=monthPattern.matcher(s);
+    while(m.find()) {
+      m.end();
+      int monthNum=D.indexOf(m.group().substring(0,3), (Object[])months);
+        if (monthNum == -1)
+          monthNum=D.indexOf(m.group().substring(0,4), (Object[])months);
+        monthNum++; // convert from 0-based to 1-based
+        String replacement="MONTH"+(monthNum/10)+(monthNum%10);
+        m.appendReplacement(in, replacement);
+        difference=replacement.length()-(m.end()-m.start());
+        posTracker.addPositionChange(m.end(), difference);
+    }
+    m.appendTail(in);
+    StringBuffer out=new StringBuffer((int) (in.length()*1.1));
+    
+    //merge position changes into the position mapping
+    posTracker.closeRun();
+        
+    // Apply the patterns
+    for(FindReplace p : patterns) {
+      m=p.pattern.matcher(in);
+      if (m.find()) {
+        out.setLength(0);
+        do {  
+            m.appendReplacement(out, p.replacement); //TODO: solve this more efficiently?
+            String test=in.substring(m.start(), m.end());
+            test=p.pattern.matcher(test).replaceFirst(p.replacement);          
+            difference=test.length()-(m.end()-m.start());
+            posTracker.addPositionChange(m.end(), difference);
+        } while (m.find());
+        m.appendTail(out); 
+        StringBuffer temp=out;
+        out=in;
+        in=temp;
+        //merge position changes into a single mapping
+        posTracker.closeRun();   
+      }
+    }
+
+    m=Pattern.compile("&DEC(\\d++)").matcher(in);
+    if(m.find()) {
+      out.setLength(0);
+      do {
+          m.appendReplacement(out, ""+(Integer.parseInt(m.group(1))-1));
+          String replacement=""+(Integer.parseInt(m.group(1))-1);
+          difference=replacement.length()-(m.end()-m.start());
+          posTracker.addPositionChange(m.end(), difference);
+      } while (m.find());      
+      m.appendTail(out);
+      
+      //merge position changes into a single mapping
+      posTracker.closeRun();
+      
+      in=null;
+      return(out.toString());
+    }
+    out=null;
+    return(in.toString());
+  }
+  
+  
+  /** Normalizes all dates in a String */
+  public static Collection<String> getAllDates(CharSequence s) {
+    return getAllDates(s, Language.ENGLISH);
+  }
+  
+  /** Normalizes all dates in a String */
+  public static Collection<String> getAllDates(CharSequence s, Language language) {
+    
+    Pattern monthPattern;
+  String[] months = null;
+  if (language.equals(Language.ENGLISH)) {
+    months = MONTHS_EN;
+    monthPattern = monthPatternEn;
+  } else if (language.equals(Language.GERMAN)) {
+    months = MONTHS_DE;
+    monthPattern = monthPatternDe;
+  } else if (language.equals(Language.SPANISH)) {
+    months = MONTHS_ES;
+    monthPattern = monthPatternEs;
+  } else if (language.equals(Language.FRENCH)) {
+    months = MONTHS_FR;
+    monthPattern = monthPatternFr;
+  } else if (language.equals(Language.ITALIAN)) {
+    months = MONTHS_IT;
+    monthPattern = monthPatternIt;
+  } else {
+    throw new IllegalArgumentException("Unsupported language: " + language);
+  }
+    
+    // If it does not contain years or months, return it unchanged
+    if(!monthPattern.matcher(s).find() && !yearPattern.matcher(s).find()) return(null);
+    
+    ArrayList<String> dates = new ArrayList<String>();
+    StringBuffer in=new StringBuffer((int) (s.length()*1.1));
+    
+    // Replace all the months
+    Matcher m=monthPattern.matcher(s);
+    while(m.find()) {
+      int monthNum=D.indexOf(m.group().substring(0,3), (Object[])months);
+        if (monthNum == -1)
+          monthNum=D.indexOf(m.group().substring(0,4), (Object[])months);
+        monthNum++; // convert from 0-based to 1-based
+        m.appendReplacement(in, "MONTH"+(monthNum/10)+(monthNum%10));                
+    }
+    m.appendTail(in);
+    StringBuffer out=new StringBuffer((int) (in.length()*1.1));
+    
+    // Apply the patterns
+    for(FindReplace p : patterns) {
+      m=p.pattern.matcher(in);
+      if (m.find()) {
+        out.setLength(0);
+        do {
+          String retrivel = m.group();
+            StringBuffer tem= new StringBuffer(retrivel);
+            m.appendReplacement(out, p.replacement);
+            Matcher tt = p.pattern.matcher(tem);
+            StringBuffer o1 = new StringBuffer();
+            if(tt.find()){
+              tt.appendReplacement(o1, p.replacement);
+              dates.add(o1.toString());
+            }
+
+        } while (m.find());
+        m.appendTail(out);
+        StringBuffer temp=out;
+        out=in;
+        in=temp;
+      }
+    }
+    
+    m=Pattern.compile("&DEC(\\d++)").matcher(in);
+    if(m.find()) {
+      out.setLength(0);
+      do {
+        String retrivel = m.group();
+          StringBuffer tem= new StringBuffer(retrivel);
+          m.appendReplacement(out, ""+(Integer.parseInt(m.group(1))-1));  
+          Matcher tt = Pattern.compile("&DEC(\\d++)").matcher(tem);
+          StringBuffer o1 = new StringBuffer();
+          if(tt.find()){
+            tt.appendReplacement(o1, ""+(Integer.parseInt(m.group(1))-1));
+            dates.add(o1.toString());
+          }
+        
+                     
+      } while (m.find());      
+      m.appendTail(out);
+      in=null;
+//      return(out.toString());
+    }
+    out=null;
+    return dates;
+  }
+	
+	
+	/** Normalizes all dates in a String 
+	 *  DEPRECATED - can go away when multilingual version accepted*/
+	/*
+	 * public static Collection<String> getAllDates(CharSequence s) {
+	 
 
 		ArrayList<String> dates = new ArrayList<String>();
 		// If it does not contain years or months, return it unchanged
@@ -380,7 +682,7 @@ public class DateParser {
 		}
 		out = null;
 		return dates;
-	}
+	}  */
 
 	/**
 	 * Returns the components of the date (year, month, day) in a normalized

@@ -80,6 +80,45 @@ public abstract class SQLType {
   }
   public static ANSIvarchar ansivarchar=new ANSIvarchar();
   
+  public static class ANSIblob extends SQLType {
+      public ANSIblob(int size) {
+        typeCode=Types.BLOB;
+        scale=0;
+      }  
+      public ANSIblob() {
+        this(0);
+      }        
+      public String format(Object o) {
+        String s=o.toString().replace("'", "\\'");
+        //if(s.length()>scale) s=s.substring(0,scale);
+        return("'"+s+"'");
+      }
+      public String toString() {
+        return("BLOB");
+      }
+  }
+  public static ANSIblob ansiblob=new ANSIblob();
+  
+  public static class ANSItext extends SQLType {
+      public ANSItext(int size) {
+        typeCode=Types.BLOB;
+        scale=0;
+      }  
+      public ANSItext() {
+        this(0);
+      }        
+      public String format(Object o) {
+        String s=o.toString().replace("'", "\\'");
+        //if(s.length()>scale) s=s.substring(0,scale);
+        return("'"+s+"'");
+      }
+      public String toString() {
+        return("TEXT");
+      }
+  }
+  public static ANSItext ansitext=new ANSItext();
+  
+  
   public static class ANSIchar extends SQLType {
     public ANSIchar(int size) {
       typeCode=Types.CHAR;
@@ -148,6 +187,32 @@ public abstract class SQLType {
       }      
     }
   public static ANSIinteger ansiinteger=new ANSIinteger();  
+  
+  
+  public static class ANSIsmallint extends SQLType {
+      public ANSIsmallint(int size) {
+        typeCode=Types.SMALLINT;
+        scale=size;
+      }      
+      public ANSIsmallint() {
+        this(0);
+      }            
+      public String format(Object o) {
+        if(o instanceof Double) return(""+Math.rint((Double)o));
+        if(o instanceof Float) return(""+Math.rint((Float)o));
+        if(o instanceof Integer) return(""+((Integer)o).longValue());
+        if(o instanceof Long) return(""+((Long)o).longValue());
+        if(o instanceof String) return(""+NumberParser.getLong(o.toString()));
+        return(null);
+      }            
+      public String toString() {
+        if(scale==0) return("SMALLINT");
+        return("SMALLINT("+scale+")");
+      }      
+    }
+  public static ANSIsmallint ansismallint=new ANSIsmallint();
+  
+  
   
   public static class ANSIfloat extends SQLType {
       public ANSIfloat(int size) {

@@ -122,4 +122,16 @@ public class ResultIterator<T> extends PeekIterator<T> {
           return(r.wasNull()?null:l);
         }
       };
+      
+      /** ResultWrapper for several Integers. Returns NULL for NULL */
+      public static final ResultWrapper<Integer[]> IntegersWrapper=new ResultWrapper<Integer[]>() {
+        public Integer[] wrap(ResultSet r) throws SQLException {
+          Integer[] result=new Integer[r.getMetaData().getColumnCount()];
+          for(int i=0;i<result.length;i++) {
+            result[i]=r.getInt(i+1);
+            if(r.wasNull()) result[i]=null;
+          }
+          return(result);
+        }
+      };      
 }
