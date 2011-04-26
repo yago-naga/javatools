@@ -992,7 +992,7 @@ public class NameML {
 
   /** Test routine */
   public static void main(String[] argv) throws Exception {
-    for (String s : new FileLines("./mix_core/testdata/NameParserTestDe.txt")) {
+    for (String s : new FileLines("./testdata/NameParserTestDe.txt")) {
       //D.p(Name.of(s).describe());
       D.p(NameML.of(s, Language.GERMAN).describe());
     }
