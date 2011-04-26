@@ -65,7 +65,7 @@ import javatools.parsers.Char;
 
 public class NameML {
 
-  static final File CONFIG_DIR = new File("config/parser");
+  static final File CONFIG_DIR = new File("data/parser");
 
   // FIXME: this should perhaps be obtained from the configuration file
 
