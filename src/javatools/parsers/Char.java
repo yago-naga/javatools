@@ -1183,7 +1183,7 @@ public class Char {
 
   /** Tells whether a char is a valid path component in the sense of URIs*/
   public static boolean isPchar(char c) {
-    return (isUnreserved(c) || isSubDelim(c) || in(c, ":@"));
+    return (isUnreserved(c) || isSubDelim(c) || in(c, "@"));
   }
 
   /** Encodes a char to percentage code, if it is not a path character in the sense of URIs*/
@@ -1388,6 +1388,7 @@ public class Char {
       System.out.println("As percentage: " + encodePercentage(s));
       System.out.println("As backslash: " + encodeBackslash(s));
       System.out.println("As ampersand: " + encodeAmpersand(s));
+      System.out.println("As URI component: " + encodeURIPathComponent(s));
     }
   }
 

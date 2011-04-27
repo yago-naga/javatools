@@ -1517,7 +1517,7 @@ public class Name {
         "Congolese", "Democratic Republic of the Congo",
         "Cook Island", "Cook Islands",
         "Costa Rican", "Costa Rica",
-        "Ivorian", "C�te d'Ivoire",
+        "Ivorian", "Côte d'Ivoire",
         "Croatian", "Croatia",
         "Cuban", "Cuba",
         "Cypriot", "Cyprus",
