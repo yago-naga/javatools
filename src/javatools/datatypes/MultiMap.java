@@ -38,13 +38,43 @@ public class MultiMap<A, B> implements Iterable<Entry<A,B>> {
     bs.add(b);
   }
   
+  public void putAll(MultiMap<A, B> otherMap) {
+    for (Entry<A, B> e : otherMap) {
+      put(e.getKey(), e.getValue());
+    }
+  }
+  
   public Set<B> get(A a) {
     return relation.get(a);
+  }
+  
+  public boolean contains(Entry<A, B> e) {
+    Set<B> test = relation.get(e.getKey());
+    
+    if (test == null) {
+      return false;
+    } else {
+      return test.contains(e.getValue());
+    }
+  }
+  
+  public boolean isEmpty() {
+    return relation.isEmpty();
   }
 
   @Override
   public Iterator<Entry<A,B>> iterator() {
     return new MultiMapIterator();
+  }
+  
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    
+    for (Entry<A, B> e: this) {
+      sb.append(e.getKey() + " - " + e.getValue() + ", ");
+    }
+    
+    return sb.toString();
   }
   
   private class MultiMapIterator implements Iterator<Entry<A,B>> {
