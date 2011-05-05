@@ -67,7 +67,7 @@ public class PostgresDatabase extends Database {
     String url = "jdbc:postgresql://" + host + ":" + port + (database == null ? "" : "/" + database) + (useSSL ? "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory" : "");
     connection = DriverManager.getConnection(url, user, password);
     connection.setAutoCommit(true);
-    description = "Postgres database " + database + " as " + user + " at " + host + ":" + port + " using schema " + schema;
+    description = "Postgres database '" + database + "' as '" + user + "' at " + host + ":" + port + " using schema '" + schema+"'";
   }
 
   public PostgresDatabase(String user, String password, String database, String host, String port) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
