@@ -103,8 +103,8 @@ public class NonsharedParameters {
   /** Holds the filename of the ini-file */
   public File iniFile=null;
   
-  /** Holds the path that should be assumed to be the local path for all path values starting with ./ */ 
-  public String localPath=null;
+  /** Holds the path that should be assumed to be the base path to the current directory for all local path values */ 
+  public String basePath=null;
   
   /** Contains the values for the parameters*/
   public Map<String,String> values=null;
@@ -132,28 +132,31 @@ public class NonsharedParameters {
   
   public NonsharedParameters(File iniFile, String localPath)throws IOException{    
     if(localPath!=null)
-    	this.localPath=localPath.endsWith("/")?localPath:localPath+"/";    		
+    	basePath=localPath.endsWith("/")?localPath:localPath+"/";    		
     init(iniFile);
   };
   public NonsharedParameters(String iniFile, String localPath)throws IOException{
 	if(localPath!=null)
-	   	this.localPath=localPath.endsWith("/")?localPath:localPath+"/";
+	   	basePath=localPath.endsWith("/")?localPath:localPath+"/";
     init(iniFile);
   };  
 
 
-  /** Returns a value for a file or folder parameter; same as getFile but returns the path as String */
+  /** Returns a value for a file or folder parameter; same as getFile but returns the path as String 
+   *  also adjusts local paths such that a global path is returned (if a base path is set)*/
   public String getPath(String s) throws UndefinedParameterException {
-    if(localPath==null)
+    if(basePath==null)
       return get(s);
     else{
       String path=get(s);
       if(path.startsWith("./"))
-        return localPath+path.substring(3);
-      else if(path.startsWith("../"))
-          return localPath+path;
-      else 
+        return basePath+path.substring(2);
+//      else if(path.startsWith("../"))
+//          return basePath+path;
+      else if(path.startsWith("/"))
         return path;
+      else 
+        return basePath+path;
     }
   }
 
@@ -384,7 +387,8 @@ public class NonsharedParameters {
     init(filename,true);
   }
   public void init(String file, boolean mainIni) throws IOException {
-    init(new File(file),mainIni);
+    Announce.message("Loading ini file '"+file+"'");
+    init(new File(file),mainIni);    
   }
   
   
