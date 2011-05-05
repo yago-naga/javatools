@@ -26,10 +26,17 @@ import javatools.filehandlers.FileLines;
  * by the YAGO-NAGA team (see http://mpii.de/yago-naga).
  * 
  * 
- * 
- * 
- * 
- * Provides an interface for an ini-File. The ini-File may contain parameters of
+ * Provides an interface for an ini-File to load parameter settings.
+ * Note that this is a static version, i.e. all components share the same parameters. 
+ * There is also an instantiable NonsharedParameters version. That version can deal with
+ * different parameter settings used in parallel. 
+ * If your work will be shared with others, please consider using the NonsharedParameters,
+ * as they allow an easier integration of your component with other components 
+ * that may want to work on a separate set of parameters 
+ * (e.g. there might be different database settings etc.). 
+ *   
+ *  
+ * The ini-File loaded may contain parameters of
  * the form
  * 
  * <PRE>

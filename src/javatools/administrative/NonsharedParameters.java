@@ -23,40 +23,71 @@ import javatools.filehandlers.FileLines;
 
 
 /** 
-This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
-It is licensed under the Creative Commons Attribution License 
-(see http://creativecommons.org/licenses/by/3.0) by 
-the YAGO-NAGA team (see http://mpii.de/yago-naga).
+  This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
+  It is licensed under the Creative Commons Attribution License 
+  (see http://creativecommons.org/licenses/by/3.0) by 
+  the YAGO-NAGA team (see http://mpii.de/yago-naga).
+    
   
-
+   This is a nonshared, i.e. instantiable variation of the Parameters class. 
+   It allows to have different parameter settings handled simultaneously, 
+   i.e. each component (or each component instance) using NonsharedParameters can have
+   its own parameters allowing, for instance, that two components running at the same time
+   work on different databases, both obtained through their own NonsharedParameters instance.  
+   
+   While the old 'Parameters' class is more convenient to use (less objects passed around),
+   this version makes it easier to integrate your components with other components that also 
+   use the Parameters/NonsharedParameters to load (and maintain) their settings.
+   
+   Therefore please consider using the NonsharedParameters instead of the Parameters. 
   
- 
-
-Provides an interface for an ini-File. The ini-File may contain parameters of the form
-<PRE>
-parameterName = value
-...
-</PRE>
-It may also contain comments or section headers (i.e. anything that does not match the
-above pattern). Parameter names are not case sensitive. Initial and terminal spaces
-are trimmed for both parameter names and values. Boolean parameters accept multiple
-ways of expressing "true" (namely "on", "true", "yes" and "active").<P>
-
-To avoid passing around object handles, this class does not function as an object!
-There is only one "static object". Example:
-<PRE>
-  // Read data from my.ini
-  this.init("my.ini");
-  // Abort with error message if the following parameters are not specified
-  this.ensureParameters(
-     "firstPar - some help text for the first parameter",
-     "secondPar - some help text for the secondparameter"
-  );
-  // Retrieve the value of a parameter
-  String p=this.get("firstPar");
-</PRE>
-You can load parameters from multiple files. These will overlay.
-You can use this also to reference a .ini file in another .ini file using the 'include' statement.
+  Provides an interface for an ini-File. The ini-File may contain parameters of the form
+  <PRE>
+  parameterName = value
+  ...
+  </PRE>
+  It may also contain comments or section headers (i.e. anything that does not match the
+  above pattern). Parameter names are not case sensitive. Initial and terminal spaces
+  are trimmed for both parameter names and values. Boolean parameters accept multiple
+  ways of expressing "true" (namely "on", "true", "yes" and "active").<P>
+  
+  This class does function as an object! Example:
+  <PRE>
+    // Read data from my.ini
+    NonsharedParameters params = new NonsharedParameters("my.ini");
+    // Abort with error message if the following parameters are not specified
+    params.ensureParameters(
+       "firstPar - some help text for the first parameter",
+       "secondPar - some help text for the secondparameter"
+    );
+    // Retrieve the value of a parameter
+    String p=params.get("firstPar");
+  </PRE>
+  You can load parameters from multiple files. These will overlay.
+  You can reference a .ini file in another .ini file using the 'include' parameter, 
+  included files will be loaded at the point of the 'include' statements, 
+  later parameter settings (whether directly in the file or by another include)
+  overwrite parameter settings of this included ini file.   
+  Example:
+   Content of main.ini:
+   <PRE>
+     //load database configuration
+     include = db_myserver.ini
+     // overwrite or add parameters
+     databasePort = 5555
+     myOtherParameter = 4
+   </PRE>
+   Content of db_myserver.ini:
+   <PRE>
+     databaseSystem = postgres
+     databaseDatabase = example
+     databaseUser = albert
+     databaseHost = localhost
+     databasePort = 5432
+   </PRE>
+   If main.ini is loaded, the port parameter will have value '5555' in the resulting NonsharedParameters instance.
+   Include is recursive, make sure you do not generate a cycle!
+     
 */
 public class NonsharedParameters {
   /** Thrown for an undefined Parameter */
