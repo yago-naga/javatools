@@ -1,5 +1,7 @@
 package javatools.datatypes;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Iterator;
 
 /** 
@@ -10,7 +12,7 @@ the YAGO-NAGA team (see http://mpii.de/yago-naga).
 
   The class wraps an iterator and translates each element before returning it  */
 
-public class MappedIterator<S,T> implements Iterator<T>, Iterable<T>{
+public class MappedIterator<S,T> implements Iterator<T>, Iterable<T>, Closeable {
    protected Iterator<S> iterator;
    protected Map<? super S,? extends T> map;
    public static interface Map<A,B> {
@@ -41,5 +43,9 @@ public class MappedIterator<S,T> implements Iterator<T>, Iterable<T>{
   @Override
   public Iterator<T> iterator() {
     return this;
+  }
+  @Override
+  public void close() throws IOException {
+    if(iterator instanceof Closeable) ((Closeable)iterator).close();
   }
 }
