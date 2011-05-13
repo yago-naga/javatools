@@ -1,6 +1,7 @@
 package javatools.datatypes;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -22,7 +23,7 @@ the YAGO-NAGA team (see http://mpii.de/yago-naga).
                process(o);
    </PRE>
   */
-public class CombinedIterable<T> implements  Iterable<T> {
+public class CombinedIterable<T> implements  Iterable<T>, Closeable {
   /** Holds the queue of iterables */
   private Queue<Iterable<? extends T>> iterables=new LinkedList<Iterable<? extends T>>();
   /** Creates an empty CombinedIterator */
@@ -74,5 +75,12 @@ public class CombinedIterable<T> implements  Iterable<T> {
     if(b.length()>2) b.setLength(b.length()-2);
     b.append("]");
     return(b.toString());
+  }
+  @Override
+  public void close() throws IOException {
+    for(Iterable<? extends T> i : iterables) {
+      if(i instanceof Closeable) ((Closeable)i).close();
+    }
+    iterables.clear();
   }
 }

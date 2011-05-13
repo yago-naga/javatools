@@ -1,6 +1,9 @@
 package javatools.datatypes;
+
 import java.util.AbstractList;
+import java.util.AbstractSet;
 import java.util.Arrays;
+import java.util.Iterator;
 
 import javatools.administrative.D;
 
@@ -9,107 +12,143 @@ This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
 It is licensed under the Creative Commons Attribution License 
 (see http://creativecommons.org/licenses/by/3.0) by 
 the YAGO-NAGA team (see http://mpii.de/yago-naga).
-  
-
-  
- 
-     
-This class implements an efficient boolean (bit) list .
-Same as java.util.BitSet
+   
+This class implements an efficient boolean (bit) list . It wraps BitSet into a set of Integers
 <BR>
 */
 
-public class BitVector extends AbstractList<Boolean>{
+public class BitVector extends AbstractSet<Integer> {
+
   protected long[] data;
-  protected int size=0;
-  
+
+  protected int size = 0;
+
   public BitVector(int capacity) {
-    data=new long[capacity/64+1];
+    data = new long[capacity / 64 + 1];
   }
 
   public BitVector(BitVector v) {
-    data=Arrays.copyOf(v.data, v.data.length);
-    size=v.size;
+    data = Arrays.copyOf(v.data, v.data.length);
+    size = v.size;
   }
-  
+
   public BitVector() {
     this(10);
   }
-  
-  public boolean add(Boolean e) {
-    return(add(e.booleanValue()));
+
+  protected void ensureCapacity(int c) {
+    if (data.length * 64 > c) return;
+    long[] newdta = new long[c / 64 + 1];
+    System.arraycopy(data, 0, newdta, 0, data.length);
+    data = newdta;
   }
 
-  public boolean add(boolean b) {
-    if(size>=data.length*64-1) {
-      long[] newdta=new long[data.length+1];
-      System.arraycopy(data,0,newdta,0,data.length);
-      data=newdta;
-    }
-    size++;
-    set(size-1,b);
-    return(true);
-  }
-
-  public void addZeroes(int num) {
-    if(size+num>data.length*64-1) {
-      long[] newdta=new long[(size+num)/64+1];
-      System.arraycopy(data,0,newdta,0,data.length);
-      data=newdta;
-    }
-    size+=num;
-  }
-  
-  public boolean add(int b) {
-    return(add(b!=0));
-  }
-
-  public void set(int pos,boolean b) {
-    if(pos<0 || pos>size-1) throw new ArrayIndexOutOfBoundsException("Pos:"+pos+" Size:"+size);
-    long add=1L<<(pos%64);
-    if(b) data[pos/64]|=add;
-    else data[pos/64]&=~add;
-  }
-
-  public void setPosBit(int pos,int bit) {
-    set(pos,bit!=0);
-  }
-  
-  protected static Boolean[] bools=new Boolean[]{Boolean.FALSE,Boolean.TRUE};
-  
   @Override
-  public Boolean get(int index) {  
-    long l=data[index/64];
-    return bools[(int)(l>>(index%64)&1)];
+  public boolean add(Integer pos) {
+    return (add(pos.intValue()));
   }
 
-  public int getBit(int index) {  
-    long l=data[index/64];
-    return (int)(l>>(index%64)&1);
+  public boolean add(int pos) {
+    ensureCapacity(pos);
+    if (contains(pos)) return (false);
+    long add = 1L << (pos % 64);
+    data[pos / 64] |= add;
+    size++;
+    return (true);
+  }
+
+  @Override
+  public boolean remove(Object pos) {
+    if (!(pos instanceof Integer)) return (false);
+    return (remove(((Integer) pos).intValue()));
+  }
+
+  public boolean remove(int pos) {
+    if (!contains(pos)) return (false);
+    long add = 1L << (pos % 64);
+    data[pos / 64] &= ~add;
+    size--;
+    return (true);
+  }
+
+  @Override
+  public boolean contains(Object arg0) {
+    if (!(arg0 instanceof Integer)) return (false);
+    return contains(((Integer) arg0).intValue());
+  }
+
+  public boolean contains(int index) {
+    if (index/64 >= data.length) return (false);
+    long l = data[index / 64];
+    return (l >> (index % 64) & 1) > 0;
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return size == 0;
   }
 
   @Override
   public int size() {
     return size;
   }
-  
+
+  @Override
   public void clear() {
-    data=new long[1];
-    size=0;
+    data = new long[1];
+    size = 0;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder b = new StringBuilder(size * 5).append("[");
+    for (Integer i : this)
+      b.append(i).append(", ");
+    return (b.append("]").toString());
+  }
+
+  public void compress() {
+    for(int i=data.length-1;i>=0;i--) {
+      if(data[i]!=0) {
+        if(i<data.length-10) {
+          long[] newdta = new long[i+1];
+          System.arraycopy(data, 0, newdta, 0, newdta.length);
+          data = newdta;          
+        }
+        return;
+      }
+    }
   }
   
   @Override
-  public String toString() {
-    StringBuilder b=new StringBuilder(size);   
-    for(int i=0;i<size;i++) b.append(getBit(i));
-    return(b.toString());
+  public PeekIterator<Integer> iterator() {
+    compress();
+    return new PeekIterator<Integer>() {
+
+      int i = -1;
+
+      @Override
+      protected Integer internalNext() throws Exception {
+        while (true) {
+          if(i/64>=data.length) return(null);
+          if(i>=0 && data[i/64]==0) i+=64;
+          else i++;
+          if (contains(i)) return (i);
+        }
+      }
+
+    };
   }
-  /**  */
+
+  /**  Test */
   public static void main(String[] args) {
-    BitVector v=new BitVector();
-    for(int i=0;i<70;i++) v.add(true);
-    D.p(v);
-    for(int i=0;i<70;i+=2) v.set(i,false);
+    BitVector v = new BitVector();
+    v.add(1);
+    v.add(63);
+    v.add(64);
+    v.add(10000000);
+    v.remove(10);
+    v.remove(63);
     D.p(v);
   }
 
