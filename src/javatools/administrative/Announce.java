@@ -400,7 +400,7 @@ public class Announce {
 
   /** Says whether a command line argument asks for help*/
   public static boolean isHelp(String arg) {
-    return (helpCommands.contains(arg.toLowerCase()));
+    return (arg==null?false:helpCommands.contains(arg.toLowerCase()));
   }
 
   /** Test routine */
