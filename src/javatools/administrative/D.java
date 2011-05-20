@@ -125,6 +125,18 @@ public class D {
   }
 
   /** Reads a long from the keyboard */
+  public static String read(String question) {
+    System.out.print(question+" ");
+    return (D.read());
+  }
+
+  /** Reads a long from the keyboard */
+  public static boolean readBoolean(String question) {
+    System.out.print(question+" ");
+    return (D.read().startsWith("y"));
+  }
+
+  /** Reads a long from the keyboard */
   public static long readLong(String question) {
     System.out.print(question);
     return (Long.parseLong(D.r()));
