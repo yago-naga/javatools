@@ -57,20 +57,33 @@ public class DateParser {
 	public static final String newDate(int y, int m, int d) {
 		return (newDate("" + y, m<10?"0" + m:""+m, d<10?"0" + d:""+d));
 	}
+	
+	/** Creates a date-string of the form "year-month-day" */
+	  public static final String newSubDate(String y,String m) {
+	    return(y+"-"+m);
+	  }
 
 	/** A Date as a capturing RegEx */
-	public static final String DATE = newDate("(-?[0-9#]++)", "([0-9#]{2})",
-			"([0-9#]{2})");
-	public static final Pattern DATEPATTERN = Pattern.compile(DATE); // No
+//	public static final String DATE = newDate("(-?[0-9#]++)", "([0-9#]{2})",
+//			"([0-9#]{2})");
+//	public static final Pattern DATEPATTERN = Pattern.compile(DATE); // No
 	// trailing
 	// boundary
 	// because
 	// of
 	// '#'
+	
+	 public static final String DATE=newDate("(-?[0-9#X]++)","([0-9#X]{1,2})","([0-9#X]{1,2})");
+	  public static final Pattern DATEPATTERN=Pattern.compile("\\b"+DATE); // No trailing boundary because of '#'
+	  
+	  public static final String SDATE=newSubDate("(-?[0-9#X]++)","([0-9#X]{1,2})");
+	  public static final Pattern SDATEPATTERN=Pattern.compile("\\b"+SDATE); // No trailing boundary because of '#'
 
 	/** A year as a pattern */
 	public static final Pattern SIMPLEYEARPATTERN = Pattern
 			.compile("\\b(\\d{3,4})\\b");
+	
+	public static final Pattern YEARPATTERN=Pattern.compile("\\d{4}");
 
 	/** Just a pair of a Pattern and a replacement string */
 	private static class FindReplace {
