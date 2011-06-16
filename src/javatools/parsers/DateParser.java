@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -654,10 +655,12 @@ public class DateParser {
     StringBuffer out = new StringBuffer((int) (in.length() * 1.1));
     // Apply the patterns
     int previousOffSet = 0;
+    HashSet<Integer> offsetUsed = new HashSet<Integer>();
     for (FindReplace p : patterns) {
       m = p.pattern.matcher(in);
       if (m.find()) {
         out.setLength(0);
+        previousOffSet = 0;
         do {
           String retrivel = m.group();
           StringBuffer tem = new StringBuffer(retrivel);
@@ -678,11 +681,17 @@ public class DateParser {
             }
             if (offSetPair != null) {
               offSetList.remove(offSetPair);
-              end = end-start+offSetPair.second;
-              start = start+previousOffSet;
-              previousOffSet=previousOffSet+offSetPair.second;
+              end = end - start + offSetPair.second;
+              start = start + previousOffSet;
+              previousOffSet = previousOffSet + offSetPair.second;
+            } else {
+              end = end - start;
+              start = start + previousOffSet;
             }
-            dates.add(new Triple<String, Integer, Integer>(o1.toString(), start, end));
+            if (!offsetUsed.contains(start)) {
+              dates.add(new Triple<String, Integer, Integer>(o1.toString(), start, end));
+              offsetUsed.add(start);
+            }
           }
         } while (m.find());
         m.appendTail(out);
@@ -695,6 +704,7 @@ public class DateParser {
     m = Pattern.compile("&DEC(\\d++)").matcher(in);
     if (m.find()) {
       out.setLength(0);
+      previousOffSet = 0;
       do {
         String retrivel = m.group();
         StringBuffer tem = new StringBuffer(retrivel);
@@ -715,11 +725,17 @@ public class DateParser {
           }
           if (offSetPair != null) {
             offSetList.remove(offSetPair);
-            end = end-start+offSetPair.second;
-            start = start+previousOffSet;
-            previousOffSet=previousOffSet+offSetPair.second;
+            end = end - start + offSetPair.second;
+            start = start + previousOffSet;
+            previousOffSet = previousOffSet + offSetPair.second;
+          } else {
+            end = end - start;
+            start = start + previousOffSet;
           }
-          dates.add(new Triple<String, Integer, Integer>(o1.toString(), start, end));
+          if (!offsetUsed.contains(start)) {
+            dates.add(new Triple<String, Integer, Integer>(o1.toString(), start, end));
+            offsetUsed.add(start);
+          }
         }
       } while (m.find());
       m.appendTail(out);
