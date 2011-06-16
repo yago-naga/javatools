@@ -675,7 +675,7 @@ public class DateParser {
             Iterator<Pair<Integer, Integer>> iter = offSetList.iterator();
             while (iter.hasNext()) {
               offSetPair = iter.next();
-              if (start < offSetPair.first && end > offSetPair.first) {
+              if (start <= offSetPair.first && end >= offSetPair.first) {
                 break;
               }
             }
@@ -684,9 +684,17 @@ public class DateParser {
               end = end - start + offSetPair.second;
               start = start + previousOffSet;
               previousOffSet = previousOffSet + offSetPair.second;
+              int position = out.length() - o1.length();
+              int length = end - o1.length();
+              Pair<Integer, Integer> newOffSetPair = new Pair<Integer, Integer>(position, length);
+              offSetList.add(newOffSetPair);
             } else {
               end = end - start;
               start = start + previousOffSet;
+              int position = out.length() - o1.length();
+              int length = end - o1.length();
+              Pair<Integer, Integer> newOffSetPair = new Pair<Integer, Integer>(position, length);
+              offSetList.add(newOffSetPair);
             }
             if (!offsetUsed.contains(start)) {
               dates.add(new Triple<String, Integer, Integer>(o1.toString(), start, end));
@@ -728,9 +736,17 @@ public class DateParser {
             end = end - start + offSetPair.second;
             start = start + previousOffSet;
             previousOffSet = previousOffSet + offSetPair.second;
+            int position = out.length() - o1.length();
+            int length = end - o1.length();
+            Pair<Integer, Integer> newOffSetPair = new Pair<Integer, Integer>(position, length);
+            offSetList.add(newOffSetPair);
           } else {
             end = end - start;
             start = start + previousOffSet;
+            int position = out.length() - o1.length();
+            int length = end - o1.length();
+            Pair<Integer, Integer> newOffSetPair = new Pair<Integer, Integer>(position, length);
+            offSetList.add(newOffSetPair);
           }
           if (!offsetUsed.contains(start)) {
             dates.add(new Triple<String, Integer, Integer>(o1.toString(), start, end));
@@ -743,6 +759,7 @@ public class DateParser {
       //      return(out.toString());
     }
     out = null;
+
     return dates;
   }
 
