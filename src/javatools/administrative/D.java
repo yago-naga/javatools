@@ -6,8 +6,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 
 import javatools.parsers.Char;
@@ -269,6 +273,30 @@ public class D {
     return (i);
   }
 
+  /** Returns a sorted list of the items*/
+  public static<T> List<T> sorted(final Map<T, Integer> map) {
+    List<T> list=new ArrayList<T>(map.keySet());
+    Collections.sort(list,new Comparator<T>(){
+
+      @Override
+      public int compare(T arg0, T arg1) {
+        return (map.get(arg1).compareTo(map.get(arg0)));
+      }});
+    return(list);
+  }
+  
+  /** Returns a sorted list of the items*/
+  public static<T> List<T> sortedDouble(final Map<T, Double> map) {
+    List<T> list=new ArrayList<T>(map.keySet());
+    Collections.sort(list,new Comparator<T>(){
+
+      @Override
+      public int compare(T arg0, T arg1) {
+        return (map.get(arg1).compareTo(map.get(arg0)));
+      }});
+    return(list);
+  }
+  
   /** Returns true if two things are equal, including NULL */
   public static <E> boolean equal(E s1, E s2) {
     if (s1 == s2) return (true);

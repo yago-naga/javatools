@@ -173,6 +173,6 @@ public class Trie extends AbstractSet<CharSequence> {
     return(new MappedIterator<CharSequence, String>(iterator(), MappedIterator.stringMapper));
   }
   public Iterable<String> strings() {
-    return(new IterableForIterator<String>(stringIterator()));
+    return(new MappedIterator<CharSequence, String>(iterator(), MappedIterator.stringMapper));
   }
 }

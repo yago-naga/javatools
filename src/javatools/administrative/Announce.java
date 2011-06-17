@@ -298,6 +298,16 @@ public class Announce {
     }
   }
 
+  /** Writes "done NEWLINE"*/
+  public static void done(String text) {
+    if (doingLevel > 0) {
+      doingLevel--;
+      if (D.smaller(level, Level.STATE)) return;
+      print(text);
+      newLine();
+    }
+  }
+
   /** Writes "done with problems NEWLINE"*/
   public static void doneWithProbs() {
     if (doingLevel > 0) {
