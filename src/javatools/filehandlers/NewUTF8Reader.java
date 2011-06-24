@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
 import javatools.administrative.Announce;
+import javatools.parsers.Char;
 
 /** 
  This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
@@ -38,7 +39,17 @@ public class NewUTF8Reader extends Reader {
 
   private InputStreamReader in;
 
-  private BufferedReader bin;
+  protected BufferedReader bin;
+
+  /** tells whether we want a progress bar*/
+  protected boolean progressBar = false;
+
+  /** number of chars for announce */
+  protected long numBytesRead = 0;
+
+  private char[] buffer;
+
+  private int position = 0;
 
   /** Constructs a UTF8Reader from a Reader */
   public NewUTF8Reader(InputStream s) {
@@ -47,7 +58,6 @@ public class NewUTF8Reader extends Reader {
       bin = new BufferedReader(in);
     } catch (UnsupportedEncodingException une) {
       une.printStackTrace();
-      // "As long as UTF8 is not changed this should never be called";
     }
   }
 
@@ -65,6 +75,7 @@ public class NewUTF8Reader extends Reader {
   /** Constructs a UTF8Reader from a File, makes a nice progress bar */
   public NewUTF8Reader(File f, String message) throws FileNotFoundException {
     this(new FileInputStream(f));
+    progressBar = true;
     Announce.progressStart(message, f.length());
   }
 
@@ -88,6 +99,8 @@ public class NewUTF8Reader extends Reader {
       in.close();
       in = null;
     }
+    if (progressBar) Announce.progressDone();
+    progressBar = false;
   }
 
   @Override
@@ -97,43 +110,53 @@ public class NewUTF8Reader extends Reader {
 
   @Override
   public int read() throws IOException {
-    return bin.read();
+    if (buffer == null || buffer.length == position) {
+      String line = readLine();
+      if (line != null) {
+        buffer = (line + '\n').toCharArray();
+        position = 0;
+      } else {
+        buffer = null;
+        position = 0;
+        return -1;
+      }
+    }
+    int c = buffer[position];
+    position++;
+    return c;
   }
 
-  /** Reads a line */
+  /** Reads a line do not between read() and readLine methods pick one and stick to it.*/
   public String readLine() throws IOException {
-    return bin.readLine();
+    String line = bin.readLine();
+    if (progressBar) {
+      if (line != null) {
+        numBytesRead += line.getBytes().length;
+        Announce.progressAt(numBytesRead);
+      }
+    }
+    return line;
+  }
+
+  /** Returns the number of bytes read from the underlying stream*/
+  public long numBytesRead() {
+    return (numBytesRead);
   }
 
   /** Test method
    * @throws IOException   */
   public static void main(String[] args) throws IOException {
+    long time = System.currentTimeMillis();
     String file = "C:/wikipedia/enwiki-100000-test.xml";
-    int step = 10000;
-    System.out.println("Checking if file readers are equal for first " + (step * 100) + " lines");
-    UTF8Reader f = new UTF8Reader(new File(file));
-    NewUTF8Reader ff = new NewUTF8Reader(new File(file));
+    NewUTF8Reader ff = new NewUTF8Reader(new File(file), "Reader wiki file");
     int count = 0;
-    int problem = 0;
-    while (count < step * 100) {
+    int c = -1;
+    while ((c = ff.read()) != -1) {
       count++;
-      String line = ff.readLine();
-      String line2 = f.readLine();
-      if (line == null) {
-        if (line2 != null) {
-          System.out.println("null -> does not equal -> " + line2);
-        } else {
-          break;
-        }
-      }
-      if (!line.equals(line2)) {
-        System.out.println(count + ": " + line + " -> does not equal -> " + line2);
-        problem++;
-        break;
-      }
     }
-    f.close();
     ff.close();
-    System.out.println("Done equal check with " + problem + " problems");
+    time = System.currentTimeMillis() - time;
+    System.out.println("Done in " + time);
+
   }
 }
