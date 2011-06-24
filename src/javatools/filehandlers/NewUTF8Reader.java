@@ -119,7 +119,6 @@ public class NewUTF8Reader extends Reader {
       count++;
       String line = ff.readLine();
       String line2 = f.readLine();
-      System.out.println(line2);
       if (line == null) {
         if (line2 != null) {
           System.out.println("null -> does not equal -> " + line2);
