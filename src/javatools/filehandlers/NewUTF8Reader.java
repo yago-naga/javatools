@@ -1,5 +1,6 @@
 package javatools.filehandlers;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -35,19 +36,17 @@ public class NewUTF8Reader extends Reader {
 
   /** Holds the input Stream */
 
-  protected InputStreamReader in;
+  private InputStreamReader in;
 
-  /** number of chars for announce */
-  protected long numBytesRead = 0;
-
-  /** tells whether we want a progress bar*/
-  protected boolean progressBar = false;
+  private BufferedReader bin;
 
   /** Constructs a UTF8Reader from a Reader */
   public NewUTF8Reader(InputStream s) {
     try {
       in = new InputStreamReader(s, "UTF8");
+      bin = new BufferedReader(in);
     } catch (UnsupportedEncodingException une) {
+      une.printStackTrace();
       // "As long as UTF8 is not changed this should never be called";
     }
   }
@@ -66,7 +65,6 @@ public class NewUTF8Reader extends Reader {
   /** Constructs a UTF8Reader from a File, makes a nice progress bar */
   public NewUTF8Reader(File f, String message) throws FileNotFoundException {
     this(new FileInputStream(f));
-    progressBar = true;
     Announce.progressStart(message, f.length());
   }
 
@@ -82,92 +80,46 @@ public class NewUTF8Reader extends Reader {
 
   @Override
   public void close() throws IOException {
-    if (in == null) return;
-    in.close();
-    in = null;
-    if (progressBar) Announce.progressDone();
-    progressBar = false;
+    if (bin != null) {
+      bin.close();
+      bin = null;
+    }
+    if (in != null) {
+      in.close();
+      in = null;
+    }
   }
 
   @Override
   public int read(char[] cbuf, int off, int len) throws IOException {
-    if (in == null) return (-1);
-    return in.read(cbuf, off, len);
+    return bin.read(cbuf, off, len);
   }
 
   @Override
   public int read() throws IOException {
-    if (in == null) return -1;
-    numBytesRead++;
-    if (progressBar) Announce.progressAt(numBytesRead);
-    return in.read();
-  }
-
-  /** Returns the number of bytes read from the underlying stream*/
-  public long numBytesRead() {
-    return (numBytesRead);
+    return bin.read();
   }
 
   /** Reads a line */
   public String readLine() throws IOException {
-    if (in == null) return (null);
-    StringBuffer sb = new StringBuffer(50);
-    int ch = -1;
-    char c;
-    while ((ch = read()) != -1) {
-      c = (char) ch;
-      if (c == '\n') {
-        return sb.toString();
-      } else {
-        sb.append(c);
-      }
-    }
-    if (ch == -1 && sb.toString().length() == 0) {
-      return null;
-    }
-    return sb.toString();
+    return bin.readLine();
   }
 
   /** Test method
    * @throws IOException   */
   public static void main(String[] args) throws IOException {
-    String file = "C:/yagoTest/yago2/means.tsv";
+    String file = "C:/wikipedia/enwiki-100000-test.xml";
     int step = 10000;
-    long time = System.currentTimeMillis();
+    System.out.println("Checking if file readers are equal for first " + (step * 100) + " lines");
     UTF8Reader f = new UTF8Reader(new File(file));
-    int count = 0;
-    System.out.println("Speed test");
-    while (count < step * 10 + 2 && f.readLine() != null) {
-      count++;
-      if (count % step == 0) {
-        time = System.currentTimeMillis() - time;
-        System.out.println("read " + step + " in " + time + "ms");
-        time = System.currentTimeMillis();
-      }
-    }
-    f.close();
-    time = System.currentTimeMillis();
     NewUTF8Reader ff = new NewUTF8Reader(new File(file));
-    count = 0;
-    while (count < step * 10 + 2 && ff.readLine() != null) {
-      count++;
-      if (count % step == 0) {
-        time = System.currentTimeMillis() - time;
-        System.out.println("read " + step + " in " + time + "ms");
-        time = System.currentTimeMillis();
-      }
-    }
-    ff.close();
-    time = System.currentTimeMillis() - time;
-    System.out.println("Speed test done, checking if file readers are equal for first " + (step * 100) + " lines");
-    f = new UTF8Reader(new File(file));
-    ff = new NewUTF8Reader(new File(file));
-    count = 0;
+    int count = 0;
     int problem = 0;
     while (count < step * 100) {
       count++;
       String line = ff.readLine();
       String line2 = f.readLine();
+      System.out.println(line2);
       if (line == null) {
         if (line2 != null) {
           System.out.println("null -> does not equal -> " + line2);
@@ -176,8 +128,9 @@ public class NewUTF8Reader extends Reader {
         }
       }
       if (!line.equals(line2)) {
-        System.out.println(line + " -> does not equal -> " + line2);
+        System.out.println(count + ": " + line + " -> does not equal -> " + line2);
         problem++;
+        break;
       }
     }
     f.close();
