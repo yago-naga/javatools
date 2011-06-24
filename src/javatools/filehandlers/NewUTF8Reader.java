@@ -12,7 +12,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
 import javatools.administrative.Announce;
-import javatools.parsers.Char;
 
 /** 
  This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
