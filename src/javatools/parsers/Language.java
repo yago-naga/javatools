@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javatools.administrative.Announce;
+import javatools.administrative.D;
+import javatools.filehandlers.FileLines;
 
 
 
@@ -19,8 +21,8 @@ import javatools.administrative.Announce;
  */
 public class Language implements Comparable<Language>{
 	String id;
-	Map<String,List<String>> pronounPositiveTypes;
-	Map<String,List<String>> pronounNegativeTypes;
+	Map<String,List<String>> pronounPositiveTypes=new HashMap<String,List<String>>();
+	Map<String,List<String>> pronounNegativeTypes=new HashMap<String,List<String>>();
   protected static final Map<String,String> supported= new HashMap<String,String>();
   static{
     supported.put("en","English");
@@ -43,15 +45,17 @@ public class Language implements Comparable<Language>{
       throw new LanguageNotSupportedException();
     this.id = id;
     for(Map.Entry<String,String> prTypes:getPronouns(id).entrySet()){
-      String split[]=prTypes.getValue().split("+:-");
+      String split[]=prTypes.getValue().split("\\+:-");
       if(split[0]!=null)
         pronounPositiveTypes.put(prTypes.getKey(), Arrays.asList((split[0].split(","))));
-      if(split[1]!=null)
-        pronounPositiveTypes.put(prTypes.getKey(), Arrays.asList((split[0].split(","))));
+      if(split.length>1)
+        if(split[1]!=null)
+          pronounPositiveTypes.put(prTypes.getKey(), Arrays.asList((split[0].split(","))));
     }            
   }
   
-  /** Pronoun lists for different languages;  (if it gets more involved, move into a PronounML class)*/
+  /** Pronoun lists for different languages;  
+   * (TODO: if it gets more involved, move into a PronounML class and/or load from file)*/
   protected static final Map<String,String> getPronouns(String id) {
     Map<String,String> prons=new HashMap<String,String>();
     //map layout: pronoun -> [positiveTypes]+:-[negativeTypes]
@@ -85,13 +89,18 @@ public class Language implements Comparable<Language>{
 	  return pronounPositiveTypes.keySet().contains(candidate.toLowerCase());
 	}
 	
+	/** provides a list of all pronouns in this language */
+	public Set<String> getPronouns(){
+	  return pronounPositiveTypes.keySet();
+	}
+	
 	 /** returns the entity type associated with the pronoun (e.g. Person, Female Person etc.) */
-  public List<String> getPronounsEntityTypes(String pronoun){
+  public List<String> getPronounEntityTypes(String pronoun){
     return pronounPositiveTypes.get(pronoun.toLowerCase());
   }
   
   /** returns the entity type associated with the pronoun (e.g. Person, Female Person etc.) */
-  public List<String> getPronounsCounterEntityTypes(String pronoun){
+  public List<String> getPronounCounterEntityTypes(String pronoun){
     return pronounNegativeTypes.get(pronoun.toLowerCase());
   }
 	
@@ -166,6 +175,20 @@ public class Language implements Comparable<Language>{
 	public static final Language ITALIAN = generateLanguage("it");
   
   
+	
+  /** Test routine */
+  public static void main(String[] argv) throws Exception {
+    for (String langID : supported.keySet()){
+      Language lang=new Language(langID);
+      Announce.message("Language ID:'"+langID+"' full name:'"+lang.getLongForm()+"'");
+      assert(lang.getLongForm().equals(supported.get(langID)));
+      Announce.message("Pronouns: "+lang.getPronouns());
+      for (String pronoun:lang.getPronouns()){
+        assert lang.isPronoun(pronoun);
+        
+      }
+    }
+  }
   
   // ---------------------------------------------------------------------
   //           Exceptions
