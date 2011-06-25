@@ -222,7 +222,9 @@ public class PlingStemmer {
   /** Words that end in "-se" in their plural forms (like "nurse" etc.)*/
   public static Set<String> categorySE_SES=new FinalSet<String>(
    "nurses",
-   "cruises"
+   "cruises",
+   "premises",
+   "houses"
   );
 
   /** Words that do not have a distinct plural form (like "atlas" etc.)*/
@@ -260,7 +262,7 @@ public class PlingStemmer {
    "news",
    "pathos",
    "pincers",
-   "pliers",
+   "pliers",   
    "proceedings",
    "rabies",
    "rhinoceros",
@@ -896,6 +898,7 @@ public class PlingStemmer {
         "people",
         "physics",
         "polemics",
+        "premises",
         "propaedeutics",
         "pyrotechnics",
         "quadratics",
@@ -911,9 +914,10 @@ public class PlingStemmer {
     BufferedReader in=new BufferedReader(new InputStreamReader(System.in));
     while(true) {
       String w=in.readLine();
-      System.out.println(stem(w));
-      if(isPlural(w)) System.out.println("  (Plural)");
-      if(isSingular(w)) System.out.println("  (Singular)");
+      if(w.length()==0) break;
+      if(isPlural(w)) System.out.println("This word is plural");
+      if(isSingular(w)) System.out.println("This word is singular");
+      System.out.println("Stemmed to singular: "+stem(w));
     }
   }
 }
