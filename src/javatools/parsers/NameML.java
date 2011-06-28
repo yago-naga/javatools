@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javatools.administrative.D;
+import javatools.administrative.NonsharedParameters;
 import javatools.datatypes.FinalMap;
 import javatools.filehandlers.FileLines;
 import javatools.parsers.Char;
@@ -61,16 +62,82 @@ import javatools.parsers.Char;
  *     City: Saarbruecken
  *     Normalized: Fabian_Great
  * </PRE>
+ * 
+ * IMPORTANT: Note that currently you need to initialize the class first by calling one of the init functions 
+ * before you can use most of its functions! Otherwise it may throw null pointer errors!
+ * TODO: Turn completely into an instantiable object? then we would not need to init nor to load all languages while only using 1
  */
+
 
 public class NameML {
 
-  static final File CONFIG_DIR = new File("data/parsing");
+  static File CONFIG_DIR = new File("data/parsing");
 
   // FIXME: this should perhaps be obtained from the configuration file
 
   /** Holds the general default name */
   public static final String ANYNAME = "NAME";
+  
+  
+  // -----------------------------------------------------------------------------------
+  // Initialization   TODO: Turn completely into an instantiable object? then we would not need to load all languages while only using 1  
+  // -----------------------------------------------------------------------------------
+  
+  public static final void init(NonsharedParameters params){
+    CONFIG_DIR=new File(params.get("javatoolsConfigDir")+"parsing/");
+    init();
+  }
+  
+  public static final void init(String configPath){
+    CONFIG_DIR=new File(configPath+"parsing/");
+    init();
+  }
+  
+  protected static boolean hasBeenInitialized=false;
+  
+  protected static final void init(){
+    if(hasBeenInitialized)
+      return;
+    
+    /** Matches common titles (like "Mr.") */
+    titlePatternEn = createTitlePattern(Language.ENGLISH);
+    titlePatternDe = createTitlePattern(Language.GERMAN);
+    titlePatternFr = createTitlePattern(Language.FRENCH);
+    titlePatternEs = createTitlePattern(Language.SPANISH);
+    titlePatternIt = createTitlePattern(Language.ITALIAN);
+    
+    /** given name titles */
+    titlesForGivenNamesEn = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "titles." + Language.ENGLISH.getId()));
+    titlesForGivenNamesDe = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "titles." + Language.GERMAN.getId()));
+    titlesForGivenNamesEs = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "titles." + Language.SPANISH.getId()));
+    titlesForGivenNamesFr = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "titles." + Language.FRENCH.getId()));
+    titlesForGivenNamesIt = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "titles." + Language.ITALIAN.getId()));
+    
+    /** stop words */
+    stopWordDE = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "stopwords." + Language.GERMAN.getId()));
+    stopWordFR = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "stopwords." + Language.FRENCH.getId()));
+    stopWordES = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "stopwords." + Language.SPANISH.getId()));
+    stopWordEN = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "stopwords." + Language.ENGLISH.getId()));
+    stopWordIT = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "stopwords." + Language.ITALIAN.getId()));
+    
+    
+    /** person name patterns */
+    laxPersonNamePatternEn = createLaxPersonNamePattern(titlePatternEn);
+    laxPersonNamePatternDe = createLaxPersonNamePattern(titlePatternDe);
+    laxPersonNamePatternEs = createLaxPersonNamePattern(titlePatternEs);
+    laxPersonNamePatternFr = createLaxPersonNamePattern(titlePatternFr);
+    laxPersonNamePatternIt = createLaxPersonNamePattern(titlePatternIt);
+    
+    
+    safePersonNamePatternEn = createSafePersonNamePattern(titlePatternEn);
+    safePersonNamePatternDe = createSafePersonNamePattern(titlePatternDe);
+    safePersonNamePatternEs = createSafePersonNamePattern(titlePatternEs);
+    safePersonNamePatternFr = createSafePersonNamePattern(titlePatternFr);
+    safePersonNamePatternIt = createSafePersonNamePattern(titlePatternIt);
+    
+    hasBeenInitialized=true;
+    
+  }
 
   // -----------------------------------------------------------------------------------
   // Punctation
@@ -198,16 +265,16 @@ public class NameML {
   // Titles
   // -----------------------------------------------------------------------------------
 
-  /** Matches common titles (like "Mr.") */
-  public static final Pattern titlePatternEn = createTitlePattern(Language.ENGLISH);
+  /** Matches common titles (like "Mr.") */ //are initialized via init()
+  public static Pattern titlePatternEn = null;
 
-  public static final Pattern titlePatternDe = createTitlePattern(Language.GERMAN);
+  public static Pattern titlePatternDe = null;
 
-  public static final Pattern titlePatternFr = createTitlePattern(Language.FRENCH);
+  public static Pattern titlePatternFr = null;
 
-  public static final Pattern titlePatternEs = createTitlePattern(Language.SPANISH);
+  public static Pattern titlePatternEs = null;
 
-  public static final Pattern titlePatternIt = createTitlePattern(Language.ITALIAN);
+  public static Pattern titlePatternIt = null;
 
   // public static final String titles="(?:"+title+B+")*"+B+title;
 
@@ -250,25 +317,25 @@ public class NameML {
    * Contains those titles that go with the given name (e.g. "Queen" in
    * "Queen Elisabeth"), lowercase
    */
-  protected static Set<String> titlesForGivenNamesEn = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "titles." + Language.ENGLISH.getId()));
+  protected static Set<String> titlesForGivenNamesEn = null;
 
-  protected static Set<String> titlesForGivenNamesDe = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "titles." + Language.GERMAN.getId()));
+  protected static Set<String> titlesForGivenNamesDe = null;
 
-  protected static Set<String> titlesForGivenNamesEs = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "titles." + Language.SPANISH.getId()));
+  protected static Set<String> titlesForGivenNamesEs = null;
 
-  protected static Set<String> titlesForGivenNamesFr = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "titles." + Language.FRENCH.getId()));
+  protected static Set<String> titlesForGivenNamesFr;
 
-  protected static Set<String> titlesForGivenNamesIt = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "titles." + Language.ITALIAN.getId()));
+  protected static Set<String> titlesForGivenNamesIt;
   
-  protected static Set<String> stopWordDE = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "stopwords." + Language.GERMAN.getId()));
+  protected static Set<String> stopWordDE;
 
-  protected static Set<String> stopWordFR = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "stopwords." + Language.FRENCH.getId()));
+  protected static Set<String> stopWordFR;
 
-  protected static Set<String> stopWordES = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "stopwords." + Language.SPANISH.getId()));
+  protected static Set<String> stopWordES;
 
-  protected static Set<String> stopWordEN = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "stopwords." + Language.ENGLISH.getId()));
+  protected static Set<String> stopWordEN;
 
-  protected static Set<String> stopWordIT = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "stopwords." + Language.ITALIAN.getId()));
+  protected static Set<String> stopWordIT;
 
   // -----------------------------------------------------------------------------------
   // Company Name Suffixes
@@ -588,15 +655,15 @@ public class NameML {
         + opt(B + c(nickName)));
   }
 
-  public static final Pattern laxPersonNamePatternEn = createLaxPersonNamePattern(titlePatternEn);
+  public static  Pattern laxPersonNamePatternEn;
 
-  public static final Pattern laxPersonNamePatternDe = createLaxPersonNamePattern(titlePatternDe);
+  public static  Pattern laxPersonNamePatternDe;
 
-  public static final Pattern laxPersonNamePatternEs = createLaxPersonNamePattern(titlePatternEs);
+  public static  Pattern laxPersonNamePatternEs;
 
-  public static final Pattern laxPersonNamePatternFr = createLaxPersonNamePattern(titlePatternFr);
+  public static  Pattern laxPersonNamePatternFr;
 
-  public static final Pattern laxPersonNamePatternIt = createLaxPersonNamePattern(titlePatternIt);
+  public static  Pattern laxPersonNamePatternIt;
 
   /**
    * @param titlePattern
@@ -620,15 +687,15 @@ public class NameML {
             givenName + B + U + "\\." + B + U + "\\." + B + opt(familyNamePrefix + B) + familyName + opt(BC + familyNameSuffix));
   }
 
-  public static final Pattern safePersonNamePatternEn = createSafePersonNamePattern(titlePatternEn);
+  public static  Pattern safePersonNamePatternEn;
 
-  public static final Pattern safePersonNamePatternDe = createSafePersonNamePattern(titlePatternDe);
+  public static Pattern safePersonNamePatternDe;
 
-  public static final Pattern safePersonNamePatternEs = createSafePersonNamePattern(titlePatternEs);
+  public static  Pattern safePersonNamePatternEs;
 
-  public static final Pattern safePersonNamePatternFr = createSafePersonNamePattern(titlePatternFr);
+  public static Pattern safePersonNamePatternFr;
 
-  public static final Pattern safePersonNamePatternIt = createSafePersonNamePattern(titlePatternIt);
+  public static Pattern safePersonNamePatternIt;
 
   /** Returns true if it is possible that the string is a person name */
   public static boolean couldBePersonName(String s, Language lang) {
@@ -926,7 +993,7 @@ public class NameML {
       "Cape Verdean", "Cape Verde", "Caymanian", "Cayman Islands", "Central African", "Central African Republic", "Chadian", "Chad", "Chilean",
       "Chile", "Chinese", "People's Republic of China", "See Taiwan", "Republic of China", "Christmas Island", "Christmas Island", "Cocos Island",
       "Cocos (Keeling) Islands", "Colombian", "Colombia", "Comorian", "Comoros", "Congolese", "Democratic Republic of the Congo", "Cook Island",
-      "Cook Islands", "Costa Rican", "Costa Rica", "Ivorian", "C�te d'Ivoire", "Croatian", "Croatia", "Cuban", "Cuba", "Cypriot", "Cyprus",
+      "Cook Islands", "Costa Rican", "Costa Rica", "Ivorian", "Côte d'Ivoire", "Croatian", "Croatia", "Cuban", "Cuba", "Cypriot", "Cyprus",
       "Czech", "Czech Republic", "Danish", "Denmark", "Djiboutian", "Djibouti", "Dominicand", "Dominica", "Dominicane", "Dominican Republic",
       "Timorese", "East Timor", "Ecuadorian", "Ecuador", "Egyptian", "Egypt", "Salvadoran", "El Salvador", "English", "England",
       "Equatorial Guinean", "Equatorial Guinea", "Eritrean", "Eritrea", "Estonian", "Estonia", "Ethiopian", "Ethiopia", "Falkland Island",
@@ -942,17 +1009,17 @@ public class NameML {
       "Luxembourg", "Luxembourg", "Macanese", "Macau", "Macedonian", "Republic of Macedonia", "Malagasy", "Madagascar", "Malawian", "Malawi",
       "Malaysian", "Malaysia", "Maldivian", "Maldives", "Malian", "Mali", "Maltese", "Malta", "Marshallese", "Marshall Islands", "Martiniquais",
       "Martinique", "Mauritanian", "Mauritania", "Mauritian", "Mauritius", "Mahoran", "Mayotte", "Mexican", "Mexico", "Micronesian", "Micronesia",
-      "Moldovan", "Moldova", "Mon�gasque", "Monaco", "Mongolian", "Mongolia", "Montenegrin", "Montenegro", "Montserratian", "Montserrat",
+      "Moldovan", "Moldova", "Monégasque", "Monaco", "Mongolian", "Mongolia", "Montenegrin", "Montenegro", "Montserratian", "Montserrat",
       "Moroccan", "Morocco", "Mozambican", "Mozambique", "Namibian", "Namibia", "Nauruan", "Nauru", "Nepali", "Nepal", "Dutch", "Netherlands",
       "Dutch Antillean", "Netherlands Antilles", "New Caledonian", "New Caledonia", "New Zealand", "New Zealand", "Nicaraguan", "Nicaragua",
       "Niuean", "Niue", "Nigerien", "Niger", "Nigerian", "Nigeria", "Norwegian", "Norway", "Northern Irish", "Northern Ireland", "Northern Marianan",
       "Northern Marianas", "Omani", "Oman", "Pakistani", "Pakistan", "Palestinian", "Palestinian territories", "Palauan", "Palau", "Panamanian",
       "Panama", "Papua New Guinean", "Papua New Guinea", "Paraguayan", "Paraguay", "Peruvian", "Peru", "Philippine", "Philippines", "Filipino",
       "Philippines", "Pitcairn Island", "Pitcairn Island", "Polish", "Poland", "Portuguese", "Portugal", "Puerto Rican", "Puerto Rico", "Qatari",
-      "Qatar", "Irish", "Republic of Ireland", "R�unionese", "R�union", "Romanian", "Romania", "Russian", "Russia", "Rwandan", "Rwanda",
+      "Qatar", "Irish", "Republic of Ireland", "Réunionese", "Réunion", "Romanian", "Romania", "Russian", "Russia", "Rwandan", "Rwanda",
       "St. Helenian", "St. Helena", "Kittitian", "St. Kitts and Nevis", "St. Lucian", "St. Lucia", "Saint-Pierrais", "Saint-Pierre and Miquelon",
-      "St. Vincentian", "St. Vincent and the Grenadines", "Samoan", "Samoa", "Sammarinese", "San Marino", "S�o Tom�an",
-      "S�o Tom� and Pr�ncipe", "Saudi", "Saudi Arabia", "Scottish", "Scotland", "Senegalese", "Senegal", "Serbian", "Serbia", "Seychellois",
+      "St. Vincentian", "St. Vincent and the Grenadines", "Samoan", "Samoa", "Sammarinese", "San Marino", "São Toméan",
+      "São Tomé and Príncipe", "Saudi", "Saudi Arabia", "Scottish", "Scotland", "Senegalese", "Senegal", "Serbian", "Serbia", "Seychellois",
       "Seychelles", "Sierra Leonean", "Sierra Leone", "Singaporean", "Singapore", "Slovak", "Slovakia", "Slovene", "Slovenia", "Slovenian",
       "Slovenia", "Solomon Island", "Solomon Islands", "Somali", "Somalia", "Somaliland", "Somaliland", "South African", "South Africa", "Spanish",
       "Spain", "Sri Lankan", "Sri Lanka", "Sudanese", "Sudan", "Surinamese", "Surinam", "Swazi", "Swaziland", "Swedish", "Sweden", "Swiss",
@@ -992,6 +1059,7 @@ public class NameML {
 
   /** Test routine */
   public static void main(String[] argv) throws Exception {
+    init();
     for (String s : new FileLines("./testdata/NameParserTestDe.txt")) {
       //D.p(Name.of(s).describe());
       D.p(NameML.of(s, Language.GERMAN).describe());
