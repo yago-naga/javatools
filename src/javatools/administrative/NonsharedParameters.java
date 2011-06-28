@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -190,14 +191,34 @@ public class NonsharedParameters {
     return(isDefined(s)?new File(getPath(s)):defaultValue);
   }
 
+  /** Returns a value for an integer parameter as Integer object*/
+  public Integer getInteger(String s) throws UndefinedParameterException {
+    return(Integer.parseInt(get(s)));
+  }
+  
+  /** Returns a value for an integer parameter returning the default value if undefined*/
+  public Integer getInteger(String s, Integer defaultValue) throws UndefinedParameterException {
+    return(isDefined(s)?Integer.parseInt(get(s)):defaultValue);
+  }
+  
   /** Returns a value for an integer parameter*/
   public int getInt(String s) throws UndefinedParameterException {
     return(Integer.parseInt(get(s)));
   }
 
   /** Returns a value for an integer parameter returning the default value if undefined*/
-  public Integer getInt(String s, Integer defaultValue) throws UndefinedParameterException {
+  public int getInt(String s, int defaultValue) throws UndefinedParameterException {
     return(isDefined(s)?Integer.parseInt(get(s)):defaultValue);
+  }
+  
+  /** Returns a value for an integer parameter*/
+  public Float getFloatObject(String s) throws UndefinedParameterException {
+    return(Float.parseFloat(get(s)));
+  }
+  
+  /** Returns a value for an integer parameter returning the default value if undefined*/
+  public Float getFloatObject(String s, Float defaultValue) throws UndefinedParameterException {
+    return(isDefined(s)?Float.parseFloat(get(s)):defaultValue);
   }
 
   /** Returns a value for an integer parameter*/
@@ -206,7 +227,7 @@ public class NonsharedParameters {
   }
 
   /** Returns a value for an integer parameter returning the default value if undefined*/
-  public Float getFloat(String s, Float defaultValue) throws UndefinedParameterException {
+  public float getFloat(String s, float defaultValue) throws UndefinedParameterException {
     return(isDefined(s)?Float.parseFloat(get(s)):defaultValue);
   }
   
@@ -219,6 +240,18 @@ public class NonsharedParameters {
   public Double getDouble(String s, Double defaultValue) throws UndefinedParameterException {
     return(isDefined(s)?Double.parseDouble(get(s)):defaultValue);
   }
+  
+  /** Returns a value for a boolean parameter */
+  public Boolean getBooleanObject(String s) throws UndefinedParameterException  {
+    String v=get(s);
+    return(!no.contains(v.toLowerCase()));
+  }
+  
+  /** Returns a value for a boolean parameter, returning a default value by default */
+  public Boolean getBooleanObject(String s, Boolean defaultValue) {
+    String v=get(s,defaultValue?"yes":"no");
+    return(!no.contains(v.toLowerCase()));
+  }
 
   /** Returns a value for a boolean parameter */
   public boolean getBoolean(String s) throws UndefinedParameterException  {
@@ -227,7 +260,7 @@ public class NonsharedParameters {
   }
 
   /** Returns a value for a boolean parameter, returning a default value by default */
-  public Boolean getBoolean(String s, Boolean defaultValue) {
+  public boolean getBoolean(String s, boolean defaultValue) {
     String v=get(s,defaultValue?"yes":"no");
     return(!no.contains(v.toLowerCase()));
   }
@@ -521,6 +554,26 @@ public class NonsharedParameters {
     }
     throw new RuntimeException("Unsupported database system "+system);        
   }
+  
+  
+  /** Matches all parameters against a provided class attribute 
+   * If a parameter name, transformed to upper-case, matches the attribute 
+   * the value assigned to the parameter is returned as an object   
+   * @param field  the attribute against which to match the parameters
+   * @return  an object representing the value of a parameter that matches the given attribute
+   *          iff there is a match, otherwise null
+   */
+  public Object matchObjectAttribut(Field field) throws IllegalAccessException{   
+      String parameterName = field.getName();
+      if (parameterName.equals(parameterName.toUpperCase()) && isDefined(parameterName)) {
+        if (field.getType() == Integer.class || field.getType() == int.class) return getInteger(parameterName);
+        else if (field.getType() == Boolean.class || field.getType() == boolean.class) return new Boolean(getBoolean(parameterName));
+        else if (field.getType() == Float.class || field.getType() == float.class) return new Float(getFloat(parameterName));
+        else if (D.indexOf(List.class, (Object[]) field.getType().getInterfaces()) != -1) return getList(parameterName);
+        else return get(parameterName);
+      }
+      return null;
+  }  
   
   /** Returns all defined parameters*/
   public Set<String> parameters() {
