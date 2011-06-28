@@ -3,7 +3,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -141,6 +145,16 @@ public class NonsharedParameters {
     init(iniFile);
   };  
 
+  
+  /** Returns a value for a date parameter;  */
+  public Timestamp getTimestamp(String s) throws UndefinedParameterException {
+    return Timestamp.valueOf(get(s));
+  }
+
+  /** Returns a value for a date parameter, returning the default value if undefined; */
+  public Timestamp getTimestamp(String s, Timestamp defaultValue) throws UndefinedParameterException {
+    return(isDefined(s)?getTimestamp(s):defaultValue);
+  }
 
   /** Returns a value for a file or folder parameter; same as getFile but returns the path as String 
    *  also adjusts local paths such that a global path is returned (if a base path is set)*/
@@ -182,7 +196,7 @@ public class NonsharedParameters {
   }
 
   /** Returns a value for an integer parameter returning the default value if undefined*/
-  public int getInt(String s, int defaultValue) throws UndefinedParameterException {
+  public Integer getInt(String s, Integer defaultValue) throws UndefinedParameterException {
     return(isDefined(s)?Integer.parseInt(get(s)):defaultValue);
   }
 
@@ -192,7 +206,7 @@ public class NonsharedParameters {
   }
 
   /** Returns a value for an integer parameter returning the default value if undefined*/
-  public float getFloat(String s, float defaultValue) throws UndefinedParameterException {
+  public Float getFloat(String s, Float defaultValue) throws UndefinedParameterException {
     return(isDefined(s)?Float.parseFloat(get(s)):defaultValue);
   }
   
@@ -202,7 +216,7 @@ public class NonsharedParameters {
   }
 
   /** Returns a value for an integer parameter returning the default value if undefined*/
-  public double getDouble(String s, double defaultValue) throws UndefinedParameterException {
+  public Double getDouble(String s, Double defaultValue) throws UndefinedParameterException {
     return(isDefined(s)?Double.parseDouble(get(s)):defaultValue);
   }
 
@@ -213,7 +227,7 @@ public class NonsharedParameters {
   }
 
   /** Returns a value for a boolean parameter, returning a default value by default */
-  public boolean getBoolean(String s, boolean defaultValue) {
+  public Boolean getBoolean(String s, Boolean defaultValue) {
     String v=get(s,defaultValue?"yes":"no");
     return(!no.contains(v.toLowerCase()));
   }
@@ -513,10 +527,11 @@ public class NonsharedParameters {
     return(values.keySet());
   }
   
-  /** Test routine */
-  public void main(String argv[]) throws Exception {
+  /** Test routine */  
+  public static void main(String[] args) throws Exception {
     System.err.println("Enter the name of an ini-file: ");
-    init(D.r());
-    D.p(values);
+    NonsharedParameters params= new NonsharedParameters();
+    params.init(D.r());
+    D.p(params.values);
   }
 }
