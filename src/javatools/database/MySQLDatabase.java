@@ -163,6 +163,10 @@ public class MySQLDatabase extends Database {
 	  endTransaction(true);
   }
 
+  // ---------------------------------------------------------------------
+  //           DB specific SQL variations of common functionality
+  // ---------------------------------------------------------------------
+  
   /** returns the database system specific expression for isnull functionality 
    * i.e. isnull(a,b) returns b if a is null and a otherwise */
   public String getSQLStmntIFNULL(String a, String b){
@@ -183,6 +187,17 @@ public class MySQLDatabase extends Database {
 	   return sql.toString();	   
    }
   
+   
+   /** 
+    * Produces an SQL fragment representing column properties for an autoincrementing integer column
+    * s.t. if used during table creation a column can declared to get by default an 
+    * integer value assigned according to an internal self-incrementing sequence counter
+    * Example:
+    * createTable("tableWithSingleAutoIncrementingIDColumn", "ID", autoincrementColumn()) 
+    */
+    public String autoincrementColumn(){
+      return "int AUTO_INCREMENT";
+    }
    
    
    public static void main(String[] args) throws Exception {

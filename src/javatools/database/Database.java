@@ -544,6 +544,18 @@ public abstract class Database {
 	   sql.append(value).append(" AS ").append(type).append(")");
 	   return sql.toString();	   
    }
+   
+   /** 
+    * Produces an SQL fragment representing an autoincrementing column type
+    * s.t. if used during table creation a column can declared to get by default a 
+    * value assigned according to an internal sequence counter
+    * Example:
+    * createTable("tableWithSingleAutoIncrementingIDColumn", "ID", autoincrementColumn(java.sql.Integer)) 
+    */
+    public String autoincrementColumn(String type){
+      Announce.error("This functionality is not provided for this database type. It may simply lack implementation at the Database class.");
+      return null;
+    }
 
   /**
    * Creates or rewrites an SQL table. Attributes is an alternating sequence of

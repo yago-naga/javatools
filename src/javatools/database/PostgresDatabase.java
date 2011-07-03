@@ -201,7 +201,16 @@ public static Postgretext postgretext=new Postgretext();
     return "COALESCE("+a+","+b+")";
   }
   
-
+  /** 
+   * Produces an SQL fragment representing column properties for an autoincrementing integer column
+   * s.t. if used during table creation a column can declared to get by default an 
+   * integer value assigned according to an internal self-incrementing sequence counter
+   * Example:
+   * createTable("tableWithSingleAutoIncrementingIDColumn", "ID", autoincrementColumn()) 
+   */
+   public String autoincrementColumn(){
+     return "SERIAL";
+   }
   
 
   // ---------------------------------------------------------------------
