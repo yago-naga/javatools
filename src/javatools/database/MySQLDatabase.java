@@ -169,6 +169,7 @@ public class MySQLDatabase extends Database {
   
   /** returns the database system specific expression for isnull functionality 
    * i.e. isnull(a,b) returns b if a is null and a otherwise */
+  @Override
   public String getSQLStmntIFNULL(String a, String b){
 	  return "IFNULL("+a+","+b+")";
   }
@@ -177,6 +178,7 @@ public class MySQLDatabase extends Database {
   /** 
    * Produces an SQL fragment casting the given value to the given type   * 
    */
+  @Override
    public String cast(String value, String type){
 	   if(type.equals("INTEGER"))
 		   type="UNSIGNED";
@@ -195,6 +197,7 @@ public class MySQLDatabase extends Database {
     * Example:
     * createTable("tableWithSingleAutoIncrementingIDColumn", "ID", autoincrementColumn()) 
     */
+   @Override
     public String autoincrementColumn(){
       return "int AUTO_INCREMENT";
     }

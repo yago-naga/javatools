@@ -195,8 +195,19 @@ public static Postgretext postgretext=new Postgretext();
   //           DB specific SQL variations of common functionality
   // ---------------------------------------------------------------------
   
+  /** 
+   * Produces an SQL fragment casting the given value to the given type   * 
+   */
+  @Override
+   public String cast(String value, String type){
+     StringBuilder sql=new StringBuilder("CAST(");
+     sql.append(value).append(" AS ").append(type).append(")");
+     return sql.toString();    
+   }
+  
   /** returns the database system specific expression for isnull functionality 
    * i.e. isnull(a,b) returns b if a is null and a otherwise */
+  @Override
   public String getSQLStmntIFNULL(String a, String b){
     return "COALESCE("+a+","+b+")";
   }
@@ -208,6 +219,7 @@ public static Postgretext postgretext=new Postgretext();
    * Example:
    * createTable("tableWithSingleAutoIncrementingIDColumn", "ID", autoincrementColumn()) 
    */
+  @Override
    public String autoincrementColumn(){
      return "SERIAL";
    }

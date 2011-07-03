@@ -552,7 +552,7 @@ public abstract class Database {
     * Example:
     * createTable("tableWithSingleAutoIncrementingIDColumn", "ID", autoincrementColumn(java.sql.Integer)) 
     */
-    public String autoincrementColumn(String type){
+    public String autoincrementColumn(){
       Announce.error("This functionality is not provided for this database type. It may simply lack implementation at the Database class.");
       return null;
     }
