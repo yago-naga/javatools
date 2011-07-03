@@ -556,6 +556,8 @@ public abstract class Database {
       Announce.error("This functionality is not provided for this database type. It may simply lack implementation at the Database class.");
       return null;
     }
+    
+    
 
   /**
    * Creates or rewrites an SQL table. Attributes is an alternating sequence of
@@ -643,6 +645,23 @@ public abstract class Database {
     for (String a : attributes) {
       createIndex(table, false, a);
     }
+  }
+  
+
+  /** makes the given attributes/columns the primary key of the given table*/
+  public void createPrimaryKey(String table, String... attributes) throws SQLException {
+    StringBuilder sql = new StringBuilder("ALTER TABLE ");
+    sql.append(table);
+    sql.append(" ADD PRIMARY KEY ( ");
+    for (String a : attributes)
+      sql.append(a).append(", ");
+    sql.setLength(sql.length() - 2);
+    sql.append(")");        
+    try {
+      executeUpdate("ALTER TABLE " + table+" DROP PRIMARY KEY");
+    } catch (SQLException e) {
+    }
+    executeUpdate(sql.toString());
   }
 
   public String toString() {
