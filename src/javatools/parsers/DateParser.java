@@ -3,6 +3,8 @@ package javatools.parsers;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -638,7 +640,7 @@ public class DateParser {
     StringBuffer in = new StringBuffer((int) (s.length() * 1.1));
 
     // Replace all the months and remeber where are where with difference,
-    List<Pair<Integer, Integer>> offSetList = new LinkedList<Pair<Integer, Integer>>();
+    List<Triple<Integer, Integer, Integer>> offSetList = new LinkedList<Triple<Integer, Integer, Integer>>();
     Matcher m = monthPattern.matcher(s);
     while (m.find()) {
       int monthNum = D.indexOf(m.group().substring(0, 3), (Object[]) months);
@@ -648,7 +650,7 @@ public class DateParser {
       int diff = (m.end() - m.start()) - newMonth.length();
       m.appendReplacement(in, newMonth);
       int position = in.length() - newMonth.length();
-      Pair<Integer, Integer> offsetPair = new Pair<Integer, Integer>(position, diff);
+      Triple<Integer, Integer, Integer> offsetPair = new Triple<Integer, Integer, Integer>(position, m.end() - m.start(), diff);
       offSetList.add(offsetPair);
     }
     m.appendTail(in);
@@ -658,6 +660,8 @@ public class DateParser {
     HashSet<Integer> offsetUsed = new HashSet<Integer>();
     for (FindReplace p : patterns) {
       m = p.pattern.matcher(in);
+      List<Triple<Integer, Integer, Integer>> toRemove = new LinkedList<Triple<Integer, Integer, Integer>>();
+      List<Triple<Integer, Integer, Integer>> toAdd = new LinkedList<Triple<Integer, Integer, Integer>>();
       if (m.find()) {
         out.setLength(0);
         previousOffSet = 0;
@@ -671,30 +675,46 @@ public class DateParser {
             tt.appendReplacement(o1, p.replacement);
             int start = m.start();
             int end = m.end();
-            Pair<Integer, Integer> offSetPair = null;
-            Iterator<Pair<Integer, Integer>> iter = offSetList.iterator();
+            List<Triple<Integer, Integer, Integer>> offSetPairs = new LinkedList<Triple<Integer, Integer, Integer>>();
+            Iterator<Triple<Integer, Integer, Integer>> iter = offSetList.iterator();
+            previousOffSet = 0;
+            boolean ignore = false;
             while (iter.hasNext()) {
-              offSetPair = iter.next();
-              if (start <= offSetPair.first && end >= offSetPair.first) {
-                break;
+              Triple<Integer, Integer, Integer> nextOffSetPair = iter.next();
+              if (start <= nextOffSetPair.first && end >= nextOffSetPair.first) {
+                offSetPairs.add(nextOffSetPair);
+              } else if (nextOffSetPair.first < start) {
+                previousOffSet = previousOffSet + nextOffSetPair.third;
+              }
+              if (nextOffSetPair.first < start && nextOffSetPair.second + nextOffSetPair.first >= end) {
+                ignore = true;
               }
             }
-            if (offSetPair != null) {
-              offSetList.remove(offSetPair);
-              end = end - start + offSetPair.second;
+            if (ignore) {
+              continue;
+            }
+            if (offSetPairs.size() > 0) {
+              int diff = 0;
+              iter = offSetPairs.iterator();
+              while (iter.hasNext()) {
+                Triple<Integer, Integer, Integer> offSetPair = iter.next();
+                toRemove.add(offSetPair);
+                diff = diff + offSetPair.third;
+              }
+              end = end - start + diff;
               start = start + previousOffSet;
-              previousOffSet = previousOffSet + offSetPair.second;
+              previousOffSet = previousOffSet + diff;
               int position = out.length() - o1.length();
               int length = end - o1.length();
-              Pair<Integer, Integer> newOffSetPair = new Pair<Integer, Integer>(position, length);
-              offSetList.add(newOffSetPair);
+              Triple<Integer, Integer, Integer> newOffSetPair = new Triple<Integer, Integer, Integer>(position, o1.length(), length);
+              toAdd.add(newOffSetPair);
             } else {
               end = end - start;
               start = start + previousOffSet;
               int position = out.length() - o1.length();
               int length = end - o1.length();
-              Pair<Integer, Integer> newOffSetPair = new Pair<Integer, Integer>(position, length);
-              offSetList.add(newOffSetPair);
+              Triple<Integer, Integer, Integer> newOffSetPair = new Triple<Integer, Integer, Integer>(position, o1.length(), length);
+              toAdd.add(newOffSetPair);
             }
             if (!offsetUsed.contains(start)) {
               dates.add(new Triple<String, Integer, Integer>(o1.toString(), start, end));
@@ -706,6 +726,14 @@ public class DateParser {
         StringBuffer temp = out;
         out = in;
         in = temp;
+        Iterator<Triple<Integer, Integer, Integer>> iter = toRemove.iterator();
+        while (iter.hasNext()) {
+          offSetList.remove(iter.next());
+        }
+        iter = toAdd.iterator();
+        while (iter.hasNext()) {
+          offSetList.add(iter.next());
+        }
       }
     }
 
@@ -723,8 +751,8 @@ public class DateParser {
           tt.appendReplacement(o1, "" + (Integer.parseInt(m.group(1)) - 1));
           int start = m.start();
           int end = m.end();
-          Pair<Integer, Integer> offSetPair = null;
-          Iterator<Pair<Integer, Integer>> iter = offSetList.iterator();
+          Triple<Integer, Integer, Integer> offSetPair = null;
+          Iterator<Triple<Integer, Integer, Integer>> iter = offSetList.iterator();
           while (iter.hasNext()) {
             offSetPair = iter.next();
             if (start < offSetPair.first && end > offSetPair.first) {
@@ -738,14 +766,14 @@ public class DateParser {
             previousOffSet = previousOffSet + offSetPair.second;
             int position = out.length() - o1.length();
             int length = end - o1.length();
-            Pair<Integer, Integer> newOffSetPair = new Pair<Integer, Integer>(position, length);
+            Triple<Integer, Integer, Integer> newOffSetPair = new Triple<Integer, Integer, Integer>(position, o1.length(), length);
             offSetList.add(newOffSetPair);
           } else {
             end = end - start;
             start = start + previousOffSet;
             int position = out.length() - o1.length();
             int length = end - o1.length();
-            Pair<Integer, Integer> newOffSetPair = new Pair<Integer, Integer>(position, length);
+            Triple<Integer, Integer, Integer> newOffSetPair = new Triple<Integer, Integer, Integer>(position, o1.length(), length);
             offSetList.add(newOffSetPair);
           }
           if (!offsetUsed.contains(start)) {
