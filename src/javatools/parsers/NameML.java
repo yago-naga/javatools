@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javatools.administrative.Announce;
 import javatools.administrative.D;
 import javatools.administrative.NonsharedParameters;
 import javatools.datatypes.FinalMap;
@@ -31,25 +32,34 @@ import javatools.parsers.Char;
  * is synonymous to that of the Name class, but given corresponding word lists
  * it supports various languages.
  * 
- * The class Name represents a name. There are three sub-types (subclasses) of
+ * The class NameML represents a name. There are three sub-types (subclasses) of
  * names: Abbreviations, person names and company names. These subclasses
  * provide methods to access the components of the name (like the family name).
- * Use the factory method Name.of to create a Name-object of the appropriate
- * subclass.<BR>
+ * Use the factory method NameML.of to create a NameML-object of the appropriate
+ * subclass. However, before you can apply any NameML method, you need to 
+ * initiate the class with the path to its lanuage dependent configuration 
+ * files.<BR>
  * Example:
  * 
  * <PRE>
- * Name.isName("Mouse");
+ * NameML.init("javatools/data/");
+ * NameML.isName("Mouse");
  *   --> true
- *   Name.isAbbreviation("PMM");
+ *   NameML.isAbbreviation("PMM");
  *   --> true  
- *   Name.isPerson("Mickey Mouse");
+ *   NameML.isPersonName("Mickey Mouse",Language.ENGLISH);
  *   --> false
- *   Name.couldBePerson("Mickey Mouse");
+ *   NameML.couldBePersonName("Mickey Mouse",Language.ENGLISH);
  *   --> true
- *   Name.isPerson("Prof. Mickey Mouse");
+ *   NameML.isPersonName("Pope Mickey Mouse",Language.ENGLISH);
  *   --> true
- *   Name.of("Prof. Dr. Fabian the Great III of Saarbruecken").describe()
+ *   NameML.isPersonName("Pope Mickey Mouse",Language.SPANISH);
+ *   --> false
+ *   NameML.isPersonName("Pope Mickey Mouse",Language.GERMAN);
+ *   --> false    
+ *   NameML.isPersonName("Papst Mickey Mouse",Language.GERMAN);
+ *   --> true   
+ *   NameML.of("Prof. Dr. Fabian the Great III of Saarbruecken").describe()
  *   // equivalent to new PersonName(...) in this case
  *   -->
  *   PersonName
@@ -67,8 +77,11 @@ import javatools.parsers.Char;
  *     Normalized: Fabian_Great
  * </PRE>
  * 
- * IMPORTANT: Note that currently you need to initialize the class first by calling one of the init functions 
+ * IMPORTANT: !Note that for some recognition methods the class falls back to English as the target language
+ *            since not all methods have been adapted yet for multi-language support! 
+ * Also note that currently you need to initialize the class first by calling one of the init functions 
  * before you can use most of its functions! Otherwise it may throw null pointer errors!
+ * 
  * TODO: Turn completely into an instantiable object? then we would not need to init nor to load all languages while only using 1
  */
 
@@ -1064,9 +1077,14 @@ public class NameML {
   /** Test routine */
   public static void main(String[] argv) throws Exception {
     init();
+    for (String s : new FileLines("./testdata/NameParserTest.txt")) {
+      //D.p(Name.of(s).describe());
+      D.p(NameML.of(s, Language.ENGLISH).describe());
+    }        
     for (String s : new FileLines("./testdata/NameParserTestDe.txt")) {
       //D.p(Name.of(s).describe());
       D.p(NameML.of(s, Language.GERMAN).describe());
     }
+    
   }
 }
