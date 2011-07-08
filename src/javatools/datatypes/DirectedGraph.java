@@ -136,13 +136,15 @@ public class DirectedGraph<E extends Comparable<E>> {
 		return(nodes.get(label));
 	}
 	
-	@SuppressWarnings("unchecked")
-	public DirectedGraph(File file, Pattern pattern) throws IOException {
-		for(String line : new FileLines(file, "Loading graph")) {
+	/** Constructs a directed graph from a File. Previously a constructor, but that caused compilation problems*/
+	public static DirectedGraph<String> create(File file, Pattern pattern) throws IOException {
+	  DirectedGraph<String> result=new DirectedGraph<String>();
+	  for(String line : new FileLines(file, "Loading graph")) {
 			Matcher m=pattern.matcher(line);
 			if(!m.find()) continue;
-			addLink((E)m.group(2),(E)m.group(1));
+			result.addLink(m.group(2),m.group(1));
 		}
+	  return(result);
 	}
 	/** Constructor for subclasses*/
 	public DirectedGraph() {
