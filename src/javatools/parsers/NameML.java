@@ -27,6 +27,10 @@ import javatools.parsers.Char;
  * by the YAGO-NAGA team (see http://mpii.de/yago-naga).
  * 
  * 
+ * This class is a multi-language extension of the Name class. Its functionality
+ * is synonymous to that of the Name class, but given corresponding word lists
+ * it supports various languages.
+ * 
  * The class Name represents a name. There are three sub-types (subclasses) of
  * names: Abbreviations, person names and company names. These subclasses
  * provide methods to access the components of the name (like the family name).
@@ -80,7 +84,7 @@ public class NameML {
   
   
   // -----------------------------------------------------------------------------------
-  // Initialization   TODO: Turn completely into an instantiable object? then we would not need to load all languages while only using 1  
+  // Initialization    
   // -----------------------------------------------------------------------------------
   
   public static final void init(NonsharedParameters params){
