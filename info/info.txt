@@ -1,3 +1,11 @@
-Responsible: <one or more Email addresses>
+Responsible: Edwin <edwin@mpi-inf.mpg.de>
 
-Description: <short description>
+Description: Little general purpose Java utilities. These tools are exported to the MPI homepage at 
+   http://mpii.de/yago-naga/javatools
+Therefore, this project should only contain independent general purpose utilities that are of more interest than one project.
+
+The modification policy is as follows:
+If it's bug fixes or additional methods, then please feel free to update the code in the repository. 
+With other things (major changes, added functionality to existing methods, new classes etc) keep them 
+in private folders until sure that it's a stable and general-purpose class. You can use the package javatools.test
+for such private classes.
