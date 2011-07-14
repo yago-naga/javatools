@@ -264,6 +264,15 @@ public class DateParser {
       // ------------ Process special constructions -----------
       // 1850s
       new FindReplace("(\\d{3})0'?s", newDate("$1#", "##", "##")),
+      
+//    ---------------in the summer of 2009 -------------------
+      new FindReplace("summer of "+Y,' '+newDate("$1","68", "##")),
+//    ---------------in the winter of 2009 -------------------
+      new FindReplace("winter of "+Y,' '+newDate("$1","22", "##")),
+//    ---------------in the spring of 2009 -------------------
+      new FindReplace("spring of "+Y,' '+newDate("$1","35", "##")),
+//    ---------------in the autum of 2009 -------------------
+      new FindReplace("autumn of "+Y,' '+newDate("$1","91", "##")),
 
       // ------------ Make Months and days 2-digit -----------
       new FindReplace(newDate("([0-9#]++)", "([0-9])", "([0-9\\#]++)"), newDate("$1", "0$2", "$3")),
