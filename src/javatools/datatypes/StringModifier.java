@@ -5,13 +5,42 @@ import java.util.Iterator;
 
 import javatools.database.Database;
 
+/** 
+This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
+It is licensed under the Creative Commons Attribution License 
+(see http://creativecommons.org/licenses/by/3.0) by 
+the YAGO-NAGA team (see http://mpii.de/yago-naga).
+  
 
+  
+  This class is a collection of additional string modification methods.
+   
+  For instance, it provides methods to generate a string from an array, 
+  separating array elements by a given deleminator; 
+  
+  String array[]={"cat", "mouse", "cheese"}; 
+  String imploded=StringModifier.implode(array," eats ");
+  System.out.println(imploded);  
+  -> cat eats mouse eats cheese;
+  
+  imploded=StringModifier.implode(array,",");
+  System.out.println(imploded);
+  -> cat,mouse,cheese;
+  
+  This is helpfull for instance to generate a list of values 
+  for database insertion; note that there is also a version
+  of that functionality that makes sure the array strings 
+  are all formated for database insertion/queries (e.g. put in
+  quotations).
+   
+   
+ */
 public abstract class StringModifier {
   
 
 
   /* Concatenates the Strings contained in an array to a combined string, 
-   * separating each two partial Strings with the given delimeter */
+   * separating each two array Strings with the given delimeter */
   public static String implode(String[] array, String delim){
     if (array.length==0) {
       return "";
@@ -27,7 +56,7 @@ public abstract class StringModifier {
   }
 
   /* Concatenates the Strings contained in a collection to a combined string, 
-   * separating each two partial Strings with the given delimeter */
+   * separating each two array Strings with the given delimeter */
   public static String implode(Collection<String> col, String delim){    
     Iterator<String> it=col.iterator();
     if(!it.hasNext())
@@ -44,15 +73,15 @@ public abstract class StringModifier {
   }  
   
   /* Concatenates the Strings contained in a collection to a combined string, 
-   * separating each two partial Strings with the given delimeter 
-   * while applying the database.format function to each string pieace */
+   * separating each two array Strings with the given delimeter 
+   * while applying the database.format function on each array string piece */
   public static String implodeForDB(Collection<?> col, String delim, Database database ){    
     return implodeForDB(col.iterator(),delim, database);
   }
   
   /* Concatenates the String pieces produced by an iterator to a combined string, 
-   * separating each two partial Strings with the given delimeter 
-   * while applying the database.format function to each string pieace */
+   * separating each two array Strings with the given delimeter 
+   * while applying the database.format function to each array string piece */
   public static String implodeForDB(Iterator<?> it, String delim, Database database ){        
     if(!it.hasNext())
       return "";
@@ -77,7 +106,15 @@ public abstract class StringModifier {
     else return s;
   }
   
-
+  /** Test method */
+  public static void main(String[] argv) throws Exception {
+    String array[]={"cat", "mouse", "cheese"}; 
+    String imploded=StringModifier.implode(array," eats ");
+    System.out.println(imploded);    
+           
+    imploded=StringModifier.implode(array,",");
+    System.out.println(imploded);    
+  }
      
   
 

@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javatools.administrative.Announce;
 import javatools.administrative.D;
 import javatools.administrative.NonsharedParameters;
 import javatools.datatypes.FinalMap;
@@ -78,7 +77,8 @@ import javatools.parsers.Char;
  * </PRE>
  * 
  * IMPORTANT: !Note that for some recognition methods the class falls back to English as the target language
- *            since not all methods have been adapted yet for multi-language support! 
+ *            since not all methods have been adapted yet for multi-language support and be aware that the
+ *            interface might change for methods that are not yet language-dependent! 
  * Also note that currently you need to initialize the class first by calling one of the init functions 
  * before you can use most of its functions! Otherwise it may throw null pointer errors!
  * 
