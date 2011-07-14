@@ -347,10 +347,10 @@ public class Announce {
   }
   
   /** Notes that the progress is at d, prints dots if necessary,
-   * calculates and displays the estimated time after 20sec of the progress */
+   * calculates and displays the estimated time after 60sec of the progress */
   public static void progressAt(double d) {
     if (d > progressEnd) return;
-    if (!D.smaller(level, Level.STATE) && !printedEstimatedTime && System.currentTimeMillis() - progressStart > 20000) {
+    if (!D.smaller(level, Level.STATE) && !printedEstimatedTime && System.currentTimeMillis() - progressStart > 60000) {
       print("("+NumberFormatter.formatMS((long) ((System.currentTimeMillis() - progressStart) * (progressEnd - d) / d))+" to go)");
       printedEstimatedTime = true;
       lastEstimation=System.currentTimeMillis();
