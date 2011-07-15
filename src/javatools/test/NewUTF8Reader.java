@@ -35,9 +35,9 @@ import javatools.administrative.Announce;
 public class NewUTF8Reader extends Reader {
 
   /** Holds the input Stream */
-
   private InputStreamReader in;
 
+  /** Buffered input stream*/
   protected BufferedReader bin;
 
   /** tells whether we want a progress bar*/
@@ -46,9 +46,17 @@ public class NewUTF8Reader extends Reader {
   /** number of chars for announce */
   protected long numBytesRead = 0;
 
+  /** the buffer that is readinto, */
   private char[] buffer;
 
+  /** the buffer size that is read */
+  private int maxBufferLength = 1024;
+
+  /** current position on the buffer when returning */
   private int position = 0;
+
+  /** how many char were read into the buffer*/
+  private int readTo = -1;
 
   /** Constructs a UTF8Reader from a Reader */
   public NewUTF8Reader(InputStream s) {
@@ -71,7 +79,7 @@ public class NewUTF8Reader extends Reader {
     this(new FileInputStream(f));
   }
 
-  /** Constructs a UTF8Reader from a File, makes a nice progress bar */
+  /** Constructs a UTF8Reader from a File, makes a nice progress bar, but reads slower, 1GB in 18 seconds with progressbar, 11 seconds without*/
   public NewUTF8Reader(File f, String message) throws FileNotFoundException {
     this(new FileInputStream(f));
     progressBar = true;
@@ -83,7 +91,7 @@ public class NewUTF8Reader extends Reader {
     this(new File(f));
   }
 
-  /** Constructs a UTF8Reader from a File, makes a nice progress bar */
+  /** Constructs a UTF8Reader from a File, makes a nice progress bar, but reads slower, 1GB in 18 seconds with progressbar, 11 seconds without*/
   public NewUTF8Reader(String f, String message) throws FileNotFoundException {
     this(new File(f), message);
   }
@@ -109,15 +117,16 @@ public class NewUTF8Reader extends Reader {
 
   @Override
   public int read() throws IOException {
-    if (buffer == null || buffer.length == position) {
-      String line = readLine();
-      if (line != null) {
-        buffer = (line + '\n').toCharArray();
-        position = 0;
-      } else {
-        buffer = null;
-        position = 0;
+    if (buffer == null || position >= readTo) {
+      buffer = new char[maxBufferLength];
+      readTo = bin.read(buffer);
+      position = 0;
+      if (readTo == -1) {
         return -1;
+      } else if (progressBar) {
+        String line = new String(buffer);
+        numBytesRead = numBytesRead + line.getBytes("UTF-8").length;
+        Announce.progressAt(numBytesRead);
       }
     }
     int c = buffer[position];
@@ -145,17 +154,18 @@ public class NewUTF8Reader extends Reader {
   /** Test method
    * @throws IOException   */
   public static void main(String[] args) throws IOException {
-    long time = System.currentTimeMillis();
-    String file = "C:/wikipedia/enwiki-100000-test.xml";
-    NewUTF8Reader ff = new NewUTF8Reader(new File(file), "Reader wiki file");
-    int count = 0;
-    int c = -1;
-    while ((c = ff.read()) != -1) {
-      count++;
+    for (int i = 0; i < 5; i++) {
+      long time = System.currentTimeMillis();
+      String file = "C:/yagoTest/yago2/wasFoundIn.tsv";
+      //    String file = "C:/wikipedia/enwiki-100-test.xml";
+      NewUTF8Reader ff = new NewUTF8Reader(new File(file), "test");
+      long count = 0;
+      while (ff.read() != -1) {
+        count++;
+      }
+      ff.close();
+      time = System.currentTimeMillis() - time;
+      System.out.println("Done in " + time);
     }
-    ff.close();
-    time = System.currentTimeMillis() - time;
-    System.out.println("Done in " + time);
-
   }
 }
