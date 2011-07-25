@@ -50,6 +50,9 @@ public class HTMLReader extends Reader {
   /** number of chars for announce (or -1) */
   protected long announceChars=-1;
   
+  /** TRUE to skip STYLE attributes*/
+  public boolean skipSTYLE=true;
+  
   /** Constructs a HTMLReader from a Reader */
   public HTMLReader(Reader s) {
     in=s;
@@ -129,7 +132,7 @@ public class HTMLReader extends Reader {
           scrollToTag("/SCRIPT");
           return(read());
         }
-        if(tag.equals("STYLE")) {
+        if(skipSTYLE && tag.equals("STYLE")) {
           scrollToTag("/STYLE");
           return(read());
         }

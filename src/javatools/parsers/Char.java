@@ -162,7 +162,7 @@ public class Char {
       (char) 8205, "lrm", (char) 8206, "rlm", (char) 8207, "ndash",
       (char) 8211, //0x2013
       "mdash", (char) 8212, "lsquo", (char) 8216, "rsquo", (char) 8217, "sbquo", (char) 8218, "ldquo", (char) 8220, "rdquo", (char) 8221, "bdquo", (char) 8222, "dagger", (char) 8224, "Dagger", (char) 8225, "permil", (char) 8240, "lsaquo",
-      (char) 8249, "rsaquo", (char) 8250, "euro", (char) 8364);
+      (char) 8249, "rsaquo", (char) 8250, "euro", (char) 8364, "apos", '\'');
 
   /** Maps characters to normalizations */
   public static Map<Character, String> normalizeMap = new TreeMap<Character, String>();
