@@ -96,6 +96,24 @@ public abstract class StringModifier {
     }
   }
   
+  /* Concatenates the String pieces contained in an array to a combined string, 
+   * separating each two array values with the given delimeter 
+   * while applying the database.format function to each array entry */
+  public static <T> String implodeForDB(T[] col, String delim, Database database ){        
+    if(col.length<=0)
+      return "";
+    else{
+      StringBuffer sb = new StringBuffer();
+      sb.append(database.format(col[0]));
+      for (int i=1;i<col.length;i++){
+        sb.append(delim);
+        sb.append(database.format(col[i]));              
+      }
+      return sb.toString();
+    }
+  }
+
+  
   
   /** limits the length of a String to the given size
    * ie applies s.substring(0,length) for given length iff
