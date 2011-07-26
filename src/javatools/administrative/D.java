@@ -272,6 +272,13 @@ public class D {
     if (i == null) return (0);
     return (i);
   }
+  
+  /** Returns the element of a map or a default value*/
+  public static <K,V> V getOr(Map<K, V> map, K key, V defValue) {
+    V i = map.get(key);
+    if (i == null) return defValue;
+    return (i);
+  }
 
   /** Returns a sorted list of the items*/
   public static<T> List<T> sorted(final Map<T, Integer> map) {
