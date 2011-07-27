@@ -255,6 +255,16 @@ public class D {
     map.put(key, coll + value);
   }
 
+  /** Given a map that maps to floats, adds a new key/value pair or increases the counter*/
+  public static <K> void addKeyValueFlt(Map<K, Float> map, K key, float value) {
+    Float coll = map.get(key);
+    if (coll == null) {
+      map.put(key, value);
+      return;
+    }
+    map.put(key, coll + value);    
+  }
+  
   /** Given a map that maps to doubles, adds a new key/value pair or increases the counter*/
   public static <K> void addKeyValueDbl(Map<K, Double> map, K key, double value) {
     Double coll = map.get(key);
@@ -263,8 +273,9 @@ public class D {
       return;
 
     }
-    map.put(key, coll + value);
+    map.put(key, coll + value);    
   }
+  
 
   /** Returns the element of a map or 0*/
   public static <K> int getOrZero(Map<K, Integer> map, K key) {
