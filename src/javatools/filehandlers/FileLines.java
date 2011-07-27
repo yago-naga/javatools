@@ -3,8 +3,10 @@ package javatools.filehandlers;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Iterator;
@@ -50,28 +52,43 @@ public class FileLines extends PeekIterator<String> implements
 		this(f, null);
 	}
 
-	/** Constructs FileLines from a filename, shows progress bar */
-	public FileLines(String f, String announceMsg) throws IOException {
-		this(new File(f), announceMsg);
-	}
+  /** Constructs FileLines from a filename, shows progress bar */
+  public FileLines(String f, String announceMsg) throws IOException {
+    this(new File(f), announceMsg);
+  }
+  /** Constructs FileLines from a filename with a given encoding, shows progress bar */
+  public FileLines(String f, String encoding, String announceMsg) throws IOException {
+    this(new File(f), encoding, announceMsg);
+  }
 
-	/**
-	 * Constructs FileLines from a file, shows progress bar (main constructor 1)
-	 */
-	public FileLines(File f, String announceMsg) throws IOException {
-		if (announceMsg != null) {
-			Announce.progressStart(announceMsg, f.length());
-			announceChars = 0;
-		}
-		br = new BufferedReader(new FileReader(f));
-	}
+  /**
+   * Constructs FileLines from a file with an encoding, shows progress bar (main constructor 1)
+   */
+  public FileLines(File f, String encoding, String announceMsg) throws IOException {
+    if (announceMsg != null) {
+      Announce.progressStart(announceMsg, f.length());
+      announceChars = 0;
+    }
+    br = new BufferedReader(new InputStreamReader(new FileInputStream(f),encoding));
+  }
+  
+  /**
+   * Constructs FileLines from a file, shows progress bar (main constructor 2)
+   */
+  public FileLines(File f, String announceMsg) throws IOException {
+    if (announceMsg != null) {
+      Announce.progressStart(announceMsg, f.length());
+      announceChars = 0;
+    }
+    br = new BufferedReader(new FileReader(f));
+  }
 
 	/** Constructs FileLines from a Reader */
 	public FileLines(Reader f) {
 		this(new BufferedReader(f));
 	}
 
-	/** Constructs FileLines from a BufferedReader (main constructor 2) */
+	/** Constructs FileLines from a BufferedReader (main constructor 3) */
 	public FileLines(BufferedReader r) {
 		br = r;
 	}
