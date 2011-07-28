@@ -276,6 +276,17 @@ public class D {
     map.put(key, coll + value);    
   }
   
+  /** Given a map that maps to comparable objects, sets a key to a given value iff the current value is null or smaller than the given value*/
+  public static <K ,V extends Comparable<V>> void setKeyValueIfGreaterThanCurrent(Map<K, V> map, K key, V value) {
+    V coll = map.get(key);
+    if (coll == null) {
+      map.put(key, value);
+      return;
+    }
+    if(coll.compareTo(value)<0)
+      map.put(key, value);    
+  }
+  
 
   /** Returns the element of a map or 0*/
   public static <K> int getOrZero(Map<K, Integer> map, K key) {
