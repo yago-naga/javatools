@@ -81,24 +81,30 @@ public class Announce {
 
   /** Are we at the beginning of a line?*/
   protected static boolean cursorAtPos1 = true;
+  
+  /** Progress level */
+  protected static int progressLevel = -1;
 
   /** Memorizes the maximal value for progressAt(...) */
-  protected static double progressEnd = 0;
+  protected static double[] progressEnd = {0,0,0,0,0,0,0,0,0,0};
 
   /** Memorizes the number of printed dots */
-  protected static int progressDots = 0;
+  protected static int[] progressDots = {0,0,0,0,0,0,0,0,0,0};
+  
+  /** Memorizes a short identification string for a progress level */
+  protected static String[] progressID = new String[10];
 
   /** Memorizes the process start time */
-  protected static long progressStart = 0;
+  protected static long[] progressStart = {0,0,0,0,0,0,0,0,0,0};
 
   /** Internal counter for progresses*/
-  protected static double progressCounter = 0;
+  protected static double[] progressCounter = {0,0,0,0,0,0,0,0,0,0};
 
   /** Did we print the estimated time? */
-  protected static boolean printedEstimatedTime;
+  protected static boolean[] printedEstimatedTime =  new boolean[10];
   
   /** last time we printed estimated time */
-  protected static long lastEstimation;
+  protected static long[] lastEstimation = new long[10];
 
   /** Memorizes the timer */
   protected static long timer;
@@ -326,44 +332,57 @@ public class Announce {
 
   /** Writes s, prepares to make progress up to max */
   public static void progressStart(String s, double max) {
-    progressEnd = max;
-    progressDots = 0;
-    progressStart = System.currentTimeMillis();
-    printedEstimatedTime = false;
-    progressCounter=0;
+    progressStart(s,null,max);
+  }
+  
+  
+  /** Writes s, prepares to make progress up to max */
+  public static void progressStart(String s, String id, double max) {
+    if(progressLevel<9)
+      progressLevel++;
+    progressID[progressLevel]=(id!=null?"["+id+"]: ":"");
+    progressEnd[progressLevel] = max;
+    progressDots[progressLevel] = 0;
+    progressStart[progressLevel] = System.currentTimeMillis();
+    printedEstimatedTime[progressLevel] = false;
+    progressCounter[progressLevel]=0;
     if (!D.smaller(level, Level.STATE)) {
       newLine();
       if(debug)
         print("["+CallStack.toString(new CallStack().ret().top()) + "] ");
-      print(s,"...");
-    }
+      print(s,progressID[progressLevel],"...");
+    }    
     doingLevel++;
   }
 
   /** Shows remaining time*/
   public static void progressShowTime() {
-    print("("+NumberFormatter.formatMS((long) ((System.currentTimeMillis() - progressStart) * (progressEnd - progressCounter) / progressCounter))+" to go)");
-    printedEstimatedTime = true;    
+    if(progressLevel<0)
+      return;
+    print("("+NumberFormatter.formatMS((long) ((System.currentTimeMillis() - progressStart[progressLevel]) * (progressEnd[progressLevel] - progressCounter[progressLevel]) / progressCounter[progressLevel]))+" to go)");
+    printedEstimatedTime[progressLevel] = true;    
   }
   
   /** Notes that the progress is at d, prints dots if necessary,
    * calculates and displays the estimated time after 60sec of the progress */
   public static void progressAt(double d) {
-    if (d > progressEnd) return;
-    if (!D.smaller(level, Level.STATE) && !printedEstimatedTime && System.currentTimeMillis() - progressStart > 60000) {
-      print("("+NumberFormatter.formatMS((long) ((System.currentTimeMillis() - progressStart) * (progressEnd - d) / d))+" to go)");
-      printedEstimatedTime = true;
-      lastEstimation=System.currentTimeMillis();
+    if(progressLevel<0)
+      return;
+    if (d > progressEnd[progressLevel]) return;
+    if (!D.smaller(level, Level.STATE) && !printedEstimatedTime[progressLevel] && System.currentTimeMillis() - progressStart[progressLevel] > 60000) { //60000
+      print("("+progressID[progressLevel]+NumberFormatter.formatMS((long) ((System.currentTimeMillis() - progressStart[progressLevel]) * (progressEnd[progressLevel] - d) / d))+" to go)");
+      printedEstimatedTime[progressLevel] = true;
+      lastEstimation[progressLevel]=System.currentTimeMillis();
     }
-    if(!D.smaller(level, Level.STATE) && printedEstimatedTime && (System.currentTimeMillis()-lastEstimation) > 1800000){
-      print("("+(NumberFormatter.formatMS((long) ((System.currentTimeMillis() - progressStart) * (progressEnd - d) / d)))+" to go)");
-      lastEstimation=System.currentTimeMillis();
+    if(!D.smaller(level, Level.STATE) && printedEstimatedTime[progressLevel] && (System.currentTimeMillis()-lastEstimation[progressLevel]) > 1800000){
+      print("("+progressID[progressLevel]+(NumberFormatter.formatMS((long) ((System.currentTimeMillis() - progressStart[progressLevel]) * (progressEnd[progressLevel] - d) / d)))+" to go)");
+      lastEstimation[progressLevel]=System.currentTimeMillis();
     }
-    if(d * MAXDOTS / progressEnd <= progressDots)return;
+    if(d * MAXDOTS / progressEnd[progressLevel] <= progressDots[progressLevel])return;
 
     StringBuilder b = new StringBuilder();
-    while (d * MAXDOTS / progressEnd > progressDots) {
-      progressDots++;
+    while (d * MAXDOTS / progressEnd[progressLevel] > progressDots[progressLevel]) {
+      progressDots[progressLevel]++;
       b.append(".");
     }
     if (!D.smaller(level, Level.STATE)) print(b);
@@ -371,22 +390,28 @@ public class Announce {
 
   /** One progress step (use alternatively to progressAt) */
   public static void progressStep() {
-    progressAt(progressCounter++);
+    progressAt(progressCounter[progressLevel]++);
   }
 
   /** Fills missing dots and writes "done NEWLINE"*/
   public static void progressDone() {
-    progressAt(progressEnd);
+    if(progressLevel<0)
+      return;
+    progressAt(progressEnd[progressLevel]);
     doingLevel--;
     if (!D.smaller(level, Level.STATE)) {
-      print(" done (" + NumberFormatter.formatMS(System.currentTimeMillis() - progressStart) + ")");
+      print(" done "+"(" + progressID[progressLevel] + NumberFormatter.formatMS(System.currentTimeMillis() - progressStart[progressLevel]) + ")");
       newLine();
     }
+    progressLevel--;
+    if(progressLevel<-1)
+      progressLevel=-1;
   }
 
   /** Writes "failed NEWLINE"*/
   public static void progressFailed() {
-    failed();
+    progressLevel--;
+    failed();    
   }
 
   /** Writes a help text and exits */
@@ -431,6 +456,29 @@ public class Announce {
     Announce.progressAt(4); // We're at 4 (of 5)
     D.waitMS(1000);
     Announce.progressDone();
+    Announce.progressStart("Testing 3d", 5); // 5 steps
+    D.waitMS(1000);
+    Announce.progressAt(1); // We're at 1 (of 5)
+    Announce.progressStart("Testing 4a inside 3d", 4); // 4 step sub-process
+    D.waitMS(1000);
+    Announce.progressAt(1); // We're at 1 (of 4)
+    D.waitMS(2000);
+    Announce.progressAt(3); // We're at 3 (of 4)
+    D.waitMS(1000);
+    Announce.progressDone(); // we're done with the inner process 4a, going on with the outher process
+    Announce.progressAt(2); // We're at 2 (of 5) in the outher process  
+    Announce.progressStart("Testing 4b inside 3d", "4b", 6); // 6 step sub-process, which we give a short ID to be included in the progress messages
+    D.waitMS(1000);
+    Announce.progressAt(1); // We're at 1 (of 6)
+    D.waitMS(3000);
+    Announce.progressAt(4); // We're at 4 (of 6)
+    D.waitMS(1000);
+    Announce.progressDone(); // we're done with the inner process 4b, going on with the outher process
+    D.waitMS(1000);
+    Announce.progressAt(4); // We're at 4 (of 5)
+    D.waitMS(1000);
+    Announce.progressDone();// we're done with the outer process 3d
+    Announce.progressDone();// This is one too much, but it works nevertheless    
     Announce.done();
     Announce.done();
     Announce.done(); // This is one too much, but it works nevertheless
