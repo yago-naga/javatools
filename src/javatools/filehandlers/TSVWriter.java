@@ -3,8 +3,6 @@ package javatools.filehandlers;
 import java.io.File;
 import java.io.IOException;
 
-import javatools.administrative.D;
-
 public class TSVWriter {
 
   /* the writer */
