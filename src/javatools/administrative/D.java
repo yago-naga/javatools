@@ -294,6 +294,13 @@ public class D {
     if (i == null) return (0);
     return (i);
   }
+
+  /** Returns the element of a map or 0*/
+  public static <K> double getOrZeroDouble(Map<K, Double> map, K key) {
+    Double i = map.get(key);
+    if (i == null) return (0);
+    return (i);
+  }
   
   /** Returns the element of a map or a default value*/
   public static <K,V> V getOr(Map<K, V> map, K key, V defValue) {
@@ -398,5 +405,11 @@ public class D {
       if (i != o.length - 1) b.append(" ");
     }
     return (b.toString());
+  }
+  
+  /** Picks one element from a set or NULL*/
+  public static <T> T pick(Collection<T> set) {
+    if(set.isEmpty()) return(null);
+    return(set.iterator().next());
   }
 }
