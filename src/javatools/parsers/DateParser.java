@@ -73,6 +73,7 @@ public class DateParser {
 	// of
 	// '#'
 
+	// Required to deal with negative dates
 	private static final String WBNEG =  "[(?:(?<=[A-Za-z0-9_-])(?![A-Za-z0-9_-])|(?<![A-Za-z0-9_-])(?=[A-Za-z0-9_-]))]";
 
 	public static final String DATE = newDate("(-?[0-9#X]++)", "([0-9#X]{1,2})", "([0-9#X]{1,2})");
@@ -81,7 +82,7 @@ public class DateParser {
 
 	public static final String SDATE = newSubDate("(-?[0-9#X]++)", "([0-9#X]{1,2})");
 
-	public static final Pattern SDATEPATTERN = Pattern.compile("\\b" + SDATE); // No trailing boundary because of '#'
+	public static final Pattern SDATEPATTERN = Pattern.compile(WBNEG + SDATE); // No trailing boundary because of '#'
 
 	/** A year as a pattern */
 	public static final Pattern SIMPLEYEARPATTERN = Pattern.compile("\\b(\\d{3,4})\\b");
