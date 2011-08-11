@@ -82,10 +82,10 @@ public class DateParser {
   public static final Pattern DATEPATTERN = Pattern.compile(WBNEG + DATE); // No trailing boundary because of '#'
 
   public static final Pattern JUSTDATEPATTERN = Pattern.compile(DATE); // No trailing boundary because of '#'
-  
+
   public static final String SDATE = newSubDate("(-?[0-9#X]++)", "([0-9#X]{1,2})");
 
-	public static final Pattern SDATEPATTERN = Pattern.compile(WBNEG + SDATE); // No trailing boundary because of '#'
+  public static final Pattern SDATEPATTERN = Pattern.compile(WBNEG + SDATE); // No trailing boundary because of '#'
 
   /** A year as a pattern */
   public static final Pattern SIMPLEYEARPATTERN = Pattern.compile("\\b(\\d{3,4})\\b");
@@ -912,7 +912,7 @@ public class DateParser {
     }
     pos[0] = m.start();
     pos[1] = m.end();
-    String[] result = new String[] {m.group(1), m.group(2), m.group(3) };
+    String[] result = new String[] { m.group(1), m.group(2), m.group(3) };
     return (result);
   }
 
