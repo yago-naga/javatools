@@ -536,6 +536,13 @@ public abstract class Database {
     return (t.format(o.toString()));
   }
   
+  /** Formats an object appropriately (provided that its class is in java2SQL) and assigns NULL it the given object is a null pointer */
+  public String formatNullToNull(Object o) {
+    if(o==null)
+      return "NULL";
+    else return format(o);
+  }
+  
   /** 
    * Produces an SQL fragment casting the given value to the given type   * 
    */
