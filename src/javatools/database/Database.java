@@ -554,10 +554,10 @@ public abstract class Database {
    
    /** 
     * Produces an SQL fragment representing an autoincrementing column type
-    * s.t. if used during table creation a column can declared to get by default a 
-    * value assigned according to an internal sequence counter
+    * s.t. if used during table creation a column can be declared to get by default 
+    * an integer value assigned according to an internal sequence counter
     * Example:
-    * createTable("tableWithSingleAutoIncrementingIDColumn", "ID", autoincrementColumn(java.sql.Integer)) 
+    * createTable("tableWithSingleAutoIncrementingIDColumn", "ID", autoincrementColumn()) 
     */
     public String autoincrementColumn(){
       Announce.error("This functionality is not provided for this database type. It may simply lack implementation at the Database class.");
