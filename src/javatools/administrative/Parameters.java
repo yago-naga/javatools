@@ -194,16 +194,37 @@ public class Parameters {
 		return (v);
 	}
 
-	/**
-	 * Returns a value for a parameter. If not present, asks the user for it and
-	 * adds it
-	 */
-	public static String getOrRequestAndAdd(String s, String description)
-			throws IOException {
-		String v = getOrRequest(s, description);
-		add(s, v);
-		return (v);
-	}
+  /**
+   * Returns a value for a parameter. If not present, asks the user for it and
+   * adds it
+   */
+  public static String getOrRequestAndAdd(String s, String description)
+      throws IOException {
+    String v = getOrRequest(s, description);
+    add(s, v);
+    return (v);
+  }
+  /**
+   * Returns a value for a parameter. If not present, asks the user for it and
+   * adds it
+   */
+  public static int getOrRequestAndAddInt(String s, String description)
+      throws IOException {
+    int v = getOrRequestInteger(s, description);
+    add(s, ""+v);
+    return (v);
+  }
+
+  /**
+   * Returns a value for a parameter. If not present, asks the user for it and
+   * adds it
+   */
+  public static File getOrRequestAndAddFile(String s, String description)
+      throws IOException {
+    File v = getOrRequestFileParameter(s, description);
+    add(s, ""+v);
+    return (v);
+  }
 
 	/**
 	 * Returns a value for a parameter. If not present, asks the user for it and
