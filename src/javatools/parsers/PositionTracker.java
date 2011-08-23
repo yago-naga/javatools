@@ -2,6 +2,7 @@ package javatools.parsers;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -153,27 +154,34 @@ public class PositionTracker {
     
     private SortedMap<Integer,Integer>positionMap;
     private SortedMap<Integer,Integer>positionChanges;
-    private SortedMap<Integer,Integer>new2OldMap;
+    //private SortedMap<Integer,Integer>new2OldMap;
+    private PositionTracker new2OldTracker=null;
     private int accumulatedModifier=0;
       
     public ForwardPositionTracker(){
       positionMap=new TreeMap<Integer,Integer>();
       positionChanges=new TreeMap<Integer,Integer>();
-      new2OldMap=new TreeMap<Integer,Integer>();         
+     // new2OldMap=new TreeMap<Integer,Integer>();
+      new2OldTracker=new PositionTracker();
+     
     }
     
       
     public void addPositionChange(int pos, int modifier){
-          if(modifier!=0){          
-            int oldModifier=0;                        
+          if(modifier!=0){                                         
             positionChanges.put(pos,modifier);
             accumulatedModifier+=modifier;
-            if(new2OldMap.containsKey(pos+accumulatedModifier))
+            /*if(new2OldMap.containsKey(pos+accumulatedModifier))
               oldModifier=new2OldMap.get(pos+accumulatedModifier);
-            new2OldMap.put(pos+accumulatedModifier, -1*modifier+oldModifier);
-                        
-          }     
+            new2OldMap.put(pos+accumulatedModifier, -1*modifier+oldModifier);                        
+          }     */
+            new2OldTracker.addPositionChange(pos, modifier);
+          }
     }
+    
+
+
+
 
       
       
@@ -182,30 +190,24 @@ public class PositionTracker {
     public void closeRun() {
       if(positionChanges.isEmpty())
         return;
-          
-        
-      SortedMap<Integer,Integer> temp=positionChanges;
-       
-      //adapt old positions to new mapping
-      while(!positionMap.isEmpty()){
-        Integer key=positionMap.firstKey();
-          Collection<Integer> modifiers=temp.headMap(key+1).values();
-          Integer newposition=key;      
-          for(Iterator<Integer> it=modifiers.iterator(); it.hasNext(); newposition+=it.next()){}
-          Integer value=positionMap.get(key);
-          if(new2OldMap.containsKey(newposition))
-            value+=new2OldMap.get(newposition);
-          positionChanges.put(newposition, value);
-          positionMap.remove(key);
-      }
 
-      positionChanges=positionMap;
-      positionMap=temp;
-      new2OldMap.clear();
+      
+      for(Map.Entry<Integer, Integer> change:positionChanges.entrySet()){
+        Integer positionInOrigStream=new2OldTracker.translatePosition(change.getKey());
+        if(positionMap.containsKey(positionInOrigStream))
+          positionMap.put(positionInOrigStream, change.getValue()+positionMap.get(positionInOrigStream));
+        else
+          positionMap.put(positionInOrigStream, change.getValue());
+      }
+       
+      positionChanges.clear();
       accumulatedModifier=0;
+      new2OldTracker.closeRun();
+        
       return;
     }
       
+    
       
     /** tells whether a position in the original stream has been cut away by some change operation, 
      *  such that translating it usually would make not to much sense
