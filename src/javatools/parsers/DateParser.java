@@ -931,12 +931,17 @@ public class DateParser {
     List<String> result = new ArrayList<String>(3);
     for (String date : preresult) {
       String[] split = getDate(date);
+      if (split.length != 3) {
+        split = new String[3];
+        for (int i = 0; i < split.length; i++) {
+          split[i] = "##";
+        }
+      }
       // check year does not start with a symbol (due to regular expression)
       if (!split[0].contains("#")) {
         try {
           Integer.parseInt(split[0]);
         } catch (NumberFormatException e) {
-          Announce.warning("Date:" + date + " was normalized wrong, please fix");
           split[0] = "##";
         }
       }
@@ -954,6 +959,7 @@ public class DateParser {
           split[2] = "##";
         }
       }
+
       result.add(newDate(split[0], split[1], split[2]));
     }
     if (result.size() == 0) {
