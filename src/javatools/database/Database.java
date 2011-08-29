@@ -639,12 +639,15 @@ public abstract class Database {
   }
 
   public void createIndex(String table, boolean unique, String... attributes) throws SQLException {
+    Announce.doingDetailed("Creating index "+indexName(table, attributes)+ " on table "+table);
     String comand = createIndexCommand(table, unique, attributes);
+    Announce.debug(comand);
     try {
       executeUpdate("DROP INDEX " + indexName(table, attributes));
     } catch (SQLException e) {
     }
     executeUpdate(comand);
+    Announce.doneDetailed();
   }
 
   /** Creates non-unique single indices on a table */
@@ -657,6 +660,7 @@ public abstract class Database {
 
   /** makes the given attributes/columns the primary key of the given table*/
   public void createPrimaryKey(String table, String... attributes) throws SQLException {
+    Announce.doingDetailed("Creating primary Key on table "+table);
     StringBuilder sql = new StringBuilder("ALTER TABLE ");
     sql.append(table);
     sql.append(" ADD PRIMARY KEY ( ");
@@ -664,11 +668,14 @@ public abstract class Database {
       sql.append(a).append(", ");
     sql.setLength(sql.length() - 2);
     sql.append(")");        
+    Announce.debug(sql);
     try {
       executeUpdate("ALTER TABLE " + table+" DROP PRIMARY KEY");
     } catch (SQLException e) {
+      throw e; //hook here for exception handling
     }
     executeUpdate(sql.toString());
+    Announce.doneDetailed();
   }
 
   public String toString() {
