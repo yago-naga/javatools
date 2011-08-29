@@ -190,7 +190,7 @@ public class Announce {
   /** Prints an (indented) message  
    * intended to provide more detailed information to a user 
    * who is interested in the details of every program step */
-  public static void messageDetail(Object... o) {
+  public static void messageDetailed(Object... o) {
     if (D.smaller(level, Level.DETAILMESSAGES)) return;  
     newLine();
     if(debug)
