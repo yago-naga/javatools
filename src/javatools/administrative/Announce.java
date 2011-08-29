@@ -62,9 +62,9 @@ import javatools.parsers.NumberFormatter;
  */
 public class Announce {
 
-  /** Log level*/
-  public enum Level {
-    MUTE, ERROR, WARNING, STATE, MESSAGES, DETAILSTATE, DEBUG
+  /** Log level */
+  public enum Level {  
+    MUTE, ERROR, WARNING, STATE, MESSAGES, DETAILSTATE, DETAILMESSAGES, DEBUG
   };
 
   /** Current log level*/
@@ -175,9 +175,23 @@ public class Announce {
     cursorAtPos1 = true;
   }
 
-  /** Prints an (indented) message */
+  /** Prints an (indented) message  
+   * intended to provide additional information to the user at a top level */
   public static void message(Object... o) {
     if (D.smaller(level, Level.MESSAGES)) return;  
+    newLine();
+    if(debug)
+      print("["+CallStack.toString(new CallStack().ret().top()) + "] ");
+    print(o);
+    newLine();
+  }
+  
+  
+  /** Prints an (indented) message  
+   * intended to provide more detailed information to a user 
+   * who is interested in the details of every program step */
+  public static void messageDetail(Object... o) {
+    if (D.smaller(level, Level.DETAILMESSAGES)) return;  
     newLine();
     if(debug)
       print("["+CallStack.toString(new CallStack().ret().top()) + "] ");
@@ -258,13 +272,14 @@ public class Announce {
     doingLevel++;
   }
   
-  /** Writes "s..."*/
+  /** Writes "s..." - intended for major states telling a user what the program does */
   public static void doing(Object... o) {
     if (D.smaller(level, Level.STATE)) return;
     writeDoing(o);
   }
   
-  /** Writes "s..."*/
+  /** Writes "s..." - intended for more detailed states, 
+   * in case the user wants to follow (nearly) every step of the program in detail */
   public static void doingDetailed(Object... o) {
     if (D.smaller(level, Level.DETAILSTATE)) return;
     writeDoing(o);
@@ -283,7 +298,7 @@ public class Announce {
   }
 
  
-  /** Writes "done NEWLINE"*/
+  /** Writes "done NEWLINE" - closes a doingDetailed statement */
   public static void doneDetailed() {
     if (doingLevel > 0) {
       doingLevel--;
@@ -294,7 +309,7 @@ public class Announce {
   }
   
   
-  /** Writes "done NEWLINE"*/
+  /** Writes "done NEWLINE" - closes a doing statement */
   public static void done() {
     if (doingLevel > 0) {
       doingLevel--;
@@ -304,7 +319,7 @@ public class Announce {
     }
   }
 
-  /** Writes "done NEWLINE"*/
+  /** Writes "done NEWLINE" - closes a doing statement*/
   public static void done(String text) {
     if (doingLevel > 0) {
       doingLevel--;
@@ -314,7 +329,7 @@ public class Announce {
     }
   }
 
-  /** Writes "done with problems NEWLINE"*/
+  /** Writes "done with problems NEWLINE" - closes a doing statement */
   public static void doneWithProbs() {
     if (doingLevel > 0) {
       doingLevel--;
@@ -324,7 +339,7 @@ public class Announce {
     }
   }
 
-  /** Calls done() and doing(...)*/
+  /** Calls done() and doing(...) - closes a doing statement opening the next one */
   public static void doneDoing(Object... s) {
     done();
     doing(s);
