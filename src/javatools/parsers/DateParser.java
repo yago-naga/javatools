@@ -191,6 +191,9 @@ public class DateParser {
       // --------- Process ISO8601 ------------------
       new FindReplace(Y + " ?[-\\|] ?(\\d{1,2}) ?[-\\|] ?(\\d{1,2})", newDate("$1", "$2", "$3")),
 
+      // --------- Process ISO8601 include Month------------------
+      new FindReplace(Y + " ?[-\\|] ?"+M+" ?[-\\|] ?(\\d{1,2})", newDate("$1", "$2", "$3")),
+      
       // --------- Process BC, CE and AD ------------
       // 2267 - 2213 BC
       new FindReplace(Y + H + Y + BC, newDate("-$1", "##", "##") + " to " + newDate("-$2", "##", "##")),
