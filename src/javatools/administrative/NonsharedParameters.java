@@ -531,10 +531,12 @@ public class NonsharedParameters {
     } catch(Exception e){Announce.debug("Warning: "+e);};
     try {
       port=this.get("databasePort");    
-    } catch(Exception e){Announce.debug("Warning: "+e);};          
-    try {
-      inst=this.get("databaseSID");
-    } catch(UndefinedParameterException e) {Announce.debug("Warning: "+e);}
+    } catch(Exception e){Announce.debug("Warning: "+e);};
+    if(system.equals("ORACLE")){
+      try {
+        inst=this.get("databaseSID");
+      } catch(UndefinedParameterException e) {Announce.debug("Warning: "+e);}
+    }
     try {
       database=this.get("databaseDatabase");
     } catch(UndefinedParameterException e) {Announce.debug("Warning: "+e);}    
