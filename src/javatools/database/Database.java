@@ -593,7 +593,7 @@ public abstract class Database {
    * @param table  name of the table to be checked 
    * @note if there is any error with the database connection,
    * the function will also return false. */
-  public boolean checkTableExistence(String table) {
+  public boolean existsTable(String table) {
     try{
       ResultSet rs=query("SELECT * FROM "+table+" LIMIT 1");
       Database.close(rs);
@@ -951,8 +951,8 @@ public abstract class Database {
   /** Test routine */
   public static void main(String[] args) throws Exception {
     new PostgresDatabase("postgres", "postgres", null, null, null).runInterface();
-//    System.out.println("Does table 'facts' exist:"+ new PostgresDatabase("postgres", "postgres", "yago", null, null).checkTableExistence("facts"));
-//    System.out.println("Does table 'factssss' exist:"+ new PostgresDatabase("postgres", "postgres", "yago", null, null).checkTableExistence("factssss"));    
+//    System.out.println("Does table 'facts' exist:"+ new PostgresDatabase("postgres", "postgres", "yago", null, null).existsTable("facts"));
+//    System.out.println("Does table 'factssss' exist:"+ new PostgresDatabase("postgres", "postgres", "yago", null, null).existsTable("factssss"));    
   }
   
   // ---------------------------------------------------------------------
