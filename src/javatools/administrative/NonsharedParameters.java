@@ -572,6 +572,7 @@ public class NonsharedParameters {
         else if (field.getType() == Boolean.class || field.getType() == boolean.class) return new Boolean(getBoolean(parameterName));
         else if (field.getType() == Float.class || field.getType() == float.class) return new Float(getFloat(parameterName));
         else if (D.indexOf(List.class, (Object[]) field.getType().getInterfaces()) != -1) return getList(parameterName);
+        else if (D.indexOf(List.class, field.getType()) != -1) return getList(parameterName);
         else return get(parameterName);
       }
       return null;
