@@ -686,7 +686,7 @@ public abstract class Database {
     try {
       executeUpdate("ALTER TABLE " + table+" DROP PRIMARY KEY");
     } catch (SQLException e) {
-      throw e; //hook here for exception handling
+     // throw e; //hook here for exception handling; usually disabled as no primary key may exist when we create the new one (which is not an error) 
     }
     executeUpdate(sql.toString());
     Announce.doneDetailed();
