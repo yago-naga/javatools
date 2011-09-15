@@ -5,11 +5,15 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 
 
 import javatools.datatypes.FinalSet;
+import javatools.datatypes.Pair;
 import javatools.parsers.NumberFormatter;
 
 /**
@@ -108,6 +112,11 @@ public class Announce {
 
   /** Memorizes the timer */
   protected static long timer;
+  
+  /** Memorizes a set of named timers that each can accumulate several time intervals */
+  protected static Vector<Long> timerStarts=new Vector<Long>();
+  protected static Vector<Long> timerTimes=new Vector<Long>();
+  
 
   /** TRUE if debugging is on*/
   protected static boolean debug;
@@ -116,11 +125,65 @@ public class Announce {
   public static void startTimer() {
     timer = System.currentTimeMillis();
   }
-
+  
   /** Retrieves the time */
   public static long getTime() {
     return (System.currentTimeMillis() - timer);
   }
+
+  /** Initiates a numbered timer */
+  public static int initTimer(){
+    timerStarts.add(0l);
+    timerTimes.add(0l);
+    return timerStarts.size()-1;
+  }
+  
+  /** Starts a named timer */
+  public static void startTimer(int number){
+    if(timerStarts.size()<=number)
+      return;
+    timerStarts.set(number, System.currentTimeMillis());          
+  }      
+  
+  /** Stops a named timer */
+  public static void stopTimer(int number){
+    if(timerTimes.size()<=number)
+      return;    
+    timerTimes.set(number,timerTimes.get(number)+(System.currentTimeMillis() - timerStarts.get(number)));
+  }
+  
+  /** Retrieves the accumulated time the named timer has run for */
+  public static Long getTime(int number){
+    return timerTimes.get(number);
+  }
+  
+  /** Retrieves the accumulated time the named timer has run for */
+  public static Vector<Long> getTimers(){    
+    return timerTimes;
+  }
+  
+  /** Resets the named timer to 0 */
+  public static void resetTimer(int number){
+    if(timerTimes.size()<=number)
+      return;    
+    else{
+      timerTimes.set(number, 0l);      
+    }      
+  }
+
+  /** Prints the time of a particular timer given by its timer number */
+  public static void printTime(int timerNumber) {
+      printTime(timerNumber,null);
+  }
+  
+  /** Prints the time of a particular timer given by its timer number, may be given a name for printout */
+  public static void printTime(int timerNumber, String name) {    
+    if(name!=null)
+      message("Time",name,":", NumberFormatter.formatMS(getTime(timerNumber)));
+    else
+      message("Timer",timerNumber,":", NumberFormatter.formatMS(getTime(timerNumber)));
+  }
+
 
   /** Closes the writer */
   public static void close() throws IOException {
@@ -379,7 +442,8 @@ public class Announce {
   }
   
   /** Notes that the progress is at d, prints dots if necessary,
-   * calculates and displays the estimated time after 60sec of the progress */
+   * calculates and displays the estimated time after 60sec of the progress
+   * then again after 30min */
   public static void progressAt(double d) {
     if(progressLevel<0)
       return;
@@ -455,6 +519,8 @@ public class Announce {
 
   /** Test routine */
   public static void main(String[] args) {
+    int doingStuff=Announce.initTimer();
+    int doingOtherStuff=Announce.initTimer();
     Announce.startTimer();
     Announce.doing("Testing 1");
     Announce.doing("Testing 2");
@@ -467,19 +533,25 @@ public class Announce {
     Announce.progressStart("Testing 3c", 5); // 5 steps
     D.waitMS(1000);
     Announce.progressAt(1); // We're at 1 (of 5)
-    D.waitMS(3000);
-    Announce.progressAt(4); // We're at 4 (of 5)
+    Announce.startTimer(doingStuff);   // we are doing some special sort of computation
+    D.waitMS(3000);   
+    Announce.progressAt(4); // We're at 4 (of 5)    
     D.waitMS(1000);
+    Announce.stopTimer(doingStuff);  // we are done with that kind of computation
     Announce.progressDone();
     Announce.progressStart("Testing 3d", 5); // 5 steps
     D.waitMS(1000);
     Announce.progressAt(1); // We're at 1 (of 5)
     Announce.progressStart("Testing 4a inside 3d", 4); // 4 step sub-process
+    Announce.startTimer(doingOtherStuff);  // we are doing some other kind of computations
     D.waitMS(1000);
+    Announce.stopTimer(doingOtherStuff);   //and we are done with these computations
     Announce.progressAt(1); // We're at 1 (of 4)
-    D.waitMS(2000);
+    D.waitMS(2000);   
     Announce.progressAt(3); // We're at 3 (of 4)
+    Announce.startTimer(doingStuff);  //now again we do the same sort of computations as in the first case
     D.waitMS(1000);
+    Announce.stopTimer(doingStuff);   //and we are done with it again
     Announce.progressDone(); // we're done with the inner process 4a, going on with the outher process
     Announce.progressAt(2); // We're at 2 (of 5) in the outher process  
     Announce.progressStart("Testing 4b inside 3d", "4b", 6); // 6 step sub-process, which we give a short ID to be included in the progress messages
@@ -498,5 +570,7 @@ public class Announce {
     Announce.done();
     Announce.done(); // This is one too much, but it works nevertheless
     Announce.printTime();
+    Announce.printTime(doingStuff,"doing stuff");
+    Announce.printTime(doingOtherStuff,"doing other stuff");
   }
 }
