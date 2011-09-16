@@ -440,6 +440,8 @@ public class NameML {
 
   /** TRUE for stopwords */
   public static boolean isStopWord(String w, Language l) {
+    if(w==null)
+      return true;
     if (l == Language.ENGLISH) {
       return stopWordEN.contains(w);
     } else if (l == Language.FRENCH) {
