@@ -677,7 +677,7 @@ public abstract class Database {
     Announce.doingDetailed("Creating primary Key on table "+table);
     StringBuilder sql = new StringBuilder("ALTER TABLE ");
     sql.append(table);
-    sql.append(" ADD PRIMARY KEY ( ");
+    sql.append(" ADD PRIMARY KEY (");
     for (String a : attributes)
       sql.append(a).append(", ");
     sql.setLength(sql.length() - 2);
