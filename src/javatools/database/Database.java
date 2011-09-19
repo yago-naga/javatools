@@ -571,6 +571,7 @@ public abstract class Database {
    * a name (String) and a type (from java.sql.Type).
    */
   public void createTable(String name, Object... attributes) throws SQLException {
+    Announce.doingDetailed("Creating table "+name);
     try {
       executeUpdate("DROP TABLE " + name);
     } catch (SQLException e) {
@@ -587,6 +588,7 @@ public abstract class Database {
     b.setLength(b.length() - 2);
     b.append(')');
     executeUpdate(b.toString());
+    Announce.doneDetailed();
   }
   
   /** checks if a table with the given name exists (or rather whether it can be accessed).

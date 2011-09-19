@@ -974,7 +974,7 @@ public class NameML {
       "sq", "Albanian", "sr", "Serbian", "ss", "Swati", "st", "Sotho", "su", "Sundanese", "sv", "Swedish", "sw", "Swahili", "ta", "Tamil", "te",
       "Telugu", "tg", "Tajik", "th", "Thai", "ti", "Tigrinya", "tk", "Turkmen", "tl", "Tagalog", "tn", "Tswana", "to", "Tonga", "tr", "Turkish",
       "ts", "Tsonga", "tt", "Tatar", "tw", "Twi", "ty", "Tahitian", "ug", "Uighur", "uk", "Ukrainian", "ur", "Urdu", "uz", "Uzbek", "ve", "Venda",
-      "vi", "Vietnamese", "vo", "Volap�k", "wa", "Walloon", "wo", "Wolof", "xh", "Xhosa", "yi", "Yiddish", "yo", "Yoruba", "za", "Zhuang", "zh",
+      "vi", "Vietnamese", "vo", "Volapük", "wa", "Walloon", "wo", "Wolof", "xh", "Xhosa", "yi", "Yiddish", "yo", "Yoruba", "za", "Zhuang", "zh",
       "Chinese", "zu", "Zulu");
 
   /** Returns TRUE for languages */
