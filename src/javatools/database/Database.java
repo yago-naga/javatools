@@ -700,6 +700,11 @@ public abstract class Database {
   public String limit(String sql, int n) {
     return (sql + " LIMIT " + n);
   }
+  
+  /** Makes sure a query response starts at the n-th result */
+  public String offset(String sql, int n) {
+   return (sql + " OFFSET "+ n);
+  }
 
   /** Runs a user-interface and closes */
   public void runInterface() {
