@@ -173,11 +173,11 @@ public class Announce {
 
   /** Prints the time of a particular timer given by its timer number */
   public static void printTime(int timerNumber) {
-      printTime(timerNumber,null);
+      printTime(null,timerNumber);
   }
   
   /** Prints the time of a particular timer given by its timer number, may be given a name for printout */
-  public static void printTime(int timerNumber, String name) {    
+  public static void printTime(String name, int timerNumber) {    
     if(name!=null)
       message("Time",name,":", NumberFormatter.formatMS(getTime(timerNumber)));
     else
@@ -570,7 +570,7 @@ public class Announce {
     Announce.done();
     Announce.done(); // This is one too much, but it works nevertheless
     Announce.printTime();
-    Announce.printTime(doingStuff,"doing stuff");
-    Announce.printTime(doingOtherStuff,"doing other stuff");
+    Announce.printTime("doing stuff",doingStuff);
+    Announce.printTime("doing other stuff",doingOtherStuff);
   }
 }
