@@ -1385,7 +1385,7 @@ public class Char {
   }
 
   /** Test routine */
-  public static void main2(String argv[]) throws Exception {
+  public static void main(String argv[]) throws Exception {
     System.out.println("Enter a string with HTML ampersand codes, umlauts and/or UTF-8 codes and hit ENTER.");
     System.out.println("Press CTRL+C to abort");
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -1400,16 +1400,4 @@ public class Char {
       System.out.println("As URI component: " + encodeURIPathComponent(s));
     }
   }
-
-  public static void main(String[] args) {
-    String s = "This is a öäü & I should see if it has some problem ö ä ü && that ;  can not be &;test;";
-    String c = Char.encodeAmpersand(s);
-    String b1 = Char.decodeAmpersand(c);
-    String b2 = Char.decodeAmpersand2(c);
-    System.out.println(s);
-    System.out.println(c);
-    System.out.println(b1);
-    System.out.println(b2);
-  }
-
 }
