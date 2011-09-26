@@ -168,7 +168,7 @@ public class Char {
   public static Map<Character, String> normalizeMap = new TreeMap<Character, String>();
   static {
     Object[] o = new Object[] {
-    // ASCII
+        // ASCII
         (char) 7,
         "BEEP",
         (char) 9,
@@ -840,6 +840,15 @@ public class Char {
           if (space) {
             sb.append(' ');
           }
+        } else if (a.startsWith("#")) {
+          try {
+            sb.append(((char) Integer.parseInt(a.substring(1))));
+          } catch (Exception e) {
+            sb.append(a);
+          }
+          if (space) {
+            sb.append(' ');
+          }
         } else {
           if (end) {
             sb.append(s.substring(0, j));
@@ -856,12 +865,12 @@ public class Char {
     }
     return sb.toString();
   }
-  
-  public static String decodeAmpersand(String s,PositionTracker posTracker) {
+
+  public static String decodeAmpersand(String s, PositionTracker posTracker) {
     if (s == null) {
       return null;
     }
-    int pos=0;
+    int pos = 0;
     int difference;
     StringBuffer sb = new StringBuffer(s.length());
     while (s != null && s.length() != 0) {
@@ -874,14 +883,14 @@ public class Char {
         boolean end = false;
         sb.append(s.substring(0, i));
         s = s.substring(i);
-        pos+=i;
+        pos += i;
         int j1 = s.indexOf(";");
         int j2 = s.indexOf(" ");
         int j = -1;
         if (j1 == -1 || j2 == -1) {
           if (j1 == -1 && j2 == -1) {
             end = true;
-            j = s.length();            
+            j = s.length();
           } else if (j1 == -1) {
             j = j2;
           } else if (j2 == -1) {
@@ -893,11 +902,11 @@ public class Char {
           j = j2;
           space = true;
         }
-        pos+=(j+1);
+        pos += (j + 1);
         String a = s.substring(1, j);
         if (ampersandMap.get(a) != null) {
           sb.append(ampersandMap.get(a));
-          difference=1-(j+1);             
+          difference = 1 - (j + 1);
           if (space) {
             sb.append(' ');
             difference++;
@@ -1376,7 +1385,7 @@ public class Char {
   }
 
   /** Test routine */
-  public static void main(String argv[]) throws Exception {
+  public static void main2(String argv[]) throws Exception {
     System.out.println("Enter a string with HTML ampersand codes, umlauts and/or UTF-8 codes and hit ENTER.");
     System.out.println("Press CTRL+C to abort");
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -1390,6 +1399,17 @@ public class Char {
       System.out.println("As ampersand: " + encodeAmpersand(s));
       System.out.println("As URI component: " + encodeURIPathComponent(s));
     }
+  }
+
+  public static void main(String[] args) {
+    String s = "This is a öäü & I should see if it has some problem ö ä ü && that ;  can not be &;test;";
+    String c = Char.encodeAmpersand(s);
+    String b1 = Char.decodeAmpersand(c);
+    String b2 = Char.decodeAmpersand2(c);
+    System.out.println(s);
+    System.out.println(c);
+    System.out.println(b1);
+    System.out.println(b2);
   }
 
 }
