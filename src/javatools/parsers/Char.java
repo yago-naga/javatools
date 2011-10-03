@@ -801,7 +801,8 @@ public class Char {
     return (result.toString());
   }
 
-  public static String decodeAmpersand(String s) {
+  /** Fabian: This method cannot decode numeric hexadecimal ampersand codes. What is its purpose? TODO*/
+  public static String decodeAmpersand_UNKNOWN(String s) {
     if (s == null) {
       return null;
     }
@@ -931,7 +932,7 @@ public class Char {
   }
 
   /** Decodes all ampersand sequences in the string*/
-  public static String decodeAmpersand2(String s) {
+  public static String decodeAmpersand(String s) {
     StringBuilder result = new StringBuilder();
     int[] eatLength = new int[1];// add this in order to multithread safe
     while (s.length() != 0) {
