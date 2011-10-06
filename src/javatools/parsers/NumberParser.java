@@ -443,8 +443,8 @@ public class NumberParser {
 	    new FindReplace("³", "^3"),
 
 			// --------- Location coordinates, times and inches ----------------
-			new FindReplace("-?" + B + "(\\d+)" + B + "(�|degrees?)" + B
-					+ "(\\d+)?" + B + "('|minutes|min|mn|m)" + B + "(\\d+)?"
+			new FindReplace("-?" + B + "([\\d\\.]+)" + B + "(°|degrees?)" + B
+					+ "([\\d\\.]+)?" + B + "('|minutes|min|mn|m)" + B + "([\\d\\.]+)?"
 					+ B + "(''|seconds|sec|s|\")" + B + "(N|E|W|S)", null) {
 		    /* applies the pattern-replacement 
 		     *  Note: If you fix something in this version, please try to apply the same fix at the position change tracking function below */
