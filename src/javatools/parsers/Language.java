@@ -17,7 +17,7 @@ import javatools.administrative.Announce;
  * @author Gerard de Melo
  */
 public class Language implements Comparable<Language>{
-	String id;
+	protected String id;
 	Map<String,List<String>> pronounPositiveTypes=new HashMap<String,List<String>>();
 	Map<String,List<String>> pronounNegativeTypes=new HashMap<String,List<String>>();
   protected static final Map<String,String> supported= new HashMap<String,String>();
@@ -41,19 +41,24 @@ public class Language implements Comparable<Language>{
     if(!supportedLanguage(id))
       throw new LanguageNotSupportedException();
     this.id = id;
-    for(Map.Entry<String,String> prTypes:getPronouns(id).entrySet()){
+    setPronouns();        
+  }
+  
+  /** Sets pronoun properties for the current language **/
+  protected void setPronouns(){
+    for(Map.Entry<String,String> prTypes:getPronounTypes(id).entrySet()){
       String split[]=prTypes.getValue().split("\\+:-");
       if(split[0]!=null)
         pronounPositiveTypes.put(prTypes.getKey(), Arrays.asList((split[0].split(","))));
       if(split.length>1)
         if(split[1]!=null)
           pronounPositiveTypes.put(prTypes.getKey(), Arrays.asList((split[0].split(","))));
-    }            
+    }
   }
   
   /** Pronoun lists for different languages;  
    * (TODO: if it gets more involved, move into a PronounML class and/or load from file)*/
-  protected static final Map<String,String> getPronouns(String id) {
+  protected static final Map<String,String> getPronounTypes(String id) {
     Map<String,String> prons=new HashMap<String,String>();
     //map layout: pronoun -> [positiveTypes]+:-[negativeTypes]
     //every pronoun needs at least one positive type, negative types are optional; types in each group can be separated by ','
@@ -68,6 +73,8 @@ public class Language implements Comparable<Language>{
     }
     return prons;
   }
+  
+
   
 	protected static final Language generateLanguage(String id) {
     Language lang=null;
