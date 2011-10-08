@@ -13,26 +13,51 @@ import java.util.Set;
 
 import javatools.filehandlers.FileLines;
 
-public class DirectedAcyclicTokenGraph {
+/**
+ * This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
+ * It is licensed under the Creative Commons Attribution License 
+ * (see http://creativecommons.org/licenses/by/3.0) by 
+ * the YAGO-NAGA team (see http://mpii.de/yago-naga).
+ * 
+ * Memory-Efficient datastructure to store a phrase dictionary.
+ * Supports a contains and a getLongestMatch operation, which
+ * should be sufficient to annotate phrases in a text.
+ * 
+ * It takes an input file that needs to contain pre-tokenized phrases.
+ * A space (' ') is taken as a token separator on reading.
+ * 
+ * The input is a file so that the strings can be processed immediately,
+ * without having to create an in-memory datastructure to pass the strings first.
+ * 
+ * @author Johannes Hoffart
+ *
+ */
+public class PhraseDictionary {
 
   private int[][] adj;
 
   private Set<Integer> startNodes;
   private Map<String, Integer> token2id;
-  private Map<Integer, String> id2token;
+  private String[] id2token;
 
   private static final int EOW = Integer.MAX_VALUE;
 
-  public DirectedAcyclicTokenGraph(File phraseFile) throws IOException {
+  /**
+   * Builds a phrase dictionary from the given file.
+   * 
+   * @param phraseFile
+   * @throws IOException
+   */
+  public PhraseDictionary(File phraseFile) throws IOException {
     startNodes = new HashSet<Integer>();
     token2id = new HashMap<String, Integer>();
-    id2token = new HashMap<Integer, String>();
-
+    
     // first build an intermediate structure
     Map<Integer, Set<Integer>> g = createTemporaryGraph(phraseFile);
 
     // transform the temporary structure into a memory-efficient structure
     adj = createFinalGraph(g);
+    g = null;
   }
 
   public boolean contains(String[] phrase) {
@@ -121,7 +146,7 @@ public class DirectedAcyclicTokenGraph {
     int i=0;
     
     for (Integer id : phraseIds) {
-      phrase[i++] = id2token.get(id);
+      phrase[i++] = id2token[id];
     }
     
     return phrase;
@@ -130,7 +155,7 @@ public class DirectedAcyclicTokenGraph {
   private Map<Integer, Set<Integer>> createTemporaryGraph(File phraseFile) throws IOException {
     Map<Integer, Set<Integer>> g = new HashMap<Integer, Set<Integer>>();
 
-    for (String line : new FileLines(phraseFile, "Building directed acyclic token graph")) {
+    for (String line : new FileLines(phraseFile, "Building phrase dictionary")) {
       String[] p = line.split(" ");
       assert (p.length > 0);
 
@@ -147,6 +172,13 @@ public class DirectedAcyclicTokenGraph {
       }
 
       successors.add(EOW);
+    }
+    
+    // create reverse id-to-token map
+    id2token = new String[token2id.size()];
+    
+    for (Entry<String, Integer> tokenId : token2id.entrySet()) {
+      id2token[tokenId.getValue()] = tokenId.getKey();
     }
 
     return g;
@@ -212,7 +244,6 @@ public class DirectedAcyclicTokenGraph {
     if (id == null && createId) {
       id = token2id.size();
       token2id.put(token, id);
-      id2token.put(id, token);
     }
 
     return id;

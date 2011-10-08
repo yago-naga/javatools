@@ -9,13 +9,13 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DirectedAcyclicTokenGraphTest {
+public class PhraseDictionaryTest {
 
-  private DirectedAcyclicTokenGraph datg;
+  private PhraseDictionary datg;
 
   @Before
   public void setUp() throws Exception {
-    datg = new DirectedAcyclicTokenGraph(new File("testdata/test_phrases.txt"));
+    datg = new PhraseDictionary(new File("testdata/test_phrases.txt"));
 
   }
 
