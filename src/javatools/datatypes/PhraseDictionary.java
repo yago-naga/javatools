@@ -45,7 +45,7 @@ public class PhraseDictionary {
   /**
    * Builds a phrase dictionary from the given file.
    * 
-   * @param phraseFile
+   * @param phraseFile  File containing pre-tokenized phrases. Token delimiter is a space (' ')
    * @throws IOException
    */
   public PhraseDictionary(File phraseFile) throws IOException {
@@ -60,6 +60,12 @@ public class PhraseDictionary {
     g = null;
   }
 
+  /**
+   * Checks if the dictionary contains the given phrase
+   * 
+   * @param phrase  Phrase to check for in the dictionary
+   * @return        true if contained, false otherwise
+   */
   public boolean contains(String[] phrase) {
     if (phrase == null || phrase.length == 0) {
       return false;
@@ -92,15 +98,38 @@ public class PhraseDictionary {
     
     return contains;
   }
-
+  
+  /**
+   * Returns the longest matching phrase in the given sentence.
+   * The first matching token is taken to be the starting point
+   * of the longest match.
+   * 
+   * @param sentence  Sentence to match against prhase dictionary
+   * @return          Longest phrase matching the sentence.
+   */
   public String[] getLongestMatch(String[] sentence) {
-    if (sentence == null || sentence.length == 0) {
+    return getLongestMatch(sentence, 0);
+  }
+
+  /**
+   * Returns the longest matching phrase in the given sentence,
+   * starting at the start offset.
+   * 
+   * The first matching token is taken to be the starting point
+   * of the longest match.
+   * 
+   * @param sentence  Sentence to match against prhase dictionary
+   * @param start     Start the matching in the sentence from here
+   * @return          Longest phrase matching the sentence.
+   */
+  public String[] getLongestMatch(String[] sentence, int start) {
+    if (sentence == null || (sentence.length - start) == 0) {
       return sentence;
     }
   
     List<Integer> longestMatch = new LinkedList<Integer>();
         
-    Integer id = getIdForToken(sentence[0], false);
+    Integer id = getIdForToken(sentence[start], false);
     
     int[] successors = null;
     
@@ -111,7 +140,7 @@ public class PhraseDictionary {
         successors = adj[id];
       }
 
-      for (int i = 1; i < sentence.length; i++) {
+      for (int i = start+1; i < sentence.length; i++) {
         Integer tokenId = getIdForToken(sentence[i], false);
 
         if (tokenId == null) {
