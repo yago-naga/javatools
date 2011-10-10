@@ -35,8 +35,12 @@ public class PhraseDictionaryTest {
 
   @Test
   public void matchTest() throws Exception {
-    String[] sentence = "the red dog whines".split(" ");
-    String[] longestMatch = datg.getLongestMatch(sentence);
+    String[] sentence = "here the red dog whines".split(" ");
+    String[] longestMatch = datg.getLongestMatch(sentence, 1);
+    assertArrayEquals(longestMatch, "the red dog".split(" "));
+
+    sentence = "the red dog whines".split(" ");
+    longestMatch = datg.getLongestMatch(sentence);
 
     assertArrayEquals(longestMatch, "the red dog".split(" "));
 
