@@ -583,6 +583,15 @@ public class NonsharedParameters {
     return(values.keySet());
   }
   
+  /** Stores the parameters in a given file */
+  public void saveAs(String file) throws IOException {
+    Writer w = new FileWriter(file, false);
+    for(Map.Entry<String, String> entry:values.entrySet())
+      w.write(entry.getKey() + " = " + entry.getValue() + "\n");
+    w.close();
+  }
+  
+  
   /** Test routine */  
   public static void main(String[] args) throws Exception {
     System.err.println("Enter the name of an ini-file: ");
