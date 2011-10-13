@@ -200,7 +200,7 @@ public class PhraseDictionary {
     Map<Integer, Set<Integer>> g = new HashMap<Integer, Set<Integer>>();
 
     for (String line : new FileLines(phraseFile, "Building phrase dictionary")) {
-      if (line.length() <= minimumPhraseLengthInCharacters) {
+      if (line.length() < minimumPhraseLengthInCharacters) {
         continue;
       }
       
