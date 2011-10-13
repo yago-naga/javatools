@@ -39,6 +39,8 @@ public class PhraseDictionary {
   private Set<Integer> startNodes;
   private Map<String, Integer> token2id;
   private String[] id2token;
+  
+  private int minimumPhraseLengthInCharacters = 0;
 
   private static final int EOW = Integer.MAX_VALUE;
 
@@ -49,6 +51,19 @@ public class PhraseDictionary {
    * @throws IOException
    */
   public PhraseDictionary(File phraseFile) throws IOException {
+    new PhraseDictionary(phraseFile, 0);
+  }
+  
+  /**
+   * Builds a phrase dictionary from the given file.
+   * 
+   * @param phraseFile  File containing pre-tokenized phrases. Token delimiter is a space (' ')
+   * @param minPhraseCharLength All phrases shorter than this (in characters) will be skipped
+   * @throws IOException
+   */
+  public PhraseDictionary(File phraseFile, int minPhraseCharLength) throws IOException {
+    this.minimumPhraseLengthInCharacters = minPhraseCharLength;
+    
     startNodes = new HashSet<Integer>();
     token2id = new HashMap<String, Integer>();
     
@@ -59,7 +74,7 @@ public class PhraseDictionary {
     adj = createFinalGraph(g);
     g = null;
   }
-
+  
   /**
    * Checks if the dictionary contains the given phrase
    * 
@@ -185,6 +200,10 @@ public class PhraseDictionary {
     Map<Integer, Set<Integer>> g = new HashMap<Integer, Set<Integer>>();
 
     for (String line : new FileLines(phraseFile, "Building phrase dictionary")) {
+      if (line.length() <= minimumPhraseLengthInCharacters) {
+        continue;
+      }
+      
       String[] p = line.split(" ");
       assert (p.length > 0);
 
