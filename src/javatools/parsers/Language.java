@@ -52,7 +52,7 @@ public class Language implements Comparable<Language>{
         pronounPositiveTypes.put(prTypes.getKey(), Arrays.asList((split[0].split(","))));
       if(split.length>1)
         if(split[1]!=null)
-          pronounPositiveTypes.put(prTypes.getKey(), Arrays.asList((split[0].split(","))));
+          pronounNegativeTypes.put(prTypes.getKey(), Arrays.asList((split[0].split(","))));
     }
   }
   
