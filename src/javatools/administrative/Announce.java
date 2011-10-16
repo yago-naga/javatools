@@ -197,6 +197,11 @@ public class Announce {
     return(oldLevel);
   }
   
+  /** Tells whether the given level is within the currently active levels */
+  public static boolean isActiveLevel(Level l){
+    return (!D.smaller(level, l));
+  }
+  
   /** Switches debug prefix with method an code line on or off */
   public static void setDebugMode(boolean set) {
     debug = set;
@@ -363,9 +368,9 @@ public class Announce {
  
   /** Writes "done NEWLINE" - closes a doingDetailed statement */
   public static void doneDetailed() {
+    if (D.smaller(level, Level.DETAILSTATE)) return;
     if (doingLevel > 0) {
-      doingLevel--;
-      if (D.smaller(level, Level.DETAILSTATE)) return;
+      doingLevel--;      
       print("done");
       newLine();
     }
@@ -374,9 +379,9 @@ public class Announce {
   
   /** Writes "done NEWLINE" - closes a doing statement */
   public static void done() {
+    if (D.smaller(level, Level.STATE)) return;
     if (doingLevel > 0) {
       doingLevel--;
-      if (D.smaller(level, Level.STATE)) return;
       print("done");
       newLine();
     }
@@ -413,9 +418,25 @@ public class Announce {
     progressStart(s,null,max);
   }
   
+  /** Writes s, prepares to make progress up to max 
+   * (takes only effect iff current Announce level >= the given lvl) */
+  public static void progressStart(String s, double max, Level lvl) {
+    progressStart(s,null,max,lvl);
+  }
+
   
-  /** Writes s, prepares to make progress up to max */
-  public static void progressStart(String s, String id, double max) {
+  /** Writes s, prepares to make progress up to max, 
+   *  remembers id as name for progress counter */
+  public static void progressStart(String s, String id, double max) {    
+    progressStart(s,id,max,Level.MUTE);
+  }
+  
+  /** Writes s, prepares to make progress up to max
+   *  remembers id as name for progress counter (and prints it if necessary) 
+   *  (takes only effect iff current Announce level >= the given lvl) */
+  public static void progressStart(String s, String id, double max, Level lvl) {
+    if(D.smaller(level, lvl))
+      return;
     if(progressLevel<9)
       progressLevel++;
     progressID[progressLevel]=(id!=null?"["+id+"]: ":"");
@@ -443,7 +464,17 @@ public class Announce {
   
   /** Notes that the progress is at d, prints dots if necessary,
    * calculates and displays the estimated time after 60sec of the progress
-   * then again after 30min */
+   * then again after every 30min 
+   * (takes only effect iff current Announce level >= the given lvl) */
+  public static void progressAt(double d, Level lvl) {
+    if(D.smaller(level,lvl))
+      return;
+    progressAt(d);
+  }
+  
+  /** Notes that the progress is at d, prints dots if necessary,
+   * calculates and displays the estimated time after 60sec of the progress
+   * then again after every 30min */
   public static void progressAt(double d) {
     if(progressLevel<0)
       return;
@@ -467,11 +498,28 @@ public class Announce {
     if (!D.smaller(level, Level.STATE)) print(b);
   }
 
+  /** One progress step (use alternatively to progressAt) 
+   * (takes only effect iff current Announce level >= the given lvl) */
+  public static void progressStep(Level lvl) {
+    if(D.smaller(level, lvl))
+      return;
+    progressStep();
+  }
+  
   /** One progress step (use alternatively to progressAt) */
   public static void progressStep() {
     progressAt(progressCounter[progressLevel]++);
   }
 
+
+  /** Fills missing dots and writes "done NEWLINE"
+   * (takes only effect iff current Announce level >= the given lvl) */   
+  public static void progressDone(Level lvl) {
+    if(D.smaller(level, lvl))
+      return;
+    progressDone();
+  }
+  
   /** Fills missing dots and writes "done NEWLINE"*/
   public static void progressDone() {
     if(progressLevel<0)
