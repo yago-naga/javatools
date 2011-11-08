@@ -15,7 +15,7 @@ public class DateParserTest {
     assertEquals("-26-##-##", DateParser.normalize("26 BC"));
     assertEquals("##-08-23 (53 years old)", DateParser.normalize("August 23 (53 years old)"));
     assertEquals("{{death date and age| 1938-02-19|1877-02-01|df=y}}", DateParser.normalize("{{death date and age| 1938 |2|19|1877|2|1|df=y}}"));
-
+    assertEquals("{{Birth date|1896-02-19|df=y}}",DateParser.normalize("{{Birth date|1896|February|19|df=y}}"));
   }
 
   @Test
