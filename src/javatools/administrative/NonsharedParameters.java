@@ -135,17 +135,6 @@ public class NonsharedParameters {
 	  init(iniFile);
   };
   
-  public NonsharedParameters(File iniFile, String localPath)throws IOException{    
-    if(localPath!=null)
-    	basePath=localPath.endsWith("/")?localPath:localPath+"/";    		
-    init(iniFile);
-  };
-  public NonsharedParameters(String iniFile, String localPath)throws IOException{
-	if(localPath!=null)
-	   	basePath=localPath.endsWith("/")?localPath:localPath+"/";
-    init(iniFile);
-  };  
-
   
   /** Returns a value for a date parameter;  */
   public Timestamp getTimestamp(String s) throws UndefinedParameterException {
@@ -390,8 +379,11 @@ public class NonsharedParameters {
     if(f.equals(iniFile)) return;    
     if(mainIni){
       values=new TreeMap<String,String>();    
-      iniFile=f;
+      iniFile=f;      
     }
+    
+    basePath=f.getParent()+"/";
+    
     if (!iniFile.exists()) {
       Announce.error("The initialisation file",
           iniFile.getCanonicalPath(),
@@ -407,11 +399,11 @@ public class NonsharedParameters {
         if(s.startsWith("/"))
           init(s,false);
         else
-          init(iniFile.getParent()+"/"+s,false);
+          init(basePath+s,false);
+        basePath=iniFile.getParent()+"/";
       }
       else
-        values.put(m.group(1).toLowerCase(),s);
-        
+        values.put(m.group(1).toLowerCase(),s);        
     }
   }
   
