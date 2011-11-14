@@ -158,7 +158,8 @@ public class MySQLDatabase extends Database {
   
   /** releases all locks the connection holds, commits the current transaction and ends it 
    * switches back to autocommit mode*/
-  public void releaseLocksAndEndTransaciton() throws SQLException{
+  @Override
+  public void releaseLocksAndEndTransaction() throws SQLException{
 	  connection.createStatement().executeUpdate("UNLOCK TABLES");
 	  endTransaction(true);
   }

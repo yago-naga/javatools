@@ -377,7 +377,7 @@ public abstract class Database {
   }
   
   /** releases all locks the connection holds, commits the current transaction and ends it */
-  public void releaseLocksAndEndTransaciton() throws SQLException{
+  public void releaseLocksAndEndTransaction() throws SQLException{
     throw new SQLException("Sorry this functionality is not implemented for you database system by roxxi's database connector (roxxi.tools.database.Database)");
   }
   

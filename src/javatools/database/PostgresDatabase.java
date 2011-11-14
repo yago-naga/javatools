@@ -280,7 +280,8 @@ public static Postgretext postgretext=new Postgretext();
   }
   
   /** releases all locks the connection holds, commits the current transaction and ends it */
-  public void releaseLocksAndEndTransaciton() throws SQLException{    
+  @Override
+  public void releaseLocksAndEndTransaction() throws SQLException{    
     endTransaction(true);
   }
   
