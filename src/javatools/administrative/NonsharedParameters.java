@@ -135,6 +135,17 @@ public class NonsharedParameters {
 	  init(iniFile);
   };
   
+  public NonsharedParameters(File iniFile, String localPath)throws IOException{    
+    if(localPath!=null)
+    	basePath=localPath.endsWith("/")?localPath:localPath+"/";    		
+    init(iniFile);
+  };
+  public NonsharedParameters(String iniFile, String localPath)throws IOException{
+	if(localPath!=null)
+	   	basePath=localPath.endsWith("/")?localPath:localPath+"/";
+    init(iniFile);
+  };  
+
   
   /** Returns a value for a date parameter;  */
   public Timestamp getTimestamp(String s) throws UndefinedParameterException {
@@ -147,8 +158,7 @@ public class NonsharedParameters {
   }
 
   /** Returns a value for a file or folder parameter; same as getFile but returns the path as String 
-   *  also adjusts local paths such that a global path is returned 
-   *  (based on the basePath which usually refers to the folder in which the main ini file is located)*/
+   *  also adjusts local paths such that a global path is returned (if a base path is set)*/
   public String getPath(String s) throws UndefinedParameterException {
     if(basePath==null)
       return get(s);
@@ -165,9 +175,7 @@ public class NonsharedParameters {
     }
   }
 
-  /** Returns a value for a file or folder parameter, returning the default value if undefined; same as getFile but returns the path as String
-   *  adjusts local paths such that a global path is returned 
-   *  (based on the basePath which usually refers to the folder in which the main ini file is located) */
+  /** Returns a value for a file or folder parameter, returning the default value if undefined; same as getFile but returns the path as String*/
   public String getPath(String s, String defaultValue) throws UndefinedParameterException {
     return(isDefined(s)?getPath(s):defaultValue);
   }
@@ -178,9 +186,7 @@ public class NonsharedParameters {
     return(new File(getPath(s)));
   }
 
-  /** Returns a value for a file or folder parameter, returning the default value if undefined; same as getPath but returns an actual File instance 
-   *  adjusts local paths such that a global path is returned 
-   *  (based on the basePath which usually refers to the folder in which the main ini file is located) */
+  /** Returns a value for a file or folder parameter, returning the default value if undefined; same as getPath but returns an actual File instance */
   public File getFile(String s, File defaultValue) throws UndefinedParameterException {
     return(isDefined(s)?new File(getPath(s)):defaultValue);
   }
@@ -384,11 +390,9 @@ public class NonsharedParameters {
     if(f.equals(iniFile)) return;    
     if(mainIni){
       values=new TreeMap<String,String>();    
-      iniFile=f;      
+      iniFile=f;
     }
-    
-    basePath=f.getParent()+"/";
-    
+            
     if (!iniFile.exists()) {
       Announce.error("The initialisation file",
           iniFile.getCanonicalPath(),
@@ -404,8 +408,7 @@ public class NonsharedParameters {
         if(s.startsWith("/"))
           init(s,false);
         else
-          init(basePath+s,false);
-        basePath=iniFile.getParent()+"/";
+          init(f.getParent()+"/"+s,false);        
       }
       else
         values.put(m.group(1).toLowerCase(),s);        
