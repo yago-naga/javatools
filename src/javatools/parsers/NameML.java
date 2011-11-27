@@ -92,7 +92,7 @@ import javatools.parsers.Char;
 public class NameML {
 
   static File CONFIG_DIR =  null;
-  static final String PARSINGRESOURCE_DIR="/javatools/resources/parsing/";
+  static final String PARSINGRESOURCES_PATH="/javatools/resources/parsing/";
   
 
 
@@ -535,7 +535,7 @@ public class NameML {
     if(CONFIG_DIR!=null)
       return new FileInputStream(new File(CONFIG_DIR,configfile));
     else
-      return NameML.class.getResourceAsStream(PARSINGRESOURCE_DIR+configfile);
+      return NameML.class.getResourceAsStream(PARSINGRESOURCES_PATH+configfile);
   }
   
   /**
