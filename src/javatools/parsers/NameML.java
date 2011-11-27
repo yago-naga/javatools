@@ -3,7 +3,9 @@ package javatools.parsers;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -13,6 +15,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javatools.administrative.Announce;
 import javatools.administrative.D;
 import javatools.administrative.NonsharedParameters;
 import javatools.datatypes.FinalMap;
@@ -41,7 +44,7 @@ import javatools.parsers.Char;
  * Example:
  * 
  * <PRE>
- * NameML.init("javatools/data/");
+ * NameML.init();
  * NameML.isName("Mouse");
  *   --> true
  *   NameML.isAbbreviation("PMM");
@@ -88,9 +91,11 @@ import javatools.parsers.Char;
 
 public class NameML {
 
-  static File CONFIG_DIR = new File("data/parsing");
+  static File CONFIG_DIR =  null;
+  static final String PARSINGRESOURCE_DIR="/javatools/resources/parsing/";
+  
 
-  // FIXME: this should perhaps be obtained from the configuration file
+
 
   /** Holds the general default name */
   public static final String ANYNAME = "NAME";
@@ -101,7 +106,7 @@ public class NameML {
   // -----------------------------------------------------------------------------------
   
   public static final void init(NonsharedParameters params){
-    CONFIG_DIR=new File(params.get("javatoolsConfigDir")+"parsing/");
+    //CONFIG_DIR=new File(params.get("javatoolsConfigDir")+"parsing/");
     init();
   }
   
@@ -112,7 +117,7 @@ public class NameML {
   
   protected static boolean hasBeenInitialized=false;
   
-  protected static final void init(){
+  public static final void init(){
     if(hasBeenInitialized)
       return;
     
@@ -124,18 +129,18 @@ public class NameML {
     titlePatternIt = createTitlePattern(Language.ITALIAN);
     
     /** given name titles */
-    titlesForGivenNamesEn = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "titles." + Language.ENGLISH.getId()));
-    titlesForGivenNamesDe = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "titles." + Language.GERMAN.getId()));
-    titlesForGivenNamesEs = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "titles." + Language.SPANISH.getId()));
-    titlesForGivenNamesFr = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "titles." + Language.FRENCH.getId()));
-    titlesForGivenNamesIt = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "titles." + Language.ITALIAN.getId()));
+    titlesForGivenNamesEn = NameML.readTextFileLinesSet("titles." + Language.ENGLISH.getId());
+    titlesForGivenNamesDe = NameML.readTextFileLinesSet( "titles." + Language.GERMAN.getId());
+    titlesForGivenNamesEs = NameML.readTextFileLinesSet("titles." + Language.SPANISH.getId());
+    titlesForGivenNamesFr = NameML.readTextFileLinesSet("titles." + Language.FRENCH.getId());
+    titlesForGivenNamesIt = NameML.readTextFileLinesSet( "titles." + Language.ITALIAN.getId());
     
     /** stop words */
-    stopWordDE = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "stopwords." + Language.GERMAN.getId()));
-    stopWordFR = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "stopwords." + Language.FRENCH.getId()));
-    stopWordES = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "stopwords." + Language.SPANISH.getId()));
-    stopWordEN = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "stopwords." + Language.ENGLISH.getId()));
-    stopWordIT = NameML.readTextFileLinesSet(new File(CONFIG_DIR, "stopwords." + Language.ITALIAN.getId()));
+    stopWordDE = NameML.readTextFileLinesSet( "stopwords." + Language.GERMAN.getId());
+    stopWordFR = NameML.readTextFileLinesSet( "stopwords." + Language.FRENCH.getId());
+    stopWordES = NameML.readTextFileLinesSet( "stopwords." + Language.SPANISH.getId());
+    stopWordEN = NameML.readTextFileLinesSet( "stopwords." + Language.ENGLISH.getId());
+    stopWordIT = NameML.readTextFileLinesSet( "stopwords." + Language.ITALIAN.getId());
     
     
     /** person name patterns */
@@ -213,7 +218,7 @@ public class NameML {
     return ("(?:" + s + ")*");
   }
 
-  /** alternavive */
+  /** alternative */
   public static String or(String s1, String s2) {
     return ("(?:" + s1 + "|" + s2 + ")");
   }
@@ -301,7 +306,7 @@ public class NameML {
     List<String> titles;
     boolean first=true;
     try {
-      titles = NameML.readTextFileLines(new File(CONFIG_DIR, "titles." + lang.getId()), "UTF-8");
+      titles = NameML.readTextFileLines( "titles." + lang.getId(), "UTF-8");
       
       for (String title : titles) {
         title = title.trim();
@@ -514,9 +519,9 @@ public class NameML {
    * @return contents of file
    * @throws IOException
    */
-  public static List<String> readTextFileLines(File inputFile, String encoding) throws IOException {
+  public static List<String> readTextFileLines(String configFile, String encoding) throws IOException {
     if (encoding == null) encoding = "UTF-8";
-    BufferedReader fi = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), encoding));
+    BufferedReader fi = new BufferedReader(new InputStreamReader(getConfigFileStream(configFile), encoding));
     List<String> lines = new ArrayList<String>();
     String line = null;
     while ((line = fi.readLine()) != null) {
@@ -526,16 +531,23 @@ public class NameML {
     return lines;
   }
 
+  public static InputStream getConfigFileStream(String configfile) throws FileNotFoundException {
+    if(CONFIG_DIR!=null)
+      return new FileInputStream(new File(CONFIG_DIR,configfile));
+    else
+      return NameML.class.getResourceAsStream(PARSINGRESOURCE_DIR+configfile);
+  }
+  
   /**
    * Read set from an UTF-8 text file, ignoring lines starting with "##"
    * 
    * @param inputFile
    * @return set of strings
    */
-  public static Set<String> readTextFileLinesSet(File inputFile) {
+  public static Set<String> readTextFileLinesSet(String configFile) {
     List<String> lines;
     try {
-      lines = NameML.readTextFileLines(inputFile, "UTF-8");
+      lines = NameML.readTextFileLines(configFile, "UTF-8");
       // a bit slow to do it this way
     } catch (IOException e) {
       e.printStackTrace();
