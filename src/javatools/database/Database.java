@@ -325,7 +325,7 @@ public abstract class Database {
   try{
     connection.commit();                    
   }catch(SQLException ex){
-    CommitTransactionSQLException commitfail=new CommitTransactionSQLException("[Database.commitTransaction()] Could not commit transaction.", ex);
+    CommitTransactionSQLException commitfail=new CommitTransactionSQLException("Could not commit transaction.", ex);
     try{
       resetTransaction();
     }catch (RollbackTransactionSQLException rex){
@@ -340,7 +340,7 @@ public abstract class Database {
     try{          
       connection.rollback();
     }catch(SQLException ex2){
-      throw new RollbackTransactionSQLException("[Database.commitTransaction] Could not rollback transaction.");
+      throw new RollbackTransactionSQLException("Could not rollback transaction.");
     }
     endTransaction(false);
   }    
@@ -353,13 +353,13 @@ public abstract class Database {
       try{
         connection.setTransactionIsolation(originalTransactionMode);
       }catch(SQLException ex){
-        throw new TransactionSQLException("[Database.closeTransactionMode()] Could not shutdown transaction mode\n Error was:"+ex, ex);
+        throw new TransactionSQLException("Could not shutdown transaction mode\n Error was:"+ex, ex);
       }
     try{          
       if(autoCommitWasOn)
         connection.setAutoCommit(true);     
     }catch(SQLException ex){
-      throw new StartAutoCommitSQLException("[Database.closeTransactionMode()] Could not start autocommit\n Error was:"+ex, ex);
+      throw new StartAutoCommitSQLException("Could not start autocommit\n Error was:"+ex, ex);
     }
     inTransactionMode=false;
     }
