@@ -94,7 +94,7 @@ import javatools.filehandlers.FileLines;
    Include is recursive, make sure you do not generate a cycle!
      
 */
-public class NonsharedParameters {
+public class NonsharedParameters implements Cloneable{
   /** Thrown for an undefined Parameter */
   public static class UndefinedParameterException extends RuntimeException {    
     
@@ -104,6 +104,8 @@ public class NonsharedParameters {
       super("The parameter "+s+" is undefined in "+f);
     }
   }
+  
+ 
    
   /** Holds the filename of the ini-file */
   public File iniFile=null;
@@ -115,10 +117,10 @@ public class NonsharedParameters {
   public Map<String,String> values=null;
 
   /** Holds the pattern used for ini-file-entries */
-  public Pattern INIPATTERN=Pattern.compile(" *(\\w+) *= *(.*) *");
+  public static Pattern INIPATTERN=Pattern.compile(" *(\\w+) *= *(.*) *");
 
   /** Holds words that count as "no" for boolean parameters */
-  public FinalSet<String> no=new FinalSet<String>(new String [] {
+  public static FinalSet<String> no=new FinalSet<String>(new String [] {
         "inactive",
         "off",
         "false",
@@ -379,7 +381,7 @@ public class NonsharedParameters {
   /** sets a value for a parameter */
   public void set(String param, String value){
 	  if(values==null) throw new RuntimeException("Call init() before get()!");
-	  values.put(param, value);
+	  values.put(param.toLowerCase(), value);
   }
   
   /** Initializes the parameters from a file*/
@@ -408,7 +410,7 @@ public class NonsharedParameters {
         if(s.startsWith("/"))
           init(s,false);
         else
-          init(f.getParent()+"/"+s,false);        
+          init((f.getParent()!=null?f.getParent()+"/":"")+s,false);        
       }
       else
         values.put(m.group(1).toLowerCase(),s);        
@@ -591,12 +593,31 @@ public class NonsharedParameters {
     w.close();
   }
   
+  /** Cloning implementation */
+  @Override
+  public NonsharedParameters clone(){
+    try {
+      NonsharedParameters other=(NonsharedParameters) super.clone();
+      other.values=new TreeMap<String,String>();
+      for (Map.Entry<String,String> entry:values.entrySet())
+        other.values.put(entry.getKey(),entry.getValue());            
+      return other;
+    } catch (CloneNotSupportedException e) {
+        throw new Error("Is too",e);
+    }
+  }
+
+  
   
   /** Test routine */  
-  public static void main(String[] args) throws Exception {
-    System.err.println("Enter the name of an ini-file: ");
+  public static void main(String[] args) throws Exception {    
     NonsharedParameters params= new NonsharedParameters();
-    params.init(D.r());
+    params.init("testdata/testconfig.ini");
     D.p(params.values);
+    params.set("someSetting", "1");
+    NonsharedParameters params2=params.clone();
+    params2.set("someSetting", "2");
+    D.p(params.values);
+    D.p(params2.values);    
   }
 }
