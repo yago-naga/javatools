@@ -57,7 +57,9 @@ public abstract class StringModifier {
 
   /* Concatenates the Strings contained in a collection to a combined string, 
    * separating each two array Strings with the given delimeter */
-  public static String implode(Collection<?> col, String delim){    
+  public static String implode(Collection<?> col, String delim){
+    if(col==null)
+      return "";
     Iterator<?> it=col.iterator();
     if(!it.hasNext())
       return "";
