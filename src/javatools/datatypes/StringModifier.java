@@ -84,7 +84,9 @@ public abstract class StringModifier {
   /* Concatenates the String pieces produced by an iterator to a combined string, 
    * separating each two array Strings with the given delimeter 
    * while applying the database.format function to each array string piece */
-  public static String implodeForDB(Iterator<?> it, String delim, Database database ){        
+  public static String implodeForDB(Iterator<?> it, String delim, Database database ){
+    if(it==null)
+      return "";
     if(!it.hasNext())
       return "";
     else{
