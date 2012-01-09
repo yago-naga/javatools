@@ -2,6 +2,8 @@ package javatools.datatypes;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javatools.database.Database;
 
@@ -112,6 +114,79 @@ public abstract class StringModifier {
       for (int i=1;i<col.length;i++){
         sb.append(delim);
         sb.append(database.format(col[i]));              
+      }
+      return sb.toString();
+    }
+  }
+  
+  
+  /** Concatenates key value pairs of a Map into a combined String 
+   * representing the pairs as independent column conditions for a database query, 
+   * applying the database.format function to each value
+   * @param map the Map to be imploded 
+   * @param database  the Database instance for which the pairs shall be formatted  */
+  public static String implodeForDBAsConditions(Map<?,?> map, Database database ){
+    if(map==null)
+      return "";
+    if(map.isEmpty())
+      return "";
+    else{
+      return implodeForDB(map.entrySet().iterator()," = "," AND ",database,false,true);
+    }
+  }
+  
+  
+  /** Concatenates key value pairs of a Map into a combined String, 
+   * separating each key from its value by a key-value delimeter 
+   * and each key-value pair by pair delimeter 
+   * while optionally applying the database.format function to each key/value
+   * @param map the Map to be imploded
+   * @param keyValueDelimeter delimeter inserted between each key and its value
+   * @param pairDelimeter delimeter inserted between key-value pairs 
+   * @param database  the Database instance for which the pairs shall be formatted 
+   * @param formatKey flag indicating whether to format the keys with database.format 
+   * @param formatValue flag indicating whether to format the values with database.format */
+  public static String implodeForDB(Map<?,?> map, String keyValueDelim, String pairDelim, Database database, boolean formatKey, boolean formatValue ){
+    if(map==null)
+      return "";
+    if(map.isEmpty())
+      return "";
+    else{
+      return implodeForDB(map.entrySet().iterator(),keyValueDelim,pairDelim,database,formatKey,formatValue);
+    }
+  }
+  
+
+
+  /** Concatenates key value pairs of a Map.Entry iterator into a combined String, 
+   * separating each key from its value by a key-value delimeter 
+   * and each key-value pair by pair delimeter 
+   * while optionally applying the database.format function to each key/value
+   * @param it  the Map.Entry iterator
+   * @param keyValueDelimeter delimeter inserted between each key and its value
+   * @param pairDelimeter delimeter inserted between key-value pairs 
+   * @param database  the Database instance for which the pairs shall be formatted 
+   * @param formatKey flag indicating whether to format the keys with database.format 
+   * @param formatValue flag indicating whether to format the values with database.format */
+  public static <T,K> String implodeForDB(Iterator<Entry<T,K>> it, String keyValueDelim, String pairDelim, Database database, boolean formatKey, boolean formatValue ){
+    if(it==null)
+      return "";
+    if(!it.hasNext())
+      return "";
+    else{
+      StringBuffer sb = new StringBuffer();
+      Map.Entry<T, K> entry=it.next();
+      sb.append(formatKey?database.format(entry.getKey()):entry.getKey());
+      sb.append(keyValueDelim);
+      sb.append(formatValue?database.format(entry.getValue()):entry.getValue());
+      
+      while (it.hasNext()){
+        sb.append(pairDelim);
+        
+        entry=it.next();
+        sb.append(formatKey?database.format(entry.getKey()):entry.getKey());
+        sb.append(pairDelim);
+        sb.append(formatValue?database.format(entry.getValue()):entry.getValue());        
       }
       return sb.toString();
     }
