@@ -1104,14 +1104,19 @@ public class NameML {
   /** Test routine */
   public static void main(String[] argv) throws Exception {
     init();
+    Announce.doing("Testing for English");
     for (String s : new FileLines("./testdata/NameParserTest.txt")) {
       //D.p(Name.of(s).describe());
       D.p(NameML.of(s, Language.ENGLISH).describe());
     }        
+    Announce.done();
+    Announce.doing("Testing for German");
     for (String s : new FileLines("./testdata/NameParserTestDe.txt")) {
       //D.p(Name.of(s).describe());
       D.p(NameML.of(s, Language.GERMAN).describe());
     }
+    Announce.done();
+    
     
   }
 }
