@@ -102,21 +102,34 @@ public class NameML {
   
   
   // -----------------------------------------------------------------------------------
-  // Initialization    
+  // Initialization
+  //
+  // NOTE that you need to initialize NameML with any of the following init functions
+  // BEFORE doing any other call on a NameML method.
   // -----------------------------------------------------------------------------------
+  
+  protected static boolean hasBeenInitialized=false;
   
   public static final void init(NonsharedParameters params){
     //CONFIG_DIR=new File(params.get("javatoolsConfigDir")+"parsing/");
     init();
   }
   
+  /** If you like to use your own stopword lists etc. (see javatools.resources.parsing)
+   *  then you can set a path where NameML will look for such files 
+   *  instead of the default resource location (javatools.resources.parsing).
+   *  (To make sure that you cover all files necessary in your own word list set, 
+   *   best start by copying the files from src/javatools/resources/parsing/.)
+   * @param configPath  The path that contains all word lists.
+   */
   public static final void init(String configPath){
     CONFIG_DIR=new File(configPath+"parsing/");
     init();
   }
   
-  protected static boolean hasBeenInitialized=false;
   
+  
+  /** Simply call this function to initialize NameML with the default values */
   public static final void init(){
     if(hasBeenInitialized)
       return;
