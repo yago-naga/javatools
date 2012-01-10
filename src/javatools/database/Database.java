@@ -106,28 +106,28 @@ public abstract class Database {
 
   /** The concurrency type of the resultSet (read only by default) */
   protected int resultSetConcurrency = ResultSet.CONCUR_READ_ONLY;
-  
+
   /** The Driver registered for this database instance
    * TODO: it may be more reasonable to share the same driver instance for all database insances
    *       of the same type...check that and adapt */
-  protected Driver driver=null;
+  protected Driver driver = null;
 
   /** Returns the connection */
   public Connection getConnection() {
     return (connection);
   }
-  
+
   /** the default transaction mode into which to change for transactions */
   private static int defaultTransactionMode = Connection.TRANSACTION_REPEATABLE_READ;
-    
+
   /** keep track of original transaction mode setting */
   private int originalTransactionMode;
-  
-    /** Holds all active inserters to close them in the end*/
+
+  /** Holds all active inserters to close them in the end*/
   protected List<Inserter> inserters = new ArrayList<Inserter>();
-  
+
   /** tells whether the database is already closed */
-  private boolean closed=false;
+  private boolean closed = false;
 
   /** The mapping from Java to SQL */
   public Map<Class, SQLType> java2SQL = new HashMap<Class, SQLType>();
@@ -152,12 +152,12 @@ public abstract class Database {
   /** The mapping from type codes (as defined in java.sql.Types) to SQL */
   public Map<Integer, SQLType> type2SQL = new HashMap<Integer, SQLType>();
   {
-  type2SQL.put(Types.BLOB, SQLType.ansiblob);
+    type2SQL.put(Types.BLOB, SQLType.ansiblob);
     type2SQL.put(Types.VARCHAR, SQLType.ansivarchar);
     type2SQL.put(Types.TIMESTAMP, SQLType.ansitimestamp);
     type2SQL.put(Types.DATE, SQLType.ansitimestamp);
     type2SQL.put(Types.INTEGER, SQLType.ansiinteger);
-    type2SQL.put(Types.SMALLINT, SQLType.ansismallint);    
+    type2SQL.put(Types.SMALLINT, SQLType.ansismallint);
     type2SQL.put(Types.DOUBLE, SQLType.ansifloat);
     type2SQL.put(Types.REAL, SQLType.ansifloat);
     type2SQL.put(Types.FLOAT, SQLType.ansifloat);
@@ -199,7 +199,7 @@ public abstract class Database {
   public boolean jarAvailable() {
     return (true);
   }
-  
+
   /**
    * Returns the results for a query as a ResultSet with given type, concurrency and
    * fetchsize. The preferred way to execute a query is by the query(String,
@@ -210,23 +210,21 @@ public abstract class Database {
    * an open statement.
    */
   public ResultSet query(CharSequence sqlcs, int resultSetType, int resultSetConcurrency, Integer fetchsize) throws SQLException {
-    String sql = prepareQuery(sqlcs.toString());    
-    if (sql.toUpperCase().startsWith("INSERT") || sql.toUpperCase().startsWith("UPDATE") || sql.toUpperCase().startsWith("DELETE")
-        || sql.toUpperCase().startsWith("CREATE") || sql.toUpperCase().startsWith("DROP") || sql.toUpperCase().startsWith("ALTER")) {
+    String sql = prepareQuery(sqlcs.toString());
+    if (sql.toUpperCase().startsWith("INSERT") || sql.toUpperCase().startsWith("UPDATE") || sql.toUpperCase().startsWith("DELETE") || sql.toUpperCase().startsWith("CREATE") || sql.toUpperCase().startsWith("DROP")
+        || sql.toUpperCase().startsWith("ALTER")) {
       executeUpdate(sql);
       return (null);
-    }    
+    }
     try {
-      Statement stmnt=connection.createStatement(resultSetType, resultSetConcurrency);
-      if(fetchsize!=null)
-        stmnt.setFetchSize(fetchsize);
+      Statement stmnt = connection.createStatement(resultSetType, resultSetConcurrency);
+      if (fetchsize != null) stmnt.setFetchSize(fetchsize);
       return (stmnt.executeQuery(sql));
     } catch (SQLException e) {
-        throw e;
-    } 
+      throw e;
+    }
   }
-  
-  
+
   /**
    * Returns the results for a query as a ResultSet with given type and
    * concurrency. The preferred way to execute a query is by the query(String,
@@ -237,7 +235,7 @@ public abstract class Database {
    * an open statement.
    */
   public ResultSet query(CharSequence sqlcs, int resultSetType, int resultSetConcurrency) throws SQLException {
-    return query(sqlcs,resultSetType,resultSetConcurrency,null);
+    return query(sqlcs, resultSetType, resultSetConcurrency, null);
   }
 
   /**
@@ -289,99 +287,93 @@ public abstract class Database {
     close(rs);
     return (result);
   }
-  
 
   /** indicates whether autocommit was enabled before we switched if off to start a transaction */
-  boolean autoCommitWasOn=true;
-  boolean inTransactionMode=false;
-  
+  boolean autoCommitWasOn = true;
+
+  boolean inTransactionMode = false;
+
   /** Initiates a transaction by disabling autocommit and enabling transaction mode */
   public void startTransaction() throws InitTransactionSQLException {
-  if(!inTransactionMode){
-    try{    
-      autoCommitWasOn=connection.getAutoCommit();
-      if(autoCommitWasOn)
-        connection.setAutoCommit(false);      
-    }catch(SQLException ex){
-      throw new InitTransactionSQLException("Could not check and disable autocommit \nError was"+ex, ex);
-    }   
-    try{
-      originalTransactionMode=connection.getTransactionIsolation();
-    }catch(SQLException ex){
-      throw new InitTransactionSQLException("Could not get hold of transaction isolation\nError was"+ex, ex);
+    if (!inTransactionMode) {
+      try {
+        autoCommitWasOn = connection.getAutoCommit();
+        if (autoCommitWasOn) connection.setAutoCommit(false);
+      } catch (SQLException ex) {
+        throw new InitTransactionSQLException("Could not check and disable autocommit \nError was" + ex, ex);
+      }
+      try {
+        originalTransactionMode = connection.getTransactionIsolation();
+      } catch (SQLException ex) {
+        throw new InitTransactionSQLException("Could not get hold of transaction isolation\nError was" + ex, ex);
+      }
+      try {
+        connection.setTransactionIsolation(defaultTransactionMode);
+      } catch (SQLException ex) {
+        throw new InitTransactionSQLException("Could not set transaction isolation mode\nError was" + ex, ex);
+      }
+      inTransactionMode = true;
     }
-    try{
-      connection.setTransactionIsolation(defaultTransactionMode);     
-    }catch(SQLException ex){
-      throw new InitTransactionSQLException("Could not set transaction isolation mode\nError was"+ex, ex);
-    }   
-    inTransactionMode=true;   
-  } 
   }
 
   /** commits the transaction aggregated so far 
    * if the commit fails the transaction is rolled back!*/
   protected void commitTransaction() throws TransactionSQLException {
-  try{
-    connection.commit();                    
-  }catch(SQLException ex){
-    CommitTransactionSQLException commitfail=new CommitTransactionSQLException("Could not commit transaction.", ex);
-    try{
-      resetTransaction();
-    }catch (RollbackTransactionSQLException rex){
-      throw new RollbackTransactionSQLException(rex.getMessage(),commitfail);
+    try {
+      connection.commit();
+    } catch (SQLException ex) {
+      CommitTransactionSQLException commitfail = new CommitTransactionSQLException("Could not commit transaction.", ex);
+      try {
+        resetTransaction();
+      } catch (RollbackTransactionSQLException rex) {
+        throw new RollbackTransactionSQLException(rex.getMessage(), commitfail);
+      }
+      throw commitfail;
     }
-    throw commitfail;
   }
-  }    
-  
+
   /** resets the transaction rolling it back and closing it  */
   public void resetTransaction() throws TransactionSQLException {
-    try{          
+    try {
       connection.rollback();
-    }catch(SQLException ex2){
+    } catch (SQLException ex2) {
       throw new RollbackTransactionSQLException("Could not rollback transaction.");
     }
     endTransaction(false);
-  }    
-  
+  }
+
   /** executes the transaction and switches back from transaction mode into autocommit mode */
   public void endTransaction(boolean flush) throws TransactionSQLException {
-    if(inTransactionMode){
-      if(flush)
-        commitTransaction();
-      try{
+    if (inTransactionMode) {
+      if (flush) commitTransaction();
+      try {
         connection.setTransactionIsolation(originalTransactionMode);
-      }catch(SQLException ex){
-        throw new TransactionSQLException("Could not shutdown transaction mode\n Error was:"+ex, ex);
+      } catch (SQLException ex) {
+        throw new TransactionSQLException("Could not shutdown transaction mode\n Error was:" + ex, ex);
       }
-    try{          
-      if(autoCommitWasOn)
-        connection.setAutoCommit(true);     
-    }catch(SQLException ex){
-      throw new StartAutoCommitSQLException("Could not start autocommit\n Error was:"+ex, ex);
+      try {
+        if (autoCommitWasOn) connection.setAutoCommit(true);
+      } catch (SQLException ex) {
+        throw new StartAutoCommitSQLException("Could not start autocommit\n Error was:" + ex, ex);
+      }
+      inTransactionMode = false;
     }
-    inTransactionMode=false;
-    }
-  }  
-  
-  
+  }
+
   /** Locks a table in write mode, i.e. other db connections can only read the table, but not write to it */
-  public void lockTableWriteAccess(Map<String, String> tableAndAliases) throws SQLException{    
+  public void lockTableWriteAccess(Map<String, String> tableAndAliases) throws SQLException {
     throw new SQLException("Sorry this functionality is not implemented for you database system by roxxi's database connector (roxxi.tools.database.Database)");
   }
-  
+
   /** Locks a table in read mode, i.e. only this connection can read or write the table */
-  public void lockTableReadAccess(Map<String, String> tableAndAliases) throws SQLException{   
+  public void lockTableReadAccess(Map<String, String> tableAndAliases) throws SQLException {
     throw new SQLException("Sorry this functionality is not implemented for you database system by roxxi's database connector (roxxi.tools.database.Database)");
   }
-  
+
   /** releases all locks the connection holds, commits the current transaction and ends it */
-  public void releaseLocksAndEndTransaction() throws SQLException{
+  public void releaseLocksAndEndTransaction() throws SQLException {
     throw new SQLException("Sorry this functionality is not implemented for you database system by roxxi's database connector (roxxi.tools.database.Database)");
   }
-  
-  
 
   /** The minal column width for describe() */
   public static final int MINCOLUMNWIDTH = 3;
@@ -472,30 +464,30 @@ public abstract class Database {
 
   /** Closes the connection */
   public void close() {
-    if(closed) // we need to make sure we only close it once (either manually or by finalizer)
-      return;
-    if(inTransactionMode){
-      try{
+    if (closed) // we need to make sure we only close it once (either manually or by finalizer)
+    return;
+    if (inTransactionMode) {
+      try {
         commitTransaction();
-      }catch(TransactionSQLException ex){
+      } catch (TransactionSQLException ex) {
         Announce.error(ex);
       }
     }
     while (inserters.size() != 0)
       inserters.get(0).close();
     close(connection);
-    try{
+    try {
       DriverManager.deregisterDriver(driver);
-    }catch(SQLException ex){
+    } catch (SQLException ex) {
       Announce.error(ex);
     }
-    closed=true;
+    closed = true;
   }
 
   /** Closes the connection */
   public void finalize() {
     try {
-      close(); 
+      close();
     } catch (Exception e) {
       Announce.error(e);
     }
@@ -521,10 +513,10 @@ public abstract class Database {
   public SQLType getSQLType(Class c) {
     return (java2SQL.get(c));
   }
-  
+
   /** returns the database system specific expression for isnull functionality 
    * i.e. isnull(a,b) returns b if a is null and a otherwise */
-  public String getSQLStmntIFNULL(String a, String b){
+  public String getSQLStmntIFNULL(String a, String b) {
     Announce.error("You database system class needs to implement this functionality.");
     return "";
   }
@@ -535,43 +527,40 @@ public abstract class Database {
     if (t == null) t = getSQLType(String.class);
     return (t.format(o.toString()));
   }
-  
+
   /** Formats an object appropriately (provided that its class is in java2SQL) and assigns NULL it the given object is a null pointer */
   public String formatNullToNull(Object o) {
-    if(o==null)
-      return "NULL";
+    if (o == null) return "NULL";
     else return format(o);
   }
-  
+
   /** 
    * Produces an SQL fragment casting the given value to the given type   * 
    */
-   public String cast(String value, String type){
-	   StringBuilder sql=new StringBuilder("CAST(");
-	   sql.append(value).append(" AS ").append(type).append(")");
-	   return sql.toString();	   
-   }
-   
-   /** 
-    * Produces an SQL fragment representing an autoincrementing column type
-    * s.t. if used during table creation a column can be declared to get by default 
-    * an integer value assigned according to an internal sequence counter
-    * Example:
-    * createTable("tableWithSingleAutoIncrementingIDColumn", "ID", autoincrementColumn()) 
-    */
-    public String autoincrementColumn(){
-      Announce.error("This functionality is not provided for this database type. It may simply lack implementation at the Database class.");
-      return null;
-    }
-    
-    
+  public String cast(String value, String type) {
+    StringBuilder sql = new StringBuilder("CAST(");
+    sql.append(value).append(" AS ").append(type).append(")");
+    return sql.toString();
+  }
+
+  /** 
+   * Produces an SQL fragment representing an autoincrementing column type
+   * s.t. if used during table creation a column can be declared to get by default 
+   * an integer value assigned according to an internal sequence counter
+   * Example:
+   * createTable("tableWithSingleAutoIncrementingIDColumn", "ID", autoincrementColumn()) 
+   */
+  public String autoincrementColumn() {
+    Announce.error("This functionality is not provided for this database type. It may simply lack implementation at the Database class.");
+    return null;
+  }
 
   /**
    * Creates or rewrites an SQL table. Attributes is an alternating sequence of
    * a name (String) and a type (from java.sql.Type).
    */
   public void createTable(String name, Object... attributes) throws SQLException {
-    Announce.doingDetailed("Creating table "+name);
+    Announce.doingDetailed("Creating table " + name);
     try {
       executeUpdate("DROP TABLE " + name);
     } catch (SQLException e) {
@@ -590,16 +579,16 @@ public abstract class Database {
     executeUpdate(b.toString());
     Announce.doneDetailed();
   }
-  
+
   /** checks if a table with the given name exists (or rather whether it can be accessed).
    * @param table  name of the table to be checked 
    * @note if there is any error with the database connection,
    * the function will also return false. */
   public boolean existsTable(String table) {
-    try{
-      ResultSet rs=query("SELECT * FROM "+table+" LIMIT 1");
+    try {
+      ResultSet rs = query("SELECT * FROM " + table + " LIMIT 1");
       Database.close(rs);
-    }catch(SQLException ex){
+    } catch (SQLException ex) {
       return false;
     }
     return true;
@@ -607,6 +596,24 @@ public abstract class Database {
 
   /** Creates an index name*/
   public String indexName(String table, String... attributes) {
+    StringBuffer sb = new StringBuffer();
+    sb.append("I_");
+    sb.append(table.hashCode());
+    sb.append("_");
+    StringBuffer att = new StringBuffer();
+    for (int i = 0; i < attributes.length; i++) {
+      att.append(attributes[i]);
+      att.append("_");
+    }
+    if (att.length() > 0) {
+      att.setLength(att.length() - 1);
+    }
+    sb.append(att.hashCode());
+    return sb.toString().replace("-", "m");
+  }
+
+  /** Creates an index name*/
+  public String indexNameOld(String table, String... attributes) {
     StringBuilder indexName = new StringBuilder(table);
     int length = table.length() + 5;
     //removes brackets for mysql the (160)
@@ -655,7 +662,7 @@ public abstract class Database {
   }
 
   public void createIndex(String table, boolean unique, String... attributes) throws SQLException {
-    Announce.doingDetailed("Creating index "+indexName(table, attributes)+ " on table "+table);
+    Announce.doingDetailed("Creating index " + indexName(table, attributes) + " on table " + table);
     String comand = createIndexCommand(table, unique, attributes);
     Announce.debug(comand);
     try {
@@ -672,23 +679,22 @@ public abstract class Database {
       createIndex(table, false, a);
     }
   }
-  
 
   /** makes the given attributes/columns the primary key of the given table*/
   public void createPrimaryKey(String table, String... attributes) throws SQLException {
-    Announce.doingDetailed("Creating primary Key on table "+table);
+    Announce.doingDetailed("Creating primary Key on table " + table);
     StringBuilder sql = new StringBuilder("ALTER TABLE ");
     sql.append(table);
     sql.append(" ADD PRIMARY KEY (");
     for (String a : attributes)
       sql.append(a).append(", ");
     sql.setLength(sql.length() - 2);
-    sql.append(")");        
+    sql.append(")");
     Announce.debug(sql);
     try {
-      executeUpdate("ALTER TABLE " + table+" DROP PRIMARY KEY");
+      executeUpdate("ALTER TABLE " + table + " DROP PRIMARY KEY");
     } catch (SQLException e) {
-     // throw e; //hook here for exception handling; usually disabled as no primary key may exist when we create the new one (which is not an error) 
+      // throw e; //hook here for exception handling; usually disabled as no primary key may exist when we create the new one (which is not an error) 
     }
     executeUpdate(sql.toString());
     Announce.doneDetailed();
@@ -702,10 +708,10 @@ public abstract class Database {
   public String limit(String sql, int n) {
     return (sql + " LIMIT " + n);
   }
-  
+
   /** Makes sure a query response starts at the n-th result */
   public String offset(String sql, int n) {
-   return (sql + " OFFSET "+ n);
+    return (sql + " OFFSET " + n);
   }
 
   /** Runs a user-interface and closes */
@@ -753,9 +759,9 @@ public abstract class Database {
 
     /** Tells after how many commands we will flush the batch*/
     private int batchSize = 1000;
-    
+
     /** tells whether the inserter is already closed */
-    private boolean closed=false;
+    private boolean closed = false;
 
     public void setBatchSize(int size) {
       batchSize = size;
@@ -844,8 +850,8 @@ public abstract class Database {
 
     /** Flushes and closes*/
     public void close() {
-      if(closed) // we need to make sure we close only once, either by manual call or when finalizer is called by garbage collection
-        return;
+      if (closed) // we need to make sure we close only once, either by manual call or when finalizer is called by garbage collection
+      return;
       try {
         flush();
       } catch (SQLException e) {
@@ -857,7 +863,7 @@ public abstract class Database {
         Announce.warning(e);
       }
       inserters.remove(this);
-      closed=true;
+      closed = true;
     }
 
     /** Returns the number of columns*/
@@ -958,78 +964,96 @@ public abstract class Database {
   /** Test routine */
   public static void main(String[] args) throws Exception {
     new PostgresDatabase("postgres", "postgres", null, null, null).runInterface();
-//    System.out.println("Does table 'facts' exist:"+ new PostgresDatabase("postgres", "postgres", "yago", null, null).existsTable("facts"));
-//    System.out.println("Does table 'factssss' exist:"+ new PostgresDatabase("postgres", "postgres", "yago", null, null).existsTable("factssss"));    
+    //    System.out.println("Does table 'facts' exist:"+ new PostgresDatabase("postgres", "postgres", "yago", null, null).existsTable("facts"));
+    //    System.out.println("Does table 'factssss' exist:"+ new PostgresDatabase("postgres", "postgres", "yago", null, null).existsTable("factssss"));    
   }
-  
+
   // ---------------------------------------------------------------------
   //           Exceptions
   // ---------------------------------------------------------------------
 
-  public static class TransactionSQLException extends SQLException{
+  public static class TransactionSQLException extends SQLException {
+
     private static final long serialVersionUID = 1L;
-    public TransactionSQLException(){
+
+    public TransactionSQLException() {
       super();
     }
-    public TransactionSQLException(String message){
+
+    public TransactionSQLException(String message) {
       super(message);
     }
-    public TransactionSQLException(String message, Throwable cause){
-      super(message,cause);
-    }       
+
+    public TransactionSQLException(String message, Throwable cause) {
+      super(message, cause);
+    }
   }
 
+  public static class InitTransactionSQLException extends TransactionSQLException {
 
-  public static class InitTransactionSQLException extends TransactionSQLException{
     private static final long serialVersionUID = 1L;
-    public InitTransactionSQLException(){
+
+    public InitTransactionSQLException() {
       super();
     }
-    public InitTransactionSQLException(String message){
+
+    public InitTransactionSQLException(String message) {
       super(message);
     }
-    public InitTransactionSQLException(String message, Throwable cause){
-      super(message,cause);
-    }       
+
+    public InitTransactionSQLException(String message, Throwable cause) {
+      super(message, cause);
+    }
   }
-  
-  public static class CommitTransactionSQLException extends TransactionSQLException{
+
+  public static class CommitTransactionSQLException extends TransactionSQLException {
+
     private static final long serialVersionUID = 1L;
-    public CommitTransactionSQLException(){
+
+    public CommitTransactionSQLException() {
       super();
     }
-    public CommitTransactionSQLException(String message){
+
+    public CommitTransactionSQLException(String message) {
       super(message);
     }
-    public CommitTransactionSQLException(String message, Throwable cause){
-      super(message,cause);
-    }       
+
+    public CommitTransactionSQLException(String message, Throwable cause) {
+      super(message, cause);
+    }
   }
-  
-  public static class RollbackTransactionSQLException extends TransactionSQLException{
+
+  public static class RollbackTransactionSQLException extends TransactionSQLException {
+
     private static final long serialVersionUID = 1L;
-    public RollbackTransactionSQLException(){
+
+    public RollbackTransactionSQLException() {
       super();
     }
-    public RollbackTransactionSQLException(String message){
+
+    public RollbackTransactionSQLException(String message) {
       super(message);
     }
-    public RollbackTransactionSQLException(String message, Throwable cause){
-      super(message,cause);
-    }       
-  }   
-  
-  public static class StartAutoCommitSQLException extends TransactionSQLException{
+
+    public RollbackTransactionSQLException(String message, Throwable cause) {
+      super(message, cause);
+    }
+  }
+
+  public static class StartAutoCommitSQLException extends TransactionSQLException {
+
     private static final long serialVersionUID = 1L;
-    public StartAutoCommitSQLException(){
+
+    public StartAutoCommitSQLException() {
       super();
     }
-    public StartAutoCommitSQLException(String message){
+
+    public StartAutoCommitSQLException(String message) {
       super(message);
     }
-    public StartAutoCommitSQLException(String message, Throwable cause){
-      super(message,cause);
-    }       
-  }     
-  
+
+    public StartAutoCommitSQLException(String message, Throwable cause) {
+      super(message, cause);
+    }
+  }
 }
