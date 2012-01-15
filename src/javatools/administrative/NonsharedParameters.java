@@ -36,15 +36,17 @@ import javatools.filehandlers.FileLines;
   
    This is a nonshared, i.e. instantiable variation of the Parameters class. 
    It allows to have different parameter settings handled simultaneously, 
-   i.e. each component (or each component instance) using NonsharedParameters can have
-   its own parameters allowing, for instance, that two components running at the same time
+   i.e. each component (or each component instance) using NonsharedParameters can maintain
+   its own parameters. This allows, for instance, that two components running at the same time
    work on different databases, both obtained through their own NonsharedParameters instance.  
    
    While the old 'Parameters' class is more convenient to use (less objects passed around),
    this version makes it easier to integrate your components with other components that also 
    use the Parameters/NonsharedParameters to load (and maintain) their settings.
    
-   Therefore please consider using the NonsharedParameters instead of the Parameters. 
+   Therefore please consider using the NonsharedParameters instead of the Parameters, 
+   if your code may ever be used in parallel with another project that might use one 
+   of the Parameters classes. 
   
   Provides an interface for an ini-File. The ini-File may contain parameters of the form
   <PRE>
@@ -56,7 +58,8 @@ import javatools.filehandlers.FileLines;
   are trimmed for both parameter names and values. Boolean parameters accept multiple
   ways of expressing "true" (namely "on", "true", "yes" and "active").<P>
   
-  This class does function as an object! Example:
+  This class does function as an object. 
+  Example:
   <PRE>
     // Read data from my.ini
     NonsharedParameters params = new NonsharedParameters("my.ini");
@@ -71,7 +74,7 @@ import javatools.filehandlers.FileLines;
   You can load parameters from multiple files. These will overlay.
   You can reference a .ini file in another .ini file using the 'include' parameter, 
   included files will be loaded at the point of the 'include' statements, 
-  later parameter settings (whether directly in the file or by another include)
+  parameter settings following the include statement can
   overwrite parameter settings of this included ini file.   
   Example:
    Content of main.ini:
@@ -90,7 +93,7 @@ import javatools.filehandlers.FileLines;
      databaseHost = localhost
      databasePort = 5432
    </PRE>
-   If main.ini is loaded, the port parameter will have value '5555' in the resulting NonsharedParameters instance.
+   If main.ini is loaded, the 'databasePort' parameter will have value '5555' in the resulting NonsharedParameters instance.
    Include is recursive, make sure you do not generate a cycle!
      
 */

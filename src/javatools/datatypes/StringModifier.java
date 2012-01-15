@@ -185,7 +185,7 @@ public abstract class StringModifier {
         
         entry=it.next();
         sb.append(formatKey?database.format(entry.getKey()):entry.getKey());
-        sb.append(pairDelim);
+        sb.append(keyValueDelim);
         sb.append(formatValue?database.format(entry.getValue()):entry.getValue());        
       }
       return sb.toString();
