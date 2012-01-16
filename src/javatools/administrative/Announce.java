@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -302,7 +303,13 @@ public class Announce {
   /** Prints an exception and aborts (aborts even if log level is mute)*/
   public static void error(Exception e) {
     if (D.smaller(level, Level.ERROR)) System.exit(255);
-    e.printStackTrace(new PrintWriter(out));
+    if(debug)
+      print("[!Error: "+CallStack.toString(new CallStack().ret().top()) + "] ");
+    else
+      print("Error: ");
+    PrintWriter writer=new PrintWriter(out);
+    e.printStackTrace(writer);
+    writer.flush();
     System.exit(255);
   }
 
@@ -617,8 +624,8 @@ public class Announce {
     Announce.done();
     Announce.done();
     Announce.done(); // This is one too much, but it works nevertheless
-    Announce.printTime();
-    Announce.printTime("doing stuff",doingStuff);
-    Announce.printTime("doing other stuff",doingOtherStuff);
+    Announce.printTime(); //Printing the overall time
+    Announce.printTime("doing stuff",doingStuff); //Printing time used to "do stuff"
+    Announce.printTime("doing other stuff",doingOtherStuff); //Printing time used to "do other stuff"
   }
 }
