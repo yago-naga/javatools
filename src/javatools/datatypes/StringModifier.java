@@ -1,9 +1,12 @@
 package javatools.datatypes;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javatools.database.Database;
 
@@ -18,7 +21,7 @@ the YAGO-NAGA team (see http://mpii.de/yago-naga).
   This class is a collection of additional string modification methods.
    
   For instance, it provides methods to generate a string from an array, 
-  separating array elements by a given deleminator; 
+  separating array elements by a given delimiter; 
   
   String array[]={"cat", "mouse", "cheese"}; 
   String imploded=StringModifier.implode(array," eats ");
@@ -201,6 +204,32 @@ public abstract class StringModifier {
     if(s.length()>length)
       return s.substring(0,length);
     else return s;
+  }
+  
+  
+  /** produces an n-gram set from the string 
+   * @param original  the String to be split into n-grams of size n 
+   * @param n size of the n-grams
+   * @return  set of n-grams */
+  public static Set<String> toNGram(String original, int n ){
+    Set<String> ngrams = new HashSet<String>();
+    for (int i=0;i<original.length();i++)
+      ngrams.add(original.substring(i, i+n));
+    return ngrams;
+  }
+  
+  /** produces a weighed n-gram set from the string 
+   * @param original  the String to be split into n-grams of size n 
+   * @param n size of the n-grams
+   * @return  map of n-grams with their weight (frequency/overall number of ngrams) */
+  public static Map<String,Double> toWeighedNGram(String original, int n ){
+    Map<String,Double> ngrams = new HashMap<String,Double>();
+    for (int i=0;i<original.length();i++){
+      String ngram=original.substring(i, Math.min(i+n, original.length()-1));
+      Double oldVal=ngrams.get(ngram);
+      ngrams.put(ngram, oldVal!=null?oldVal+(1d/original.length()):(1d/original.length()));
+    }    
+    return ngrams;
   }
   
   /** Test method */
