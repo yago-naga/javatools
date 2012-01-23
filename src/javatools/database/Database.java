@@ -162,9 +162,10 @@ public abstract class Database {
     type2SQL.put(Types.REAL, SQLType.ansifloat);
     type2SQL.put(Types.FLOAT, SQLType.ansifloat);
     type2SQL.put(Types.BOOLEAN, SQLType.ansiboolean);
+    type2SQL.put(Types.BIT, SQLType.ansiboolean);
     type2SQL.put(Types.CHAR, SQLType.ansichar);
     type2SQL.put(Types.BIGINT, SQLType.ansibigint);
-    type2SQL.put(Types.NUMERIC, SQLType.ansifloat);
+    type2SQL.put(Types.NUMERIC, SQLType.ansifloat);    
   };
 
   /**
