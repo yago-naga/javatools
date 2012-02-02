@@ -950,6 +950,7 @@ public class Char {
 
   /** Decodes all backslash characters in the string */
   public static String decodeBackslash(String s) {
+	  if(s.indexOf('\\')==-1) return(s);
     StringBuilder result = new StringBuilder();
     int[] eatLength = new int[1];
     while (s.length() != 0) {
@@ -965,6 +966,28 @@ public class Char {
     return (result.toString());
   }
 
+  /** Used for encoding selected characters*/
+  public static interface Legal {
+	  public boolean isLegal(char c);
+  }
+  
+  /** Encodes with backslash all illegal characters*/
+  public static String encodeBackslash(CharSequence s, Legal legal) {
+	StringBuilder b=new StringBuilder((int)(s.length()*1.5));
+	for(int i=0;i<s.length();i++) {
+		if(legal.isLegal(s.charAt(i))) {
+			b.append(s.charAt(i));
+		} else {
+			b.append("\\u");
+		    String hex = Integer.toHexString(s.charAt(i));
+		    for(int j=0;j<4-hex.length();j++)
+		      b.append('0');
+		    b.append(hex);
+		}
+	}
+	return(b.toString());
+  }
+  
   /** Eats a backslash sequence from a String */
   public static char eatBackslash(String a, int[] n) {
     if (!a.startsWith("\\")) {

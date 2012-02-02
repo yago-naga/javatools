@@ -482,7 +482,7 @@ public class FrequencyVector<T, V extends Number & Comparable<V>> {
    * in the first component the center of the Wilson interval and in the second component the
    * width of the interval. alpha=95%. 
    */
-  public double[] wilson(int total, int correct) {
+  public static double[] wilson(int total, int correct) {
     double z = 1.96;
     double p = (double) correct / total;
     double center = (p + 1 / 2.0 / total * z * z) / (1 + 1.0 / total * z * z);
