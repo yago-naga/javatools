@@ -412,4 +412,12 @@ public class D {
     if(set.isEmpty()) return(null);
     return(set.iterator().next());
   }
+  
+  /** Returns the size of the intersection*/
+  public static<T> int intersectionSize(Collection<T> c1, Collection<T> c2) {
+	  if(c1.size()>c2.size()) return(intersectionSize(c2,c1));
+	  int result=0;
+	  for(T t : c1) if(c2.contains(t)) result++;
+	  return(result);
+  }
 }
