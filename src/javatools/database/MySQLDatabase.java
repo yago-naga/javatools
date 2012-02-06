@@ -57,8 +57,8 @@ public class MySQLDatabase extends Database {
 	  type2SQL.put(-4,blob);
 	
 	  //java2SQL.put(String.class,blob);
-      java2SQL.put(String.class, ansivarcharbin);
-      type2SQL.put(Types.VARCHAR, ansivarcharbin);
+      java2SQL.put(String.class, mysqlvarchar);
+      type2SQL.put(Types.VARCHAR, mysqlvarchar);
 
   }
 
@@ -75,12 +75,44 @@ public class MySQLDatabase extends Database {
     return false;
   }
   
-  public String format(Object o) {
-    String s=o.toString().replace("'", "''").replace("\\", "\\\\");
-    //if(s.length()>scale) s=s.substring(0,scale);
+/* the varchar and blob types specified below should cover the format differences 
+ * such that the general format method needs not to be overwritten (in trial phase, 
+ * if there occur any problems you can revert to revision 6614 or fix it here
+ * and best add a note what went wrong or notify me; If no problems occur I'll 
+ * completele remove the format function at some point. (Steffen))
+ *   public String format(Object o) {
     
-    return("'"+s+"'");
+    //String s=o.toString();
+    //s=s.replace("'", "''").replace("\\", "\\\\");
+    //if(s.length()>scale) s=s.substring(0,scale);
+    //return("'"+s+"'");
+      
+    String s=super.format(o);
+    return s;
+
   } 
+*/
+  
+  public static class MysqlVarchar extends SQLType.ANSIvarchar {
+    public MysqlVarchar(int size) {
+      super(size);
+    }  
+    public MysqlVarchar() {
+      this(255);
+    }        
+    public String format(Object o) {
+      String s=o.toString().replace("\\", "\\\\").replace("'", "''");
+      if(s.length()>scale){
+        s=s.substring(0,scale);
+        if(s.endsWith("'"))
+          if(!s.endsWith("''"))
+            s=s.substring(0, s.length()-1);
+      }
+      
+      return("'"+s+"'");
+    }
+  }
+public static MysqlVarchar mysqlvarchar=new MysqlVarchar(); 
   
 	public static class Blob extends SQLType.ANSIblob {
 	    public Blob(int size) {
@@ -93,13 +125,17 @@ public class MySQLDatabase extends Database {
 	      return("BLOB");
 	    }
 	    public String format(Object o) {
-	      String s=o.toString().replace("'", "\'").replace("\\", "\\\\");	      
+	      String s=o.toString().replace("\\", "\\\\").replace("'", "\\'");	      
 	      return("'"+s+"'");
 	    } 
 	  }
 	public static Blob blob=new Blob();	
   
-  // a VARCHAR BINARY TYPE, making sure we are caseSensitive in varchar fields (this can probably be avoided by choosing a case-sensitive collation (not sure))
+  /** a VARCHAR BINARY type, making sure we are case-sensitive in varchar fields 
+	 *  (currently we assume case-sensitive collation is used, so using this is not necessary,
+	 *   if this is not given however, case-sensitive applications can use this sqltype instead
+	 *   of the normal varchar type)
+	 *  */
   public static class ANSIvarcharBin extends SQLType {
     public ANSIvarcharBin(int size) {
       typeCode=Types.VARCHAR;
@@ -109,9 +145,9 @@ public class MySQLDatabase extends Database {
       this(255);
     }        
     public String format(Object o) {
-      String s=o.toString().replace("'", "\\'");
+      String s=o.toString().replace("'", "\\'");//.replace("\\", "\\\\");
       if(s.length()>scale) s=s.substring(0,scale);
-      return("'"+s+"'");
+      return("BINARY '"+s+"'");
     }
     public String toString() {
       return("VARCHAR("+scale+") BINARY");      
