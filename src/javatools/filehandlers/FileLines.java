@@ -294,6 +294,25 @@ public class FileLines extends PeekIterator<String> implements Iterable<String>,
 		return (result);
 	}
 
+	/** Reads to a specific string, returns text up to there, without boundary or returns NULL*/
+	public static String readToBoundary(Reader in, String limit) throws IOException {
+		StringBuilder result = new StringBuilder(2000);
+		int c;
+		int position = 0;
+		while ((c = in.read()) != -1) {
+			result.append((char) c);
+
+			if (c == limit.charAt(position)) {
+				if (++position == limit.length())
+					return(result.toString().substring(0,result.length()-limit.length()));
+			} else {
+				position = 0;
+			}
+			if (maxChars != -1 && result.length() > maxChars)
+				return(null);
+		}
+		return (null);
+	}
 	/**
 	 * Scrolls to one of the characters
 	 * 
