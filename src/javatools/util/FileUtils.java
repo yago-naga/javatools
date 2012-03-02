@@ -1,10 +1,13 @@
 package javatools.util;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 
 /** 
@@ -23,7 +26,7 @@ public class FileUtils {
    * @return      BufferedReader for file
    * @throws FileNotFoundException
    */
-  public static BufferedReader getBufferedUTFReader(File file) throws FileNotFoundException {
+  public static BufferedReader getBufferedUTF8Reader(File file) throws FileNotFoundException {
     return new BufferedReader(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8")));
   }
   
@@ -34,7 +37,29 @@ public class FileUtils {
    * @return      BufferedReader for file
    * @throws FileNotFoundException
    */
-  public static BufferedReader getBufferedUTFReader(String fileName) throws FileNotFoundException {
+  public static BufferedReader getBufferedUTF8Reader(String fileName) throws FileNotFoundException {
     return new BufferedReader(new InputStreamReader(new FileInputStream(fileName), Charset.forName("UTF-8")));
+  }
+  
+  /**
+   * Creates a BufferedWriter for UTF-8-encoded files
+   * 
+   * @param file  File in UTF-8 encoding
+   * @return      BufferedWriter for file
+   * @throws FileNotFoundException
+   */
+  public static BufferedWriter getBufferedUTF8Writer(File file) throws FileNotFoundException {
+    return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")));
+  }
+  
+  /**
+   * Creates a BufferedWriter for UTF-8-encoded files
+   * 
+   * @param fileName  Path to file in UTF-8 encoding
+   * @return      BufferedWriter for file
+   * @throws FileNotFoundException
+   */
+  public static BufferedWriter getBufferedUTF8Writer(String fileName) throws FileNotFoundException {
+    return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), Charset.forName("UTF-8")));
   }
 }
