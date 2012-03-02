@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
@@ -41,6 +42,16 @@ public class FileUtils {
     return new BufferedReader(new InputStreamReader(new FileInputStream(fileName), Charset.forName("UTF-8")));
   }
   
+  /**
+   * Creates a BufferedReader the UTF-8-encoded InputStream
+   * 
+   * @param inputStream  InputStream in UTF-8 encoding
+   * @return      BufferedReader for inputStream
+   */
+  public static BufferedReader getBufferedUTF8Reader(InputStream inputStream) {
+    return new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
+  }
+
   /**
    * Creates a BufferedWriter for UTF-8-encoded files
    * 
