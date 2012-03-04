@@ -525,8 +525,11 @@ public abstract class Database {
   /** Formats an object appropriately (provided that its class is in java2SQL) */
   public String format(Object o) {
     SQLType t = getSQLType(o.getClass());
-    if (t == null) t = getSQLType(String.class);
-    return (t.format(o.toString()));
+    if (t == null) {
+      t = getSQLType(String.class);
+      return t.format(o.toString());
+    }else
+      return (t.format(o));
   }
 
   /** Formats an object appropriately (provided that its class is in java2SQL) and assigns NULL it the given object is a null pointer */
