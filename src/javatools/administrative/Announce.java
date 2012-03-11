@@ -334,7 +334,7 @@ public class Announce {
 
   /** Sets the writer the data is written to */
   public static void setWriter(OutputStream s) {
-    out = new BufferedWriter(new OutputStreamWriter(s));
+    out = new OutputStreamWriter(s);
   }
 
   protected static void writeDoing(Object... o) {

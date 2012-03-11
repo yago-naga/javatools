@@ -137,6 +137,9 @@ public class Char {
   /** Maps a special character to a HTML ampersand sequence */
   public static Map<Character, String> charToAmpersand = new FinalMap<Character, String>('&', "&amp;", '\'', "&apos;", '<', "&lt;", '>', "&gt;", '"', "&quot;");
 
+  /** Maps a special character to a backslash sequence */
+  public static Map<Character, String> charToBackslash= new FinalMap<Character, String>('\\', "\\\\", '\n', "\\n");
+
   /** Maps HTML ampersand sequences to strings */
   public static Map<String, Character> ampersandMap = new FinalMap<String, Character>("nbsp", (char) 160, "iexcl", (char) 161, "cent", (char) 162, "pound", (char) 163, "curren", (char) 164, "yen", (char) 165, "brvbar", (char) 166, "sect",
       (char) 167, "uml", (char) 168, "copy", (char) 169, "ordf", (char) 170, "laquo", (char) 171, "not", (char) 172, "shy", (char) 173, "reg", (char) 174, "macr", (char) 175, "deg", (char) 176, "plusmn", (char) 177, "sup2", (char) 178, "sup3",
@@ -978,6 +981,10 @@ public class Char {
 		if(legal.isLegal(s.charAt(i))) {
 			b.append(s.charAt(i));
 		} else {
+			if(charToAmpersand.containsKey(s.charAt(i))) {
+				b.append(charToAmpersand.get(s.charAt(i)));
+				continue;
+			}
 			b.append("\\u");
 		    String hex = Integer.toHexString(s.charAt(i));
 		    for(int j=0;j<4-hex.length();j++)
