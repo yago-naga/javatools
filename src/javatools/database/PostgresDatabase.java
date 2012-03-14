@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Map;
 
+import javatools.administrative.Announce;
 import javatools.administrative.D;
 
 /** 
@@ -62,7 +63,7 @@ public class PostgresDatabase extends Database {
     if (password == null) password = "";
     if (host == null || host.length() == 0) host = "localhost";
     if (port == null || port.length() == 0) port = "5432";
-    Driver driver = (Driver) Class.forName("org.postgresql.Driver").newInstance();
+    driver = (Driver) Class.forName("org.postgresql.Driver").newInstance();
     DriverManager.registerDriver(driver);
     String url = "jdbc:postgresql://" + host + ":" + port + (database == null ? "" : "/" + database) + (useSSL ? "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory" : "");
     connection = DriverManager.getConnection(url, user, password);
@@ -163,6 +164,7 @@ public static Postgretext postgretext=new Postgretext();
     try {
       executeUpdate("DROP TABLE "+schema+"." + name);
     } catch (SQLException e) {
+      //Announce.message(e); //hook here for debugging; usually disabled as exceptions are normal in cases where the table did not yet exist before
     }
     StringBuilder b = new StringBuilder("CREATE TABLE ").append(schema).append(".").append(name).append(" (");
     for (int i = 0; i < attributes.length; i += 2) {
@@ -237,7 +239,7 @@ public static Postgretext postgretext=new Postgretext();
     super.startTransaction();
     try{
       Statement stmnt=connection.createStatement();
-      stmnt.executeUpdate("BEGIN WORK;");   
+      stmnt.executeUpdate("BEGIN");   
       close(stmnt);
     }catch(SQLException ex){
       throw new InitTransactionSQLException("Could not start transaction.", ex);
@@ -249,7 +251,7 @@ public static Postgretext postgretext=new Postgretext();
   protected void commitTransaction() throws TransactionSQLException {
   try{
       Statement stmnt=connection.createStatement();
-      stmnt.executeUpdate("COMMIT WORK;");    
+      stmnt.executeUpdate("COMMIT");    
       close(stmnt);
     connection.commit();                    
   }catch(SQLException ex){
@@ -281,7 +283,7 @@ public static Postgretext postgretext=new Postgretext();
   
   /** releases all locks the connection holds, commits the current transaction and ends it */
   @Override
-  public void releaseLocksAndEndTransaction() throws SQLException{    
+  public void releaseLocksAndEndTransaction() throws SQLException{        
     endTransaction(true);
   }
   
