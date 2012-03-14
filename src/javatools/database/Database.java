@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javatools.administrative.Announce;
 import javatools.administrative.D;
+import javatools.datatypes.StringModifier;
 import javatools.filehandlers.CSVFile;
 import javatools.filehandlers.CSVLines;
 import javatools.filehandlers.UTF8Writer;
@@ -270,14 +271,14 @@ public abstract class Database {
 
   /** Returns the results for a query as a ResultIterator */
   public <T> ResultIterator<T> query(CharSequence sql, ResultIterator.ResultWrapper<T> rc) throws SQLException {
-    return (new ResultIterator<T>(query(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY), rc));
+    return (new ResultIterator<T>(query(sql, resultSetType, resultSetConcurrency), rc));
   }
 
   /** Returns a single value (or null) */
   public <T> T queryValue(CharSequence sql, ResultIterator.ResultWrapper<T> rc) throws SQLException {
     ResultIterator<T> results = new ResultIterator<T>(query(sql), rc);
     T result = results.nextOrNull();
-    results.close();
+    results.close(); //note: if resultiterators complain about being closed twice, hook here
     return (result);
   }
 
@@ -363,17 +364,17 @@ public abstract class Database {
 
   /** Locks a table in write mode, i.e. other db connections can only read the table, but not write to it */
   public void lockTableWriteAccess(Map<String, String> tableAndAliases) throws SQLException {
-    throw new SQLException("Sorry this functionality is not implemented for you database system by roxxi's database connector (roxxi.tools.database.Database)");
+    throw new SQLException("Sorry this functionality is not implemented for your database system");
   }
 
   /** Locks a table in read mode, i.e. only this connection can read or write the table */
   public void lockTableReadAccess(Map<String, String> tableAndAliases) throws SQLException {
-    throw new SQLException("Sorry this functionality is not implemented for you database system by roxxi's database connector (roxxi.tools.database.Database)");
+    throw new SQLException("Sorry this functionality is not implemented for your database system");
   }
 
   /** releases all locks the connection holds, commits the current transaction and ends it */
   public void releaseLocksAndEndTransaction() throws SQLException {
-    throw new SQLException("Sorry this functionality is not implemented for you database system by roxxi's database connector (roxxi.tools.database.Database)");
+    throw new SQLException("Sorry this functionality is not implemented for your database system");
   }
 
   /** The minal column width for describe() */
@@ -447,19 +448,29 @@ public abstract class Database {
   public static void close(Statement statement) {
     try {
       if (statement != null) statement.close();
-    } catch (SQLException e) {
+    } catch (SQLException e) {    
+      //Announce.error(e); //hook here for debugging
     }
   }
 
   /** Closes a result set */
   public static void close(ResultSet rs) {
+    
+    try{
+      if(rs.isClosed())
+        return;
+    } catch (SQLException e) {
+      //Announce.error(e); //hook here for debugging
+    }
     try {
       close(rs.getStatement());
     } catch (SQLException e) {
+      //Announce.error(e); //hook here for debugging
     }
     try {
       if (rs != null) rs.close();
     } catch (SQLException e) {
+      //Announce.error(e); //hook here for debugging
     }
   }
 
@@ -537,6 +548,8 @@ public abstract class Database {
     if (o == null) return "NULL";
     else return format(o);
   }
+  
+
 
   /** 
    * Produces an SQL fragment casting the given value to the given type   * 
@@ -568,6 +581,7 @@ public abstract class Database {
     try {
       executeUpdate("DROP TABLE " + name);
     } catch (SQLException e) {
+      //Announce.warning(e);  //no exception handling on default as an exception might just state that the table is not there, which is perfectly okay when it is created the first time
     }
     StringBuilder b = new StringBuilder("CREATE TABLE ").append(name).append(" (");
     for (int i = 0; i < attributes.length; i += 2) {
@@ -703,6 +717,26 @@ public abstract class Database {
     executeUpdate(sql.toString());
     Announce.doneDetailed();
   }
+  
+  /** creates a view with given name over the query */
+  public void createView(String name, String query) throws SQLException {
+    Announce.doingDetailed("Creating view " + name);
+    Announce.messageDetailed(" with query: "+query);
+    
+    StringBuilder sql = new StringBuilder("CREATE VIEW ");
+    sql.append(name);
+    sql.append(" AS (");
+    sql.append(query);
+    sql.append(")");
+    Announce.debug(sql);
+    try {
+      executeUpdate("DROP VIEW " + name );
+    } catch (SQLException e) {
+      // throw e; //hook here for exception handling; usually disabled as the view might not yet exist when we want to create it (which is not an error) 
+    }
+    executeUpdate(sql.toString());
+    Announce.doneDetailed();
+  }
 
   public String toString() {
     return (description);
@@ -803,6 +837,7 @@ public abstract class Database {
       preparedStatement = connection.prepareStatement(table);
       inserters.add(this);
     }
+    
 
     /** Creates a bulk loader with column types from java.sql.Type */
     public Inserter(String table, int... columnTypes) throws SQLException {
@@ -818,6 +853,28 @@ public abstract class Database {
       preparedStatement = connection.prepareStatement(table);
       inserters.add(this);
     }
+    
+    /** Creates a bulk loader for specific coloumns of a table with column types given by Java classes*/
+    public Inserter(String table, String[] colnames, Class[] coltypes) throws SQLException {
+      if(colnames.length!=coltypes.length)
+        throw new SQLException("Column types and names do not match.");
+      this.columnTypes = new SQLType[colnames.length];
+      int i=0;
+      for (Class col:coltypes) {
+        this.columnTypes[i] = getSQLType(col);
+        i++;
+      }
+      tableName = table;
+      table = "INSERT INTO " + table + "(";
+      table+=StringModifier.implode(colnames, ",");
+      table+=") VALUES(";
+      for (i = 0; i < columnTypes.length - 1; i++)
+        table = table + "?, ";
+      table += "?)";
+      preparedStatement = connection.prepareStatement(table);
+      inserters.add(this);
+    }
+
 
     /** Returns the table name*/
     public String getTableName() {
@@ -854,7 +911,7 @@ public abstract class Database {
 
     /** Flushes and closes*/
     public void close() {
-      if (closed) // we need to make sure we close only once, either by manual call or when finalizer is called by garbage collection
+      if (closed) // closing once is enough
       return;
       try {
         flush();
@@ -877,7 +934,7 @@ public abstract class Database {
 
     @Override
     protected void finalize() {
-      close();
+      close();   
     }
   }
 
