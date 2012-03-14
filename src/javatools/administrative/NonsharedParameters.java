@@ -169,14 +169,12 @@ public class NonsharedParameters implements Cloneable{
       return get(s);
     else{
       String path=get(s);
-      if(path.startsWith("./"))
-        return basePath+path.substring(2);
+      if(path.startsWith("[CONFDIR]"))
+        return basePath+path.substring(9);
 //      else if(path.startsWith("../"))
 //          return basePath+path;
-      else if(path.startsWith("/"))
-        return path;
       else 
-        return basePath+path;
+        return path;
     }
   }
 
@@ -396,6 +394,8 @@ public class NonsharedParameters implements Cloneable{
     if(mainIni){
       values=new TreeMap<String,String>();    
       iniFile=f;
+      if(basePath==null)
+        basePath=(f.getParent()!=null?f.getParent()+"/":"");
     }
             
     if (!iniFile.exists()) {
