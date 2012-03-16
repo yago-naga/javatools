@@ -470,7 +470,7 @@ public class NumberParser {
 						if (loc == 'S') {
 							num = -num;
 						}
-						result.append(Double.toString(num));
+						result.append(newNumber(Double.toString(num),"degrees"));
 					} while (m.find());
 					for (int i = pos; i < s.length(); i++)
 						result.append(s.charAt(i));
@@ -501,8 +501,9 @@ public class NumberParser {
 	            if (loc == 'S') {
 	              num = -num;
 	            }
-	            result.append(Double.toString(num));
-	            difference=Double.toString(num).length()-(m.end()-m.start());
+	            String add=newNumber(Double.toString(num),"degrees");
+	            result.append(add);
+	            difference=add.length()-(m.end()-m.start());
 	            posTracker.addPositionChange(m.end(), difference);
 	          } while (m.find());
 	          for (int i = pos; i < s.length(); i++)
