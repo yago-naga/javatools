@@ -409,7 +409,7 @@ public class D {
   
   /** Picks one element from a set or NULL*/
   public static <T> T pick(Collection<T> set) {
-    if(set.isEmpty()) return(null);
+    if(set==null || set.isEmpty()) return(null);
     return(set.iterator().next());
   }
   

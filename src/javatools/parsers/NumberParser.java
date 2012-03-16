@@ -109,7 +109,7 @@ public class NumberParser {
 	/** A short integer as a capturing regex */
 	private static final String SINT = "([0-9]{1,3})";
 	/** A unit as a captuing regex */
-	private static final String UNIT = "([a-zA-Z\\%]++(?:\\^\\d)?)";
+	private static final String UNIT = "([/a-zA-Z\\%]++(?:\\^\\d)?)";
 	/** The number pattern */
 	public static final Pattern NUMBERPATTERN = Pattern.compile(newNumber(FLOAT
 			+ "(?:", UNIT + ")?"));
@@ -458,9 +458,9 @@ public class NumberParser {
 						for (int i = pos; i < m.start(); i++)
 							result.append(s.charAt(i));
 						pos = m.end();
-						double num = Integer.parseInt(m.group(1));
+						double num = Double.parseDouble(m.group(1));
 						if (m.group(3) != null)
-							num += Integer.parseInt(m.group(3)) / 60.0;
+							num += Double.parseDouble(m.group(3)) / 60.0;
 						if (m.group(5) != null)
 							num += Double.parseDouble(m.group(5)) / 60.0 / 60.0;
 						char loc = m.group(7).charAt(0);
@@ -489,9 +489,9 @@ public class NumberParser {
 	            for (int i = pos; i < m.start(); i++)
 	              result.append(s.charAt(i));
 	            pos = m.end();
-	            double num = Integer.parseInt(m.group(1));
+	            double num = Double.parseDouble(m.group(1));
 	            if (m.group(3) != null)
-	              num += Integer.parseInt(m.group(3)) / 60.0;
+	              num += Double.parseDouble(m.group(3)) / 60.0;
 	            if (m.group(5) != null)
 	              num += Double.parseDouble(m.group(5)) / 60.0 / 60.0;
 	            char loc = m.group(7).charAt(0);
@@ -695,6 +695,7 @@ public class NumberParser {
 			},
 
 			// --------- SI-Units ---------------
+			new FindReplace(FLOAT + B + "/km\\^2", newNumber("$1", "/km^2")),
 			new FindReplace(POSINT + B + "o'?clock am" + WB, newNumber("$1",
 					"oc")),
 			new FindAdd("o'?clock pm", "oc", 12),

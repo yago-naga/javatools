@@ -981,8 +981,8 @@ public class Char {
 		if(legal.isLegal(s.charAt(i))) {
 			b.append(s.charAt(i));
 		} else {
-			if(charToAmpersand.containsKey(s.charAt(i))) {
-				b.append(charToAmpersand.get(s.charAt(i)));
+			if(charToBackslash.containsKey(s.charAt(i))) {
+				b.append(charToBackslash.get(s.charAt(i)));
 				continue;
 			}
 			b.append("\\u");
