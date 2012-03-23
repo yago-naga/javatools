@@ -5,16 +5,12 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
 
 
 import javatools.datatypes.FinalSet;
-import javatools.datatypes.Pair;
 import javatools.parsers.NumberFormatter;
 
 /**
