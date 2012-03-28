@@ -953,7 +953,7 @@ public class Char {
 
   /** Decodes all backslash characters in the string */
   public static String decodeBackslash(String s) {
-	  if(s.indexOf('\\')==-1) return(s);
+	  if(s==null || s.indexOf('\\')==-1) return(s);
     StringBuilder result = new StringBuilder();
     int[] eatLength = new int[1];
     while (s.length() != 0) {
