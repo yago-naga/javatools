@@ -328,6 +328,12 @@ public class Announce {
     out = w;
   }
 
+  /** Gets the writer the data is written to 
+   * @return */
+  public static Writer getWriter() {
+    return(out);
+  }
+
   /** Sets the writer the data is written to */
   public static void setWriter(OutputStream s) {
     out = new OutputStreamWriter(s);
