@@ -443,7 +443,7 @@ public class Announce {
   /** Writes s, prepares to make progress up to max
    *  remembers id as name for progress counter (and prints it if necessary) 
    *  (takes only effect iff current Announce level >= the given lvl) */
-  public static void progressStart(String s, String id, double max, Level lvl) {
+  public static synchronized void progressStart(String s, String id, double max, Level lvl) {
     if(D.smaller(level, lvl))
       return;
     if(progressLevel<9)
