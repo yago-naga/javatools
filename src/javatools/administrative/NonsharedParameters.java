@@ -399,7 +399,7 @@ public class NonsharedParameters implements Cloneable{
           "was not found.");
     }
     String lastAttrib=null;
-    for (String l : new FileLines(iniFile)) {
+    for (String l : new FileLines(f)) {
       Matcher m = INIPATTERN.matcher(l);
       if (!m.matches()) {
         if(lastAttrib!=null) {
