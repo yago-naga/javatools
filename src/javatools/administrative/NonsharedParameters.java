@@ -6,6 +6,7 @@ import java.io.Writer;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -268,9 +269,34 @@ public class NonsharedParameters implements Cloneable{
     if(!isDefined(s)) return(null);
     return(Arrays.asList(get(s).split("\\s*,\\s*")));
   }
+  
+  /** Returns a value for a map parameter */
+  public Map<String,String> getMap(String s) throws UndefinedParameterException  {
+    if(!isDefined(s)) return(null);
+    Map<String,String> map =new HashMap<String,String>();
+    for(String entry:get(s).split("\\s*,\\s*")){
+      String[] entrypair=entry.split("\\s*=>\\s*");
+      if (entrypair.length<2)
+        return null;
+      map.put(entrypair[0].toLowerCase(), entrypair[1]);
+    }      
+    return map;
+  }
+  
+  /** Returns a value for a map parameter */
+  public String getMapEntry(String s, String key) throws UndefinedParameterException  {
+    if(!isDefined(s)) return(null);       
+    for(String entry:get(s).split("\\s*,\\s*")){
+      String[] entrypair=entry.split("\\s*=>\\s*");
+      if (entrypair.length<2)
+        return null;
+      if(entrypair[0].toLowerCase().equals(key.toLowerCase()))
+        return entrypair[1];
+    }      
+    return null;
+  }
 
 
- 
   /** Returns a value for a parameter*/
   public String get(String s) throws UndefinedParameterException  {
     if(values==null) throw new RuntimeException("Call init() before get()!");
