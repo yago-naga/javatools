@@ -275,7 +275,7 @@ public class NonsharedParameters implements Cloneable{
     if(!isDefined(s)) return(null);
     Map<String,String> map =new HashMap<String,String>();
     for(String entry:get(s).split("\\s*,\\s*")){
-      String[] entrypair=entry.split("\\s*=>\\s*");
+      String[] entrypair=entry.split("\\s*-->\\s*");
       if (entrypair.length<2)
         return null;
       map.put(entrypair[0].toLowerCase(), entrypair[1]);
@@ -287,7 +287,7 @@ public class NonsharedParameters implements Cloneable{
   public String getMapEntry(String s, String key) throws UndefinedParameterException  {
     if(!isDefined(s)) return(null);       
     for(String entry:get(s).split("\\s*,\\s*")){
-      String[] entrypair=entry.split("\\s*=>\\s*");
+      String[] entrypair=entry.split("\\s*-->\\s*");
       if (entrypair.length<2)
         return null;
       if(entrypair[0].toLowerCase().equals(key.toLowerCase()))
