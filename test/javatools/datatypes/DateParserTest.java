@@ -2,6 +2,8 @@ package javatools.datatypes;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import javatools.parsers.DateParser;
@@ -15,8 +17,8 @@ public class DateParserTest {
     assertEquals("-26-##-##", DateParser.normalize("26 BC"));
     assertEquals("##-08-23 (53 years old)", DateParser.normalize("August 23 (53 years old)"));
     assertEquals("{{death date and age| 1938-02-19|1877-02-01|df=y}}", DateParser.normalize("{{death date and age| 1938 |2|19|1877|2|1|df=y}}"));
-    assertEquals("{{Birth date|1896-02-19|df=y}}",DateParser.normalize("{{Birth date|1896|February|19|df=y}}"));
-    assertEquals(DateParser.isDate("-5-##-##"),true);
+    assertEquals("{{Birth date|1896-02-19|df=y}}", DateParser.normalize("{{Birth date|1896|February|19|df=y}}"));
+    assertEquals(DateParser.isDate("-5-##-##"), true);
   }
 
   @Test
@@ -50,4 +52,12 @@ public class DateParserTest {
     assertEquals("1913-12-10", dates.get(1));
   }
 
+  @Test
+  public void dateTest() {
+    String sentence = "Who died in 1945 and was born in October 1900 and won a prize on 14 December, 1920?";
+    int pos[] = new int[2];
+    DateParser.getDate(sentence, pos);
+    assertEquals(12, pos[0]);
+    assertEquals(16, pos[1]);
+  }
 }

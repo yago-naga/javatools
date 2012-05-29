@@ -909,7 +909,7 @@ public class DateParser {
       m = SIMPLEYEARPATTERN.matcher(d.toString());
       if (!m.find()) return (null);
       pos[0] = m.start();
-      pos[1] = m.end() - 2;
+      pos[1] = m.end();
       return (new String[] { m.group(1), "##", "##" });
     }
     pos[0] = m.start();
