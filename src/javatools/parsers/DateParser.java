@@ -114,7 +114,7 @@ public class DateParser {
   }
 
   /** Contains the month short names */
-  private static final String[] MONTHS = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+  //private static final String[] MONTHS = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 
   private static final String[] MONTHS_EN = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 
@@ -284,7 +284,7 @@ public class DateParser {
       new FindReplace(newDate("([0-9#]++)", "([0-9#]{2})", "([0-9])" + WB), newDate("$1", "$2", "0$3")) };
 
   /** Holds the pattern seeking for month names */
-  private static final Pattern monthPattern = Pattern.compile(WB + "(Jan|January|Feb|February|Febr|Mar|March|Apr|April|May|Jun|June|Jul|July|Aug|August|Sep|September|Sept" + "|Oct|October|Nov|November|Dec|December)" + WB);
+  //private static final Pattern monthPattern = Pattern.compile(WB + "(Jan|January|Feb|February|Febr|Mar|March|Apr|April|May|Jun|June|Jul|July|Aug|August|Sep|September|Sept" + "|Oct|October|Nov|November|Dec|December)" + WB);
 
   private static final Pattern monthPatternEn = Pattern.compile(WB + "(Jan|January|Feb|February|Febr|Mar|March|Apr|April|May|Jun|June|Jul|July|Aug|August|Sep|September|Sept" + "|Oct|October|Nov|November|Dec|December)" + WB);
 
