@@ -936,6 +936,7 @@ public class Char {
 
   /** Decodes all ampersand sequences in the string*/
   public static String decodeAmpersand(String s) {
+    if(s==null || s.indexOf('&')==-1) return(s);
     StringBuilder result = new StringBuilder();
     int[] eatLength = new int[1];// add this in order to multithread safe
     while (s.length() != 0) {
