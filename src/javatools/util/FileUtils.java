@@ -6,10 +6,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+
+import javatools.filehandlers.FileLines;
 
 /** 
 This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
@@ -72,5 +75,58 @@ public class FileUtils {
    */
   public static BufferedWriter getBufferedUTF8Writer(String fileName) throws FileNotFoundException {
     return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), Charset.forName("UTF-8")));
+  }
+    
+  /**
+   * Verifies that a file is lexicographically order (ascending or descending)
+   * 
+   * @param check         File to check
+   * @param descending    true if ordering should be descending, false if it should be ascending
+   * @return              true if file is order, false otherwise
+   * @throws IOException
+   */
+  public static boolean verifyOrderedFile(File check, boolean descending) throws IOException {
+    if (check == null || check.isDirectory() || !check.canRead()) {
+      System.out.println("Unable to verify sort order of file, make sure it is readable and not a directory");
+    }
+    
+    boolean first = true;
+    
+    String one = "";
+    String two = "";
+    
+    long lineCount = 0;
+    
+    for (String line : new FileLines(check, "UTF-8", "Verifying that '" + check + "' is sorted")) {
+      lineCount++;
+      
+      if (first) {
+        one = line;
+        two = line;
+        first = false;
+        continue;
+      }
+      
+      one = two;
+      two = line;
+      
+      int comp = two.compareTo(one);
+      
+      if (!descending && comp < 0) {
+        System.out.println("Ascending order violated in line " + lineCount + ": '" + one + "' vs. '" + two + "'");
+        return false;
+      }
+      
+      if (descending && comp > 0) {
+        System.out.println("Descending order violated in line " + lineCount + ": '" + one + "' vs. '" + two + "'");
+        return false;
+      }
+    }
+    
+    return true;
+  }
+  
+  public static void main(String[] args) throws IOException {
+    verifyOrderedFile(new File(args[0]), true);
   }
 }
