@@ -889,6 +889,15 @@ public class NumberParser {
     return (new Double(number).intValue());
   }
 
+  /** Calls Integer.parseInt, returns an Integer or NULL*/
+  public static Integer parseInt(String d) {
+    try {
+      return(Integer.parseInt(d));
+    } catch(Exception e) {
+      return(null);
+    }
+  }
+  
   /** TRUE if the numbers differ in the unit and or by more than 10% */
   public static boolean different(String n1, String n2) {
     String[] num1 = getNumberAndUnit(n1, new int[2]);

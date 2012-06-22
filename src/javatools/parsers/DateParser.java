@@ -949,15 +949,15 @@ public class DateParser {
       }
       // checks the month value
       if (!split[1].contains("#")) {
-        int value = Integer.parseInt(split[1]);
-        if (value > 12 || value < 1) {
+        Integer value = NumberParser.parseInt(split[1]);
+        if (value==null || value > 12 || value < 1) {
           split[1] = "##";
         }
       }
       // could check with date
       if (!split[2].contains("#")) {
-        int value = Integer.parseInt(split[2]);
-        if (value > 31 || value < 1) {
+        Integer value = NumberParser.parseInt(split[2]);
+        if (value==null || value > 31 || value < 1) {
           split[2] = "##";
         }
       }

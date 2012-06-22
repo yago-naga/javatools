@@ -90,6 +90,7 @@ public class PostgresDatabase extends Database {
   
   /** Sets the default schema*/
   public void setSchema(String s) throws SQLException {
+    if(s==null) return;
     executeUpdate("SET search_path TO "+s+", public");
     schema=s;
     description=description.substring(0,description.lastIndexOf(' '))+" "+schema;
