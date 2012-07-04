@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Map;
 
-import javatools.administrative.Announce;
 import javatools.administrative.D;
 
 /** 
@@ -43,10 +42,20 @@ behave according to the conventions of Postgres. For example, VARCHAR string lit
 inner quotes as doublequotes.*/
 public class PostgresDatabase extends Database {
 
+  /** holds the user name */
+  private String user=null;
+  private String password=null;
+  private String database=null;
+  private String host=null;
+  private String port=null; 
+  
   /** Holds the default schema*/
   protected String schema = null;
+  /** indicates whether to use ssl */
+  private boolean useSSL=false; 
+ 
 
-  /** Constructs a non-functional OracleDatabase for use of getSQLType*/
+  /** Constructs a non-functional PostgresDatabase for use of getSQLType*/
   public PostgresDatabase() {
     java2SQL.put(String.class,postgretext);
     type2SQL.put(Types.VARCHAR,postgrevarchar);    
@@ -59,16 +68,7 @@ public class PostgresDatabase extends Database {
    * @throws InstantiationException 
    * @throws SQLException */
   public PostgresDatabase(String user, String password, String database, String host, String port, boolean useSSL) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-    this();
-    if (password == null) password = "";
-    if (host == null || host.length() == 0) host = "localhost";
-    if (port == null || port.length() == 0) port = "5432";
-    driver = (Driver) Class.forName("org.postgresql.Driver").newInstance();
-    DriverManager.registerDriver(driver);
-    String url = "jdbc:postgresql://" + host + ":" + port + (database == null ? "" : "/" + database) + (useSSL ? "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory" : "");
-    connection = DriverManager.getConnection(url, user, password);
-    connection.setAutoCommit(true);
-    description = "Postgres database '" + database + "' as '" + user + "' at " + host + ":" + port + " using schema '" + schema+"'";
+    this(user,password,database,host,port,null,useSSL);        
   }
 
   public PostgresDatabase(String user, String password, String database, String host, String port) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
@@ -77,15 +77,37 @@ public class PostgresDatabase extends Database {
 
   /** Constructs a new Database from a user, a password and a host, setting also the (preferred) schema (public stays fallback schema) */
   public PostgresDatabase(String user, String password, String database, String host, String port, String schema, boolean useSSL) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-    this(user, password, database, host, port, useSSL);
-    setSchema(schema);
+    this();
+    if (password == null) password = "";
+    if (host == null || host.length() == 0) host = "localhost";
+    if (port == null || port.length() == 0) port = "5432";
+    driver = (Driver) Class.forName("org.postgresql.Driver").newInstance();
+    DriverManager.registerDriver(driver);
+    this.user=user;
+    this.password=password;
+    this.database=database;
+    this.host=host;
+    this.port=port;
+    this.useSSL=useSSL;
+    this.schema=schema;
+    connect();    
   }
   
   /** Constructs a new Database from a user, a password and a host, setting also the (preferred) schema (public stays fallback schema) */
   public PostgresDatabase(String user, String password, String database, String host, String port, String schema) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-    this(user, password, database, host, port, false);
-    setSchema(schema);
+    this(user, password, database, host, port, schema, false);    
   }
+
+  /** connects to the database specified */
+  @Override
+  public void connect () throws SQLException{
+    String url = "jdbc:postgresql://" + host + ":" + port + (database == null ? "" : "/" + database) + (useSSL ? "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory" : "");
+    connection = DriverManager.getConnection(url, user, password);
+    connection.setAutoCommit(true);
+    setSchema(schema);
+    description = "Postgres database '" + database + "' as '" + user + "' at " + host + ":" + port + " using schema '" + schema+"'";
+  }
+  
 
   
   /** Sets the default schema*/
@@ -173,7 +195,7 @@ public static Postgretext postgretext=new Postgretext();
       if (attributes[i + 1] instanceof Integer) {
         b.append(getSQLType((Integer) attributes[i + 1])).append(", ");
       } else {
-        b.append(getSQLType((Class) attributes[i + 1])).append(", ");
+        b.append(getSQLType((Class<?>) attributes[i + 1])).append(", ");
       }
     }
     b.setLength(b.length() - 2);

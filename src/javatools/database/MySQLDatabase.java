@@ -36,6 +36,13 @@ Example:
 </PRE>
 */
 public class MySQLDatabase extends Database {
+  
+  /** holds the user name */
+  private String user=null;
+  private String password=null;
+  private String database=null;
+  private String host=null;
+  private String port=null; 
 
   /** Constructs a new MySQLDatabase from a user and a password,
    * all other arguments may be null*/
@@ -46,11 +53,12 @@ public class MySQLDatabase extends Database {
     if (database == null) database = "";
     if(port==null) port="";
     else port=":"+port; 
-    connection = DriverManager.getConnection(
-          "jdbc:mysql://"+host+port+"/"+database+"?user="+user+"&password="+password);
-    connection.setAutoCommit( true );  
-    description="MySQL database for "+user+" at "+host+":"+port+", database "+database;
-
+    this.user=user;
+    this.password=password;
+    this.database=database;
+    this.host=host;
+    this.port=port;
+    connect();
     
 	  type2SQL.put(Types.REAL, SQLType.ansifloat);	  
 	  type2SQL.put(Types.BLOB,blob);
@@ -63,6 +71,15 @@ public class MySQLDatabase extends Database {
   }
 
   public MySQLDatabase() {
+  }
+  
+  /** connects to the database specified */
+  @Override
+  public void connect () throws SQLException{
+    connection = DriverManager.getConnection(
+        "jdbc:mysql://"+host+port+"/"+database+"?user="+user+"&password="+password);
+    connection.setAutoCommit( true );  
+    description="MySQL database for "+user+" at "+host+":"+port+", database "+database;
   }
 
 @Override
