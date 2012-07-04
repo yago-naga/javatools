@@ -1,6 +1,5 @@
 package javatools.database;
 
-import java.beans.FeatureDescriptor;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
