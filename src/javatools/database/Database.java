@@ -519,14 +519,13 @@ public abstract class Database {
     try {
       return executeUpdateQuery(sql);
     } catch (SQLException e) {
-      attemptReconnect(e, autoReconnectOnUpdate);    
-      reconnect();
+      attemptReconnect(e, autoReconnectOnUpdate);          
       return executeUpdateQuery(sql);
     }  
   }
   
   /** Executes an SQL update query, returns the number of rows added/deleted */
-  public int executeUpdateQuery(String sqlcs) throws SQLException {
+  protected int executeUpdateQuery(String sqlcs) throws SQLException {
     String sql = prepareQuery(sqlcs.toString());
     try {
       Statement s = connection.createStatement();
