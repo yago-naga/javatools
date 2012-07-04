@@ -414,6 +414,34 @@ public abstract class Database {
     }    
   }
 
+  /** called when query execution failed due to some exception; 
+   *  checks connectivity and if connection is broken may attempt to reconnect 
+   *  depending on the given parameters,
+   *  if the connection is still alive, reconnection fails or 
+   *  autoReconnect is not enabled throws a fitting exception */
+  protected void attemptReconnect(SQLException cause, boolean autoReconnect)
+  throws SQLException{
+    boolean connected=connected();
+    /* if execution fails, the connection might be broken or there is an actual problem
+     * if connection is broken and reconnecting enabled, we try to reconnect, otherwise:
+     * if connection is alive, we throw the actual error else a ConnectionIsBrokenSQLException */
+    if(connected)
+      throw cause;
+    else{ 
+      if(autoReconnect){        
+        try{
+          reconnect();
+        } catch (SQLException ex2) {          
+          throw new ConnectionBrokenSQLException("Connection is broken. Reconnection attempt failed.\n" +
+                                                 "Original exception at first try was:\n "+cause,ex2);        
+        }
+      }
+      else{
+        throw new ConnectionBrokenSQLException("Connection is broken, " +
+            "did not try to reconnect and re-execute query.", cause);
+      }
+    }   
+  }
 
   /**
    * Returns the results for a query as a ResultSet with given type, concurrency and
@@ -451,21 +479,8 @@ public abstract class Database {
     try {
       return executeQuery(sql, resultSetType, resultSetConcurrency, fetchsize);
     } catch (SQLException e) {
-      /* if execution fails, the connection might be broken or there is an actual problem
-       * if connection is broken and reconnecting enabled, we try to reconnect, otherwise:
-       * if connection is alive, we throw the actual error else a ConnectionIsBrokenSQLException */      
-      if((!autoReconnectOnSelect) || connected())
-        throw (autoReconnectOnSelect?e:new ConnectionBrokenSQLException("Connection is broken, " +
-        		                                    "did not try to reconnect and re-execute query.", e));
-      else{        
-        try{
-          reconnect();
-          return executeQuery(sql, resultSetType, resultSetConcurrency, fetchsize);
-        } catch (SQLException ex2) {          
-            throw new ConnectionBrokenSQLException("Connection is broken. Reconnection attempt failed.\n" +
-            		                                   "Original exception at first try was:\n "+e,ex2);          
-        }
-      }
+      attemptReconnect(e,autoReconnectOnSelect);
+      return executeQuery(sql, resultSetType, resultSetConcurrency, fetchsize);            
     }
   }
 
@@ -504,19 +519,9 @@ public abstract class Database {
     try {
       return executeUpdateQuery(sql);
     } catch (SQLException e) {
-      /* if execution fails, the connection might be broken or there is an actual problem
-       * if connection is broken and reconnecting enabled, we try to reconnect, otherwise:
-       * if connection is alive, we throw the actual error else a ConnectionIsBrokenSQLException */      
-      if((!autoReconnectOnUpdate) || connected())
-        throw (autoReconnectOnUpdate?e:new ConnectionBrokenSQLException("Connection is broken, did not try to reconnect and re-execute query.", e));
-      else{         
-          try{          
-            reconnect();
-            return executeUpdateQuery(sql);
-          } catch (SQLException ex2) {          
-              throw new ConnectionBrokenSQLException("Connection is broken. Reconnection attempt failed. \n Original exception at first try was:\n "+e,ex2);          
-          }        
-      }
+      attemptReconnect(e, autoReconnectOnUpdate);    
+      reconnect();
+      return executeUpdateQuery(sql);
     }  
   }
   
@@ -1319,22 +1324,13 @@ public abstract class Database {
 
         String details = e.getNextException() == null ? "" : e.getNextException().getMessage();
         SQLException ex= new SQLException(e.getMessage() + "\n\n" + details);
-        /* if execution fails, the connection might be broken or there is an actual problem
-         * if connection is broken and reconnecting enabled, we try to reconnect, otherwise:
-         * if connection is alive, we throw the actual error else a ConnectionIsBrokenSQLException */
-        if((!autoReconnectOnUpdate) || connected())
-          throw (autoReconnectOnUpdate?ex:new ConnectionBrokenSQLException("Connection is broken, " +
-          		                                "did not try to reconnect and re-execute query.", ex));
-        else{         
-          try{          
-            reconnect();
-            flush(oldBatch);
-          } catch (SQLException ex2) {
-            values.addAll(oldBatch);
-            throw new ConnectionBrokenSQLException("Connection is broken. Reconnection attempt failed.\n" +
-            		                                   "Original exception at first try was:\n "+ex,ex2);          
-          }        
-        }
+        try{
+          attemptReconnect(ex, autoReconnectOnUpdate);        
+          flush(oldBatch);
+        } catch (SQLException ex2) {
+          values.addAll(oldBatch);
+          throw ex2;          
+        }                
       }      
     }
 
