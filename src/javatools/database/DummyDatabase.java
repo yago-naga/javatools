@@ -1415,4 +1415,10 @@ public class DummyDatabase extends Database {
 				);
 		d.runInterface();
 	}
+
+  @Override
+  public void connect() throws SQLException {
+    // TODO Auto-generated method stub
+    
+  }
 }
