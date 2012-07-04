@@ -221,8 +221,8 @@ public static MysqlVarchar mysqlvarchar=new MysqlVarchar();
   //           DB specific SQL variations of common functionality
   // ---------------------------------------------------------------------
   
-  /** returns the database system specific expression for isnull functionality 
-   * i.e. isnull(a,b) returns b if a is null and a otherwise */
+  /** returns the database system specific expression for ifnull functionality 
+   * i.e. ifnull(a,b) returns b if a is null and a otherwise */
   @Override
   public String getSQLStmntIFNULL(String a, String b){
 	  return "IFNULL("+a+","+b+")";

@@ -749,10 +749,10 @@ public abstract class Database {
     return (java2SQL.get(c));
   }
 
-  /** returns the database system specific expression for isnull functionality 
-   * i.e. isnull(a,b) returns b if a is null and a otherwise */
+  /** returns the database system specific expression for if-null functionality 
+   * i.e. ifnull(a,b) returns b if a is null and a otherwise */
   public String getSQLStmntIFNULL(String a, String b) {
-    Announce.error("You database system class needs to implement this functionality.");
+    Announce.error("Your database system class needs to implement this functionality.");
     return "";
   }
 
@@ -766,7 +766,8 @@ public abstract class Database {
       return (t.format(o));
   }
 
-  /** Formats an object appropriately (provided that its class is in java2SQL) and assigns NULL it the given object is a null pointer */
+  /** Formats an object appropriately (provided that its class is in java2SQL) 
+   *  and assigns NULL if the given object is a null pointer */
   public String formatNullToNull(Object o) {
     if (o == null) return "NULL";
     else return format(o);

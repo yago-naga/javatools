@@ -230,8 +230,8 @@ public static Postgretext postgretext=new Postgretext();
      return sql.toString();    
    }
   
-  /** returns the database system specific expression for isnull functionality 
-   * i.e. isnull(a,b) returns b if a is null and a otherwise */
+  /** returns the database system specific expression for ifnull functionality 
+   * i.e. ifnull(a,b) returns b if a is null and a otherwise */
   @Override
   public String getSQLStmntIFNULL(String a, String b){
     return "COALESCE("+a+","+b+")";
