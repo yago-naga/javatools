@@ -869,40 +869,7 @@ public abstract class Database {
     return sb.toString().replace("-", "m");
   }
 
-  /** Creates an index name*/
-  public String indexNameOld(String table, String... attributes) {
-    StringBuilder indexName = new StringBuilder(table);
-    int length = table.length() + 5;
-    //removes brackets for mysql the (160)
-    String[] use = new String[attributes.length];
-    for (int i = 0; i < attributes.length; i++) {
-      int index = attributes[i].indexOf("(");
-      if (index > 0) {
-        use[i] = attributes[i].substring(0, index);
-      } else {
-        use[i] = attributes[i];
-      }
-    }
-    for (String a : use)
-      length = length + a.length();
-    if (length > 30) {
-      int min = 30 - (use.length * 2) - 2;
-      if (min < 5) min = 5;
-      if (min > table.length()) min = table.length();
-      indexName = new StringBuilder(indexName.substring(0, min));
-      for (String a : use)
-        indexName.append(a.substring(0, 2));
-      indexName.append("_I");
-    } else {
-      for (String a : use)
-        indexName.append(a);
-      indexName.append("Index");
-    }
-    if (indexName.length() > 30) {
-      return indexName.substring(0, 30);
-    }
-    return (indexName.toString());
-  }
+
 
   /** Returns the command to create one index on a table */
   public String createIndexCommand(String table, boolean unique, String... attributes) {
