@@ -103,7 +103,7 @@ public class OracleDatabase extends Database {
     Driver driver;
     driver = (Driver) Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
     DriverManager.registerDriver(driver);
-    resetConnection();
+    connect();
     description = "ORACLE database " + user + "/" + password + " at " + host + ":" + port + " instance " + inst;
   }
 
@@ -115,7 +115,9 @@ public class OracleDatabase extends Database {
   /** Holds the String by which the connection can be reset*/
   protected String connectionString;
 
-  /** Resets the connection. */
+  /** Resets the connection. 
+   * @deprecated  replaced by {@link #reconnect()} */
+  @Deprecated
   public void resetConnection() throws SQLException {
     close(connection);
     connect();
