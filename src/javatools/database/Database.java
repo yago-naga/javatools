@@ -126,7 +126,9 @@ public abstract class Database {
    *  Note: If I'm not mistaken, typical latency over an averagely good internet connection (same continent) 
    *  has a latency of around ~100 ms, that's why the limit is set to 150, 
    *  feel free to adapt if this seems problematic/too large
-   *  Note: only has any effect iff autoReconnect is true */
+   *  Note: only has any effect iff autoReconnectOnX is true 
+   *  Note: Only works for databases where the driver supports isValid checks
+   *  otherwise we will simply issue a dummy query and see whether we get an answer */
   int validityCheckTimeout=150;
   
   
