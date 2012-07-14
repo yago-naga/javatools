@@ -127,6 +127,10 @@ public class NonsharedParameters implements Cloneable{
         "none"
   });
   
+  /*****************************************************************************************************************    
+   ****                                   Initiate and ShutDown                                                 ****
+   *****************************************************************************************************************/
+  
   /** Constructors*/
   public NonsharedParameters(){};
   public NonsharedParameters(File iniFile)throws IOException{    
@@ -145,8 +149,33 @@ public class NonsharedParameters implements Cloneable{
 	if(localPath!=null)
 	   	basePath=localPath.endsWith("/")?localPath:localPath+"/";
     init(iniFile);
-  };  
+  };
+  
+  public NonsharedParameters(NonsharedParameters other){
+    this.basePath=other.basePath;
+    this.iniFile=other.iniFile;    
+    for (Map.Entry<String,String> entry:other.values.entrySet())
+     values.put(entry.getKey(),entry.getValue());      
+  };
 
+  /** Cloning implementation */
+  @Override 
+  public NonsharedParameters clone(){
+    try {
+      NonsharedParameters other=(NonsharedParameters) super.clone();
+      other.values=new TreeMap<String,String>();
+      for (Map.Entry<String,String> entry:values.entrySet())
+        other.values.put(entry.getKey(),entry.getValue());            
+      return other;
+    } catch (CloneNotSupportedException e) {
+        throw new Error("Is too",e);
+    }
+  }
+  
+  
+  /*****************************************************************************************************************    
+   ****                                     Parameter Access                                                    ****
+   *****************************************************************************************************************/
   
   /** Returns a value for a date parameter;  */
   public Timestamp getTimestamp(String s) throws UndefinedParameterException {
@@ -630,19 +659,7 @@ public class NonsharedParameters implements Cloneable{
     w.close();
   }
   
-  /** Cloning implementation */
-  @Override
-  public NonsharedParameters clone(){
-    try {
-      NonsharedParameters other=(NonsharedParameters) super.clone();
-      other.values=new TreeMap<String,String>();
-      for (Map.Entry<String,String> entry:values.entrySet())
-        other.values.put(entry.getKey(),entry.getValue());            
-      return other;
-    } catch (CloneNotSupportedException e) {
-        throw new Error("Is too",e);
-    }
-  }
+
 
   
   
