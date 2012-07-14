@@ -4,6 +4,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -217,6 +221,31 @@ public class NonsharedParameters implements Cloneable{
   /** Returns a value for a file or folder parameter, returning the default value if undefined; same as getPath but returns an actual File instance */
   public File getFile(String s, File defaultValue) throws UndefinedParameterException {
     return(isDefined(s)?new File(getPath(s)):defaultValue);
+  }
+  
+  /** Returns a URI built from a given parameter's value 
+   * @throws URISyntaxException */
+  public URI getURI(String s) throws UndefinedParameterException, URISyntaxException{
+    return new URI(get(s));
+  }
+  
+  /** Returns a URI built from a given parameter's value, but returns a given default value if the parameter is undefined
+   * @throws URISyntaxException */
+  public URI getURI(String s, URI defaultValue) throws UndefinedParameterException, URISyntaxException {
+    return(isDefined(s)?new URI(get(s)):defaultValue);
+  }
+    
+  /** Returns a URL built from a given parameter's value 
+   * @throws MalformedURLException */
+  public URL getURL(String s) throws UndefinedParameterException, MalformedURLException{
+    return new URL(get(s));
+  }
+  
+  /** Returns a URL built from a given parameter's value, but returns a given default value if the parameter is undefined
+   * @throws MalformedURLException 
+   * @throws URISyntaxException */
+  public URL getURL(String s, URL defaultValue) throws UndefinedParameterException, MalformedURLException {
+    return(isDefined(s)?new URL(get(s)):defaultValue);
   }
 
   /** Returns a value for an integer parameter as Integer object*/
