@@ -28,6 +28,8 @@ the YAGO-NAGA team (see http://mpii.de/yago-naga).
    </PRE>
 */
 public class FileSet extends ArrayList<File> {
+  private static final long serialVersionUID = 1L;
+
   /** Constructs a file from a folder, subfolder names and a filename */
   public static File file(File f, String... s) {
     for(String n : s) {
