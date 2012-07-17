@@ -282,7 +282,7 @@ public class Announce {
     newLine();
   }
 
-  /** Prints an error message and aborts (aborts even if log level is mute)*/
+  /** Prints an error message and aborts by exiting (aborts even if log level is mute)*/
   public static void error(Object... o) {
     if (D.smaller(level, Level.ERROR)) System.exit(255);
     while(doingLevel>0) failed();
@@ -296,7 +296,7 @@ public class Announce {
     System.exit(255);
   }
 
-  /** Prints an exception and aborts (aborts even if log level is mute)*/
+  /** Prints an exception and aborts by exiting (aborts even if log level is mute)*/
   public static void error(Exception e) {
     if (D.smaller(level, Level.ERROR)) System.exit(255);
     if(debug)
@@ -307,6 +307,37 @@ public class Announce {
     e.printStackTrace(writer);
     writer.flush();
     System.exit(255);
+  }
+  
+  /** Prints an error message and aborts by throwing a RuntimeException (aborts even if log level is mute) */
+  public static void errorException(Object... o) {
+    if (D.smaller(level, Level.ERROR)) throw new RuntimeException("Fatal Error.");
+    while(doingLevel>0) failed();
+    newLine();
+    if(debug)
+      print("[!Error: "+CallStack.toString(new CallStack().ret().top()) + "] ");
+    else
+      print("Error: ");
+    print(o);
+    newLine();
+    Exception cause=null;
+    for(Object ob : o)
+      if(ob instanceof Exception)
+        cause=(Exception)ob;
+    throw cause!=null?new RuntimeException("Fatal Error.",cause):new RuntimeException("Fatal Error.");
+  }
+
+  /** Prints an exception and aborts by throwing a RuntimeException (aborts even if log level is mute)*/
+  public static void errorException(Exception e) {
+    if (D.smaller(level, Level.ERROR)) throw new RuntimeException("Fatal Error.");
+    if(debug)
+      print("[!Error: "+CallStack.toString(new CallStack().ret().top()) + "] ");
+    else
+      print("Error: ");
+    PrintWriter writer=new PrintWriter(out);
+    e.printStackTrace(writer);
+    writer.flush();
+    throw new RuntimeException("Fatal Error.",e);
   }
 
   /** Prints a warning*/
@@ -592,7 +623,8 @@ public class Announce {
     Announce.progressAt(1); // We're at 1 (of 5)
     Announce.startTimer(doingStuff);   // we are doing some special sort of computation
     D.waitMS(3000);   
-    Announce.progressAt(4); // We're at 4 (of 5)    
+    Announce.progressAt(4); // We're at 4 (of 5)
+    
     D.waitMS(1000);
     Announce.stopTimer(doingStuff);  // we are done with that kind of computation
     Announce.progressDone();
@@ -629,5 +661,6 @@ public class Announce {
     Announce.printTime(); //Printing the overall time
     Announce.printTime("doing stuff",doingStuff); //Printing time used to "do stuff"
     Announce.printTime("doing other stuff",doingOtherStuff); //Printing time used to "do other stuff"
+    
   }
 }
