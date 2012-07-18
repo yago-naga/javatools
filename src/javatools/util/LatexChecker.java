@@ -21,18 +21,22 @@ This utility checks which files are referenced by a Latex File
 public class LatexChecker {
 
   /** Include statements*/
-  public static final Set<String> includeStatements=new FinalSet<String>("\\include","\\input","\\includegraphics","\\documentclass");
-  
+  public static final Set<String> includeStatements=new FinalSet<String>("\\include","\\input","\\includegraphics","\\documentclass","\\bibliography");
+
+  /** Extensions to consider*/
+  public static final String[] extensions=new String[]{"tex","cls","bib","pdf","eps"};
+
   /** Returns all files referenced in this latex file*/
   public static Set<String> references(File latexFile) throws IOException {
     Set<String> result=new HashSet<String>();
     for(String line : new FileLines(latexFile)) {
+      if(line.trim().startsWith("%")) continue;
       for(String stat : includeStatements) {
         for(int i=line.indexOf(stat);i!=-1;i=line.indexOf(stat,i+1)) {
           int j=line.indexOf('{',i);
-          if(j==-1) continue;
+          if(j==-1 ||  Character.isLetter(line.charAt(i+stat.length()))) continue;
           int k=line.indexOf('}',i);
-          if(k==-1) continue;
+          if(k==-1 || j+1==k) continue;
           result.add(line.substring(j+1,k));
         }
       }
@@ -44,13 +48,15 @@ public class LatexChecker {
   public static Set<File> referencedBy(File latexFile) throws IOException {
     Announce.doing("Analyzing",latexFile);
     Set<File> result=new HashSet<File>();
+    result.add(latexFile);
     for(String filename : references(latexFile)) {
-      File f=new File(latexFile.getParentFile(),filename);
-      if(!f.exists()) f=FileSet.newExtension(f, "cls");
-      if(!f.exists()) f=FileSet.newExtension(f, "bib");
-      if(!f.exists()) f=FileSet.newExtension(f, "tex");
+      File f=new File(latexFile.getParent()+'/'+filename);
+      for(String extension : extensions) {
+        f=FileSet.newExtension(f, extension);
+        if(f.exists()) break;
+      }
       if(!f.exists()) {
-        Announce.warning("File not found:",f);
+        Announce.warning("**** File not found:",filename);
         continue;
       }
       result.add(f);
@@ -75,7 +81,7 @@ public class LatexChecker {
   
   /** returns all referenced and all superfluous files of a given latex file*/
   public static void main(String[] args) throws Exception {
-    args=new String[]{"c:/fabian/conferences/icde2013/susie.tex"};
+    //args=new String[]{"c:/fabian/conferences/icde2013/susie.tex"};
     File latexFile=new File(args[0]);
     Set<File> referenced=referencedBy(latexFile);
     Announce.doing("Referenced files");
@@ -84,7 +90,7 @@ public class LatexChecker {
     }
     Announce.doneDoing("Non-referenced");
     for(File f : superfluous(referenced)) {
-      Announce.message(f);
+      Announce.message("del",f);
     }
     Announce.done();
   }

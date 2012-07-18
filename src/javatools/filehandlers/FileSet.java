@@ -84,9 +84,20 @@ public class FileSet extends ArrayList<File> {
     return(f.substring(dot));
   }
 
-  /** Exchanges the extension of a filename */
+  /** Exchanges the extension of a filename. This is different from newExtension(String) because the "last dot" may be in the folder name, if the file itself has no extension  */
   public static File newExtension(File f,String newex) {
-    return(new File(newExtension(f.getPath(),newex)));
+    if(newex==null) newex="";
+    // Extension may be given with preceding dot or without
+    if(newex.startsWith(".")) newex=newex.substring(1);    
+    int i=f.getName().lastIndexOf('.');
+    // If the task is to delete the extension...
+    if(newex.length()==0) {
+      if(i==-1) return(f);
+      return(new File(f.getParentFile(),f.getName().substring(0,i)));
+    }    
+    // Else add or replace the extension
+    if(i==-1) return(new File(f.getParentFile(),f.getName()+'.'+newex));
+    return(new File(f.getParentFile(),f.getName().substring(0,i)+'.'+newex));
   }
   
   /** Exchanges the extension of a filename */
