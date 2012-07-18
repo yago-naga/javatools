@@ -25,10 +25,10 @@ This utility checks which files are referenced by a Latex File.
 public class LatexChecker {
 
   /** Include statements*/
-  public static final Set<String> includeStatements=new FinalSet<String>("\\include","\\input","\\includegraphics","\\documentclass","\\bibliography");
+  public static final Set<String> includeStatements=new FinalSet<String>("\\include","\\input","\\includegraphics","\\documentclass","\\bibliography","\\bibliographystyle");
 
   /** Extensions to consider*/
-  public static final String[] extensions=new String[]{"tex","cls","bib","pdf","eps","jpg"};
+  public static final String[] extensions=new String[]{"tex","cls","bib","pdf","eps","jpg","bst"};
 
   /** Returns all files referenced in this latex file*/
   public static Set<String> references(File latexFile) throws IOException {
@@ -85,7 +85,7 @@ public class LatexChecker {
   
   /** returns all referenced and all superfluous files of a given latex file*/
   public static void main(String[] args) throws Exception {
-    //args=new String[]{"c:/fabian/conferences/icde2013/susie.tex"};
+    args=new String[]{"c:/fabian/conferences/icde2013/susie.tex"};
     File latexFile=new File(args[0]);
     Set<File> referenced=referencedBy(latexFile);
     Announce.doing("Referenced files");
