@@ -16,7 +16,11 @@ It is licensed under the Creative Commons Attribution License
 (see http://creativecommons.org/licenses/by/3.0) by 
 the YAGO-NAGA team (see http://mpii.de/yago-naga)
 
-This utility checks which files are referenced by a Latex File
+This utility checks which files are referenced by a Latex File.
+
+******* Note that we cannot guarantee that this tool finds all references!! *********
+
+@author Fabian M. Suchanek
 */
 public class LatexChecker {
 
@@ -24,7 +28,7 @@ public class LatexChecker {
   public static final Set<String> includeStatements=new FinalSet<String>("\\include","\\input","\\includegraphics","\\documentclass","\\bibliography");
 
   /** Extensions to consider*/
-  public static final String[] extensions=new String[]{"tex","cls","bib","pdf","eps"};
+  public static final String[] extensions=new String[]{"tex","cls","bib","pdf","eps","jpg"};
 
   /** Returns all files referenced in this latex file*/
   public static Set<String> references(File latexFile) throws IOException {
@@ -66,8 +70,8 @@ public class LatexChecker {
     return(result);
   }
   
-  /** returns all superfluous files*/
-  public static Set<File> superfluous(Set<File> otherFiles) {
+  /** returns all superfluous files. WITHOUT WARRANTY*/
+  public static Set<File> nonReferenced(Set<File> otherFiles) {
     Set<File> folders=new HashSet<File>();
     for(File f : otherFiles) folders.add(f.getParentFile());
     Set<File> result=new HashSet<File>();
@@ -89,9 +93,10 @@ public class LatexChecker {
       Announce.message(f);
     }
     Announce.doneDoing("Non-referenced");
-    for(File f : superfluous(referenced)) {
+    Announce.warning("There is no warranty that these files are really non-referenced!");
+    for(File f : nonReferenced(referenced)) {
       Announce.message("del",f);
-    }
+    }    
     Announce.done();
   }
 }
