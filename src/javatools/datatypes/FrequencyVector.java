@@ -497,6 +497,8 @@ public class FrequencyVector<T, V extends Number & Comparable<V>> {
 
   /** Test*/
   public static void main(String[] args) {
+	  D.p(wilson(120, 777*120/1000));
+	  D.p(wilson(120, 636*120/1000));
     FrequencyVector<String,Integer> groundTruth=new FrequencyVector<String, Integer>(
         new FinalMap<String, Integer>("A",3,"B",1,"C",2)
         );
