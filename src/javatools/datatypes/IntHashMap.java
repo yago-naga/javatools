@@ -1,7 +1,5 @@
 package javatools.datatypes;
 
-import java.lang.reflect.Array;
-
 import javatools.administrative.D;
 
 /**
@@ -33,10 +31,12 @@ public class IntHashMap<K> {
 		values=new int[10];
 	}
 
+	/** Returns an index where to store the object*/
 	protected int index(Object key, int len) {
 		return (Math.abs(key.hashCode()) % len);
 	}
 
+	/** Returns an index where to store the object*/
 	protected int index(K key) {
 		return (index(key, keys.length));
 	}
@@ -60,12 +60,17 @@ public class IntHashMap<K> {
 		}
 	}
 
-	/** Increases a value */
+	/** Increases a value, true for success */
 	public boolean increase(K key) {
 		int i = index(key);
 		while (true) {
-			if (keys[i] == null)
+			if (keys[i] == null) {
+			  keys[i]=key;
+			  values[i]=1;
+			  size++;
+			  if (size > keys.length * 3 / 4) rehash();
 				return (false);
+			}
 			if (keys[i].equals(key)) {
 				values[i]++;
 				return (true);

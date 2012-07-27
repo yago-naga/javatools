@@ -19,79 +19,82 @@ import javatools.administrative.D;
  * 
  */
 public class ByteString implements CharSequence {
-	/** Holds all strings */
-	protected static WeakHashMap<ByteString, ByteString> values = new WeakHashMap<ByteString, ByteString>();
 
-	/** Holds the string */
-	protected byte[] data;
+  /** Holds all strings */
+  protected static WeakHashMap<ByteString, ByteString> values = new WeakHashMap<ByteString, ByteString>();
 
-	/** Hash code */
-	protected int hashCode;
+  /** Holds the string */
+  public byte[] data;
 
-	/** is interned */
-	protected boolean isInterned = false;
+  /** Hash code */
+  protected int hashCode;
 
-	public ByteString(ByteString s, int start, int end) {
-		data = Arrays.copyOfRange(s.data, start, end);
-		hashCode = Arrays.hashCode(data);
-	}
+  /** is interned */
+  public boolean isInterned = false;
 
-	public ByteString intern() {
-		if (isInterned)
-			return (this);
-		ByteString canonic = values.get(this);
-		if (canonic != null)
-			return (canonic);
-		isInterned = true;
-		synchronized (values) {
-			values.put(this, this);
-		}
-		return (this);
-	}
+  public ByteString(ByteString s, int start, int end) {
+    data = Arrays.copyOfRange(s.data, start, end);
+    hashCode = Arrays.hashCode(data);
+  }
 
-	public ByteString(CharSequence s) {
-		data = new byte[s.length()];
-		for (int i = 0; i < s.length(); i++) {
-			data[i] = (byte) (int) s.charAt(i);
-		}
-		hashCode = Arrays.hashCode(data);
-	}
+  public ByteString intern() {
+    if (isInterned) return (this);
+    synchronized (values) {
+      ByteString canonic = values.get(this);
+      if (canonic != null) return (canonic);
+      isInterned = true;
+      values.put(this, this);
+    }
+    return (this);
+  }
 
-	@Override
-	public char charAt(int arg0) {
-		return (char) data[arg0];
-	}
+  public ByteString(CharSequence s) {
+    data = new byte[s.length()];
+    for (int i = 0; i < s.length(); i++) {
+      data[i] = (byte) (s.charAt(i) - 128);
+    }
+    hashCode = Arrays.hashCode(data);
+  }
 
-	@Override
-	public int length() {
-		return data.length;
-	}
+  @Override
+  public char charAt(int arg0) {
+    return (char) (data[arg0] + 128);
+  }
 
-	@Override
-	public CharSequence subSequence(int arg0, int arg1) {
-		return new ByteString(this, arg0, arg1);
-	}
+  @Override
+  public int length() {
+    return data.length;
+  }
 
-	@Override
-	public int hashCode() {
-		return hashCode;
-	}
+  @Override
+  public CharSequence subSequence(int arg0, int arg1) {
+    return new ByteString(this, arg0, arg1);
+  }
 
-	@Override
-	public boolean equals(Object obj) {
-		return obj instanceof ByteString && Arrays.equals(((ByteString) obj).data, data);
-	}
+  @Override
+  public int hashCode() {
+    return hashCode;
+  }
 
-	@Override
-	public String toString() {
-		StringBuilder b = new StringBuilder();
-		for (int i = 0; i < length(); i++) {
-			b.append(charAt(i));
-		}
-		return b.toString();
-	}
+  @Override
+  public boolean equals(Object obj) {
+    return obj instanceof ByteString && Arrays.equals(((ByteString) obj).data, data);
+  }
 
-	public static void main(String[] args) throws Exception {
-		D.p(new ByteString("Hello!"));
-	}
+  @Override
+  public String toString() {
+    StringBuilder b = new StringBuilder();
+    for (int i = 0; i < length(); i++) {
+      b.append(charAt(i));
+    }
+    return b.toString();
+  }
+
+  public String objectId() {
+    return (super.toString());
+  }
+
+  public static void main(String[] args) throws Exception {
+    D.p(new ByteString("Hallo dü!"));
+  }
 }
