@@ -367,9 +367,9 @@ public class NumberParser {
       // --------- billions and millions ------------
       // Currencies often have just a 'm' to indicate million
       new FindReplace("(?i:US\\$|USD|\\$|\\$US)" + B + FLOAT + B + "[Mm]" + WB, "$1 million dollar"),
-      new FindReplace("(?i:euro|eur|euros)" + B + FLOAT + B + "[Mm]" + WB, "$1 million euro"),
+      new FindReplace("(?i:euro|eur|euros|\u20AC)" + B + FLOAT + B + "[Mm]" + WB, "$1 million euro"),
       new FindReplace("(?i:US\\$|USD|\\$|\\$US)" + B + FLOAT + B + "[bB]" + WB, "$1 billion dollar"),
-      new FindReplace("(?i:euro|eur|euros)" + B + FLOAT + B + "[bB]" + WB, "$1 billion euro"),
+      new FindReplace("(?i:euro|eur|euros|\u20AC)" + B + FLOAT + B + "[bB]" + WB, "$1 billion euro"),
       // # trillion
       new FindReplace(SINT + DOT + DIG + B + "[Tt]rillion", "$1$200000000000"),
       new FindReplace(SINT + DOT + DIG + DIG + B + "[Tt]rillion", "$1$2$30000000000"),
@@ -688,7 +688,7 @@ public class NumberParser {
       new FindReplace(SINT + "," + DIG + '%', newNumber("$1.$2", "%")),
       new FindReplace(FLOAT + B + '%', newNumber("$1", "%")),
       new FindReplace("(?i:US\\$|USD|\\$|\\$US)" + B + FLOAT, newNumber("$1", "dollar")),
-      new FindReplace("(?i:eur|euro|euros)" + B + FLOAT, newNumber("$1", "euro")),
+      new FindReplace("(?i:eur|euro|euros|\u20AC)" + B + FLOAT, newNumber("$1", "euro")),
       new FindCompute("((?i:dollars|dollar|\\$|US\\$|USD|\\$US))", "dollar"),
       new FindCompute("((?i:euro?s?))", "euro"),
       new FindCompute("(metres|meters|meter|metre|m)(\\^)?2", "m^2"),
