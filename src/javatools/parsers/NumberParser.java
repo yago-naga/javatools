@@ -687,7 +687,7 @@ public class NumberParser {
       new FindAdd("pm", "oc", 12),
       new FindReplace(SINT + "," + DIG + '%', newNumber("$1.$2", "%")),
       new FindReplace(FLOAT + B + '%', newNumber("$1", "%")),
-      new FindReplace("(?i:US\\$|USD|\\$|\\$US)" + B + FLOAT, newNumber("$1", "dollar")),
+      new FindReplace("(?i:US\\$|USD|\\$|\\$US|US\\$)" + B + FLOAT, newNumber("$1", "dollar")),
       new FindReplace("(?i:eur|euro|euros|\u20AC)" + B + FLOAT, newNumber("$1", "euro")),
       new FindCompute("((?i:dollars|dollar|\\$|US\\$|USD|\\$US))", "dollar"),
       new FindCompute("((?i:euro?s?))", "euro"),
