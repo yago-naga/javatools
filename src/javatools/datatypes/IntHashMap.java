@@ -309,4 +309,24 @@ public class IntHashMap<K> extends AbstractSet<K> {
 	public int hashCode() {
 		return Arrays.hashCode(values);
 	}
+	
+	/** Finds the maximum value*/
+	public int findMax() {
+		int max = Integer.MIN_VALUE;
+		for (int i = 0; i < keys.length; i++) {
+			if (keys[i] != null && values[i] > max)
+				max = values[i];
+		}
+		return (max);
+	}
+
+	/** Computes the sum*/
+	public long computeSum() {
+		long sum=0;
+		for (int i = 0; i < keys.length; i++) {
+			if (keys[i] != null) sum+=values[i];
+		}
+		return (sum);
+	}
+
 }

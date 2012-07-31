@@ -274,4 +274,23 @@ public class DoubleHashMap<K> extends AbstractSet<K>{
 		return Arrays.hashCode(values);
 	}
 
+	/** Finds the maximum value*/
+	public double findMax() {
+		double max = Double.NEGATIVE_INFINITY;
+		for (int i = 0; i < keys.length; i++) {
+			if (keys[i] != null && values[i] > max)
+				max = values[i];
+		}
+		return (max);
+	}
+
+	/** Computes the sum*/
+	public double computeSum() {
+		double sum=0;
+		for (int i = 0; i < keys.length; i++) {
+			if (keys[i] != null) sum+=values[i];
+		}
+		return (sum);
+	}
+
 }
