@@ -832,6 +832,7 @@ public class NumberParser {
    * else null
    */
   public static String getNumber(CharSequence d) {
+    if(d==null) return(null);
     Matcher m = NUMBERPATTERN.matcher(d);
     if (m.find()) return (m.group(1));
     return (null);
@@ -897,7 +898,16 @@ public class NumberParser {
       return(null);
     }
   }
-  
+
+  /** Calls Double.parseDouble, returns an Integer or NULL*/
+  public static Double parseDouble(String d) {
+    try {
+      return(Double.parseDouble(d));
+    } catch(Exception e) {
+      return(null);
+    }
+  }
+
   /** TRUE if the numbers differ in the unit and or by more than 10% */
   public static boolean different(String n1, String n2) {
     String[] num1 = getNumberAndUnit(n1, new int[2]);

@@ -78,7 +78,10 @@ public class ByteString implements CharSequence {
 
   @Override
   public boolean equals(Object obj) {
-    return obj instanceof ByteString && Arrays.equals(((ByteString) obj).data, data);
+    if(!(obj instanceof ByteString)) return(false);
+    ByteString other=(ByteString) obj;
+    if(this.isInterned && other.isInterned) return(this==other);
+    return(Arrays.equals(other.data, data));
   }
 
   @Override

@@ -782,13 +782,6 @@ public class DummyDatabase extends Database {
 		}
 
 		@Override
-		public InputStream getUnicodeStream(int columnIndex)
-				throws SQLException {
-
-			return null;
-		}
-
-		@Override
 		public InputStream getUnicodeStream(String columnLabel)
 				throws SQLException {
 
@@ -1403,6 +1396,12 @@ public class DummyDatabase extends Database {
 			// TODO Auto-generated method stub
 			return null;
 		}
+
+    @Override
+    public InputStream getUnicodeStream(int columnIndex) throws SQLException {
+      // TODO Auto-generated method stub
+      return null;
+    }
 
 	}
 	
