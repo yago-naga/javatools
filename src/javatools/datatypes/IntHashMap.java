@@ -1,6 +1,7 @@
 package javatools.datatypes;
 
 import java.util.AbstractSet;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,244 +19,294 @@ import javatools.administrative.D;
  * http://mpii.de/yago-naga/javatools). It is licensed under the Creative
  * Commons Attribution License (see http://creativecommons.org/licenses/by/3.0)
  * by the YAGO-NAGA team (see http://mpii.de/yago-naga).
- *
+ * 
  * This class implements a HashMap with integer values.
  * 
  * @author Fabian M. Suchanek
  * 
  * @param <K>
  */
-public class IntHashMap<K> extends AbstractSet<K>{
+public class IntHashMap<K> extends AbstractSet<K> {
 
-  /** Holds the keys */
-  protected Object[] keys;
+	/** Holds the keys */
+	protected Object[] keys;
 
-  /** Holds the values */
-  protected int[] values;
+	/** Holds the values */
+	protected int[] values;
 
-  /** Holds size */
-  protected int size;
+	/** Holds size */
+	protected int size;
 
-  /** Constructor*/
-  public IntHashMap() {
-    clear();
-  }
-  
-  /** Creates an intHashMap with the same keys and the sizes*/
-  public IntHashMap(Map<K,Set<K>> map) {
-    this();
-    for(Entry<K,Set<K>> entry : map.entrySet()) put(entry.getKey(),entry.getValue().size());
-  }
+	/** Constructor */
+	public IntHashMap() {
+		clear();
+	}
 
-  /** Returns an index where to store the object*/
-  protected int index(Object key, int len) {
-    return (Math.abs(key.hashCode()) % len);
-  }
+	/** Creates an intHashMap with these keys set to 1 */
+	public IntHashMap(K... keys) {
+		this();
+		for (K k : keys)
+			add(k);
+	}
 
-  /** Returns an index where to store the object*/
-  protected int index(Object key) {
-    return (index(key, keys.length));
-  }
+	/** Creates an intHashMap with the same keys and the sizes */
+	public IntHashMap(Map<K, Set<K>> map) {
+		this();
+		for (Entry<K, Set<K>> entry : map.entrySet())
+			put(entry.getKey(), entry.getValue().size());
+	}
 
-  /** Retrieves a value */
-  public int get(K key) {
-    return (get(key, -1));
-  }
+	/** Returns an index where to store the object */
+	protected int index(Object key, int len) {
+		return (Math.abs(key.hashCode()) % len);
+	}
 
-  /** Finds a key, keys[find] will be NULL if non-existent */
-  protected int find(Object key) {
-    int i = index(key);
-    while (true) {
-      if (keys[i] == null) return (i);
-      if (keys[i].equals(key)) return (i);
-      i++;
-      if (i == keys.length) i = 0;
-    }
-  }
+	/** Returns an index where to store the object */
+	protected int index(Object key) {
+		return (index(key, keys.length));
+	}
 
-  /** Retrieves a value */
-  public int get(K key, int defaultValue) {
-    int pos = find(key);
-    if (keys[pos] == null) return (defaultValue);
-    else return (values[pos]);
-  }
+	/** Retrieves a value */
+	public int get(Object key) {
+		return (get(key, -1));
+	}
 
-  /** True if value is there */
-  public boolean containsKey(Object key) {
-    return (keys[find(key)] != null);
-  }
+	/** Finds a key, keys[find] will be NULL if non-existent */
+	protected int find(Object key) {
+		int i = index(key);
+		while (true) {
+			if (keys[i] == null)
+				return (i);
+			if (keys[i].equals(key))
+				return (i);
+			i++;
+			if (i == keys.length)
+				i = 0;
+		}
+	}
 
-  /** Increases a value, true for 'added new key with delta as value', false for 'increased existing value' */
-  public boolean add(K key, int delta) {
-    int pos = find(key);
-    if (keys[pos] == null) {
-      keys[pos] = key;
-      values[pos] = delta;
-      size++;
-      if (size > keys.length * 3 / 4) rehash();
-      return (true);
-    }
-    values[pos]+=delta;
-    return (false);
-  }
-  
-  /** Increases a value, true for  'added new key with value 1', false for 'increased existing value' */
-  public boolean increase(K key) {
-    return(add(key,1));
-  }
+	/** Retrieves a value */
+	public int get(Object key, int defaultValue) {
+		int pos = find(key);
+		if (keys[pos] == null)
+			return (defaultValue);
+		else
+			return (values[pos]);
+	}
 
-  /** Returns keys. Can be used only once. */
-  public PeekIterator<K> keys() {
-    final Object[] e = keys;
-    return (new PeekIterator<K>() {
+	/** True if value is there */
+	public boolean containsKey(Object key) {
+		return (keys[find(key)] != null);
+	}
 
-      int pos = -1;
+	/**
+	 * Increases a value, true for 'added new key with delta as value', false
+	 * for 'increased existing value'
+	 */
+	public boolean add(K key, int delta) {
+		int pos = find(key);
+		if (keys[pos] == null) {
+			keys[pos] = key;
+			values[pos] = delta;
+			size++;
+			if (size > keys.length * 3 / 4)
+				rehash();
+			return (true);
+		}
+		values[pos] += delta;
+		return (false);
+	}
 
-      @SuppressWarnings("unchecked")
-      @Override
-      protected K internalNext() throws Exception {
-        pos++;
-        for (; pos < keys.length; pos++) {
-          if (e[pos] != null) {
-            return ((K) e[pos]);
-          }
-        }
-        return (null);
-      }
+	/**
+	 * Increases a value, true for 'added new key with value 1', false for
+	 * 'increased existing value'
+	 */
+	public boolean increase(K key) {
+		return (add(key, 1));
+	}
 
-    });
-  }
+	/** Returns keys. Can be used only once. */
+	public PeekIterator<K> keys() {
+		final Object[] e = keys;
+		return (new PeekIterator<K>() {
 
-  /** Adds a key, true for 'added the key as new', false for 'overwrote existing value' */
-  public boolean put(K key, int value) {
-    if (put(keys, values, key, value)) {
-      size++;
-      if (size > keys.length * 3 / 4) rehash();
-      return (true);
-    }
-    return (false);
-  }
+			int pos = -1;
 
-  /** Adds a key, true for 'added the key as new', false for 'overwrote existing value' */
-  protected boolean put(Object[] keys, int[] values, Object key, int value) {
-    int i = index(key, keys.length);
-    while (true) {
-      if (keys[i] == null) {
-        keys[i] = key;
-        values[i] = value;
-        return (true);
-      }
-      if (keys[i].equals(key)) {
-        values[i] = value;
-        return (false);
-      }
-      i++;
-      if (i == keys.length) i = 0;
-    }
-  }
+			@SuppressWarnings("unchecked")
+			@Override
+			protected K internalNext() throws Exception {
+				pos++;
+				for (; pos < keys.length; pos++) {
+					if (e[pos] != null) {
+						return ((K) e[pos]);
+					}
+				}
+				return (null);
+			}
 
-  /** Rehashes */
-  protected void rehash() {
-    Object[] newKeys = new Object[keys.length * 2];
-    int[] newValues = new int[keys.length * 2];
-    for (int i = 0; i < keys.length; i++) {
-      if (keys[i] != null) put(newKeys, newValues, keys[i], values[i]);
-    }
-    keys = newKeys;
-    values = newValues;
-  }
+		});
+	}
 
-  /** Test*/
-  public static void main(String[] args) throws Exception {
-    IntHashMap<String> m = new IntHashMap<String>();
-    for (int i = 1; i < 3000; i *= 2)
-      m.put("#" + i, i);
-    m.put("#0", 17);
-    for (String key : m.keys())
-      D.p(key, m.get(key));
-  }
+	/**
+	 * Adds a key, true for 'added the key as new', false for 'overwrote
+	 * existing value'
+	 */
+	public boolean put(K key, int value) {
+		if (put(keys, values, key, value)) {
+			size++;
+			if (size > keys.length * 3 / 4)
+				rehash();
+			return (true);
+		}
+		return (false);
+	}
 
-  @Override
-  public Iterator<K> iterator() {    
-    return keys().iterator();
-  }
+	/**
+	 * Adds a key, true for 'added the key as new', false for 'overwrote
+	 * existing value'
+	 */
+	protected boolean put(Object[] keys, int[] values, Object key, int value) {
+		int i = index(key, keys.length);
+		while (true) {
+			if (keys[i] == null) {
+				keys[i] = key;
+				values[i] = value;
+				return (true);
+			}
+			if (keys[i].equals(key)) {
+				values[i] = value;
+				return (false);
+			}
+			i++;
+			if (i == keys.length)
+				i = 0;
+		}
+	}
 
-  @Override
-  public int size() {
-    return size;
-  }
-  
-  @Override
-  public boolean add(K e) {
-    return(increase(e));
-  };
-  
-  @Override
-  public void clear() {
-    size=0;
-    keys = new Object[10];
-    values = new int[10];
-  }
-  
-  @Override
-  public boolean contains(Object o) {
-    return containsKey(o);
-  }
+	/** Rehashes */
+	protected void rehash() {
+		Object[] newKeys = new Object[keys.length * 2];
+		int[] newValues = new int[keys.length * 2];
+		for (int i = 0; i < keys.length; i++) {
+			if (keys[i] != null)
+				put(newKeys, newValues, keys[i], values[i]);
+		}
+		keys = newKeys;
+		values = newValues;
+	}
 
-  /** Adds all integer values up*/
-  public void add(IntHashMap<K> countBindings) {
-    for(K key : countBindings.keys()) {
-      add(key,countBindings.get(key));
-    }
-  }
+	/** Test */
+	public static void main(String[] args) throws Exception {
+		IntHashMap<String> m = new IntHashMap<String>();
+		for (int i = 1; i < 3000; i *= 2)
+			m.put("#" + i, i);
+		m.put("#0", 17);
+		for (String key : m.keys())
+			D.p(key, m.get(key));
+	}
 
-  /** increases the counters*/
-  public void add(Collection<K> set) {
-    for(K k : set) add(k);    
-  }
-    
-  @Override
-  public String toString() {   
-    if(isEmpty()) return("{}");
-    StringBuilder b=new StringBuilder("{");
-    int counter=20;
-    for(K key : keys()) {
-      if(counter--==0) {
-        b.append("..., ");
-        break;
-      }
-      b.append(key).append('=').append(get(key)).append(", ");
-    }
-    b.setLength(b.length()-2);
-    return(b.append("}").toString());
-  }
-  
-  /** returns the keys in increasing order*/
-  public List<K> increasingKeys() {
-    List<K> result=keys().asList();    
-    Collections.sort(result, new Comparator<K>(){
+	@Override
+	public Iterator<K> iterator() {
+		return keys().iterator();
+	}
 
-      @Override
-      public int compare(K o1, K o2) {
-        int i1=get(o1);
-        int i2=get(o2);
-        return(i1<i2?-1:i1>i2?1:0);
-      }});
-    return(result);
-  }
-  
-  /** returns the keys in decreasing order*/
-  public List<K> decreasingKeys() {
-    List<K> result=keys().asList();    
-    Collections.sort(result, new Comparator<K>(){
+	@Override
+	public int size() {
+		return size;
+	}
 
-      @Override
-      public int compare(K o1, K o2) {
-        int i1=get(o1);
-        int i2=get(o2);
-        return(i1<i2?1:i1>i2?-1:0);
-      }});
-    return(result);
-  }
+	@Override
+	public boolean add(K e) {
+		return (increase(e));
+	};
 
+	@Override
+	public void clear() {
+		size = 0;
+		keys = new Object[10];
+		values = new int[10];
+	}
+
+	@Override
+	public boolean contains(Object o) {
+		return containsKey(o);
+	}
+
+	/** Adds all integer values up */
+	public void add(IntHashMap<K> countBindings) {
+		for (K key : countBindings.keys()) {
+			add(key, countBindings.get(key));
+		}
+	}
+
+	/** increases the counters */
+	public void add(Collection<K> set) {
+		for (K k : set)
+			add(k);
+	}
+
+	@Override
+	public String toString() {
+		if (isEmpty())
+			return ("{}");
+		StringBuilder b = new StringBuilder("{");
+		int counter = 20;
+		for (K key : keys()) {
+			if (counter-- == 0) {
+				b.append("..., ");
+				break;
+			}
+			b.append(key).append('=').append(get(key)).append(", ");
+		}
+		b.setLength(b.length() - 2);
+		return (b.append("}").toString());
+	}
+
+	/** returns the keys in increasing order */
+	public List<K> increasingKeys() {
+		List<K> result = keys().asList();
+		Collections.sort(result, new Comparator<K>() {
+
+			@Override
+			public int compare(K o1, K o2) {
+				int i1 = get(o1);
+				int i2 = get(o2);
+				return (i1 < i2 ? -1 : i1 > i2 ? 1 : 0);
+			}
+		});
+		return (result);
+	}
+
+	/** returns the keys in decreasing order */
+	public List<K> decreasingKeys() {
+		List<K> result = keys().asList();
+		Collections.sort(result, new Comparator<K>() {
+
+			@Override
+			public int compare(K o1, K o2) {
+				int i1 = get(o1);
+				int i2 = get(o2);
+				return (i1 < i2 ? 1 : i1 > i2 ? -1 : 0);
+			}
+		});
+		return (result);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof IntHashMap<?>))
+			return (false);
+		IntHashMap<?> other = (IntHashMap<?>) o;
+		if (other.size() != this.size())
+			return (false);
+		for(int i=0;i<keys.length;i++) {
+			if(keys[i]!=null && values[i]!=other.get(keys[i])) return(false);
+		}
+		return(true);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(values);
+	}
 }
