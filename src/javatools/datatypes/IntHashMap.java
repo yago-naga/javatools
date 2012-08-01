@@ -261,12 +261,32 @@ public class IntHashMap<K> extends AbstractSet<K> {
 		b.setLength(b.length() - 2);
 		return (b.append("}").toString());
 	}
-
-	/** returns the keys in increasing order */
-	public List<K> increasingKeys() {
-		List<K> result = keys().asList();
-		Collections.sort(result, new Comparator<K>() {
-
+	
+  /** increases the counters*/
+  public void add(Collection<K> set) {
+    for(K k : set) add(k);    
+  }
+    
+  @Override
+  public String toString() {   
+    if(isEmpty()) return("{}");
+    StringBuilder b=new StringBuilder("{");
+    int counter=30;
+    for(K key : keys()) {
+      if(counter--==0) {
+        b.append("..., ");
+        break;
+      }
+      b.append(key).append('=').append(get(key)).append(", ");
+    }
+    b.setLength(b.length()-2);
+    return(b.append("}").toString());
+  }
+  
+  /** returns the keys in increasing order*/
+  public List<K> increasingKeys() {
+    List<K> result=keys().asList();    
+    Collections.sort(result, new Comparator<K>(){
 			@Override
 			public int compare(K o1, K o2) {
 				int i1 = get(o1);
