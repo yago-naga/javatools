@@ -49,6 +49,13 @@ public class IntHashMap<K> extends AbstractSet<K> {
 			add(k);
 	}
 
+	 /** Creates an intHashMap with these keys set to 1 */
+  public IntHashMap(Collection<K> keys) {
+    this();
+    for (K k : keys)
+      add(k);
+  }
+
 	/** Creates an intHashMap with the same keys and the sizes */
 	public IntHashMap(Map<K, Set<K>> map) {
 		this();
@@ -244,29 +251,7 @@ public class IntHashMap<K> extends AbstractSet<K> {
 		for (K k : set)
 			add(k);
 	}
-
-	@Override
-	public String toString() {
-		if (isEmpty())
-			return ("{}");
-		StringBuilder b = new StringBuilder("{");
-		int counter = 20;
-		for (K key : keys()) {
-			if (counter-- == 0) {
-				b.append("..., ");
-				break;
-			}
-			b.append(key).append('=').append(get(key)).append(", ");
-		}
-		b.setLength(b.length() - 2);
-		return (b.append("}").toString());
-	}
-	
-  /** increases the counters*/
-  public void add(Collection<K> set) {
-    for(K k : set) add(k);    
-  }
-    
+	  
   @Override
   public String toString() {   
     if(isEmpty()) return("{}");
