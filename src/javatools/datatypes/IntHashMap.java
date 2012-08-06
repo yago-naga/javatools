@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javatools.administrative.D;
 
@@ -57,9 +56,9 @@ public class IntHashMap<K> extends AbstractSet<K> {
   }
 
 	/** Creates an intHashMap with the same keys and the sizes */
-	public IntHashMap(Map<K, Set<K>> map) {
+	public IntHashMap(Map<K, IntHashMap<K>> map) {
 		this();
-		for (Entry<K, Set<K>> entry : map.entrySet())
+		for (Entry<K, IntHashMap<K>> entry : map.entrySet())
 			put(entry.getKey(), entry.getValue().size());
 	}
 
