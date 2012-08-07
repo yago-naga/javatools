@@ -317,14 +317,6 @@ public class NumberParser {
 
   /** Holds the number patterns */
   private static final FindReplace[] patterns = new FindReplace[] {
-      // The internal order of the patterns is essential!
-      new FindCompute("(pounds|pound|lb|lbs)", "g", 453.59237, 0), // TODO:
-      // The
-      // UK
-      // currency
-      // is
-      // a
-      // problem
       // --------- separators ------------
       // c.##
       new FindReplace(WB + "ca?\\.? ?(\\d)", "about $1"),
@@ -634,6 +626,26 @@ public class NumberParser {
             result.append(s.charAt(i));
         }
       },
+      new FindReplace(POSINT + B + "(?:[Ss]t\\.?|[Ss]tones?)" + B + POSINT + B + "(?:[lL]b\\.?)" + WB, null) {
+
+        /* applies the pattern-replacement 
+        *  Note: If you fix something in this version, please try to apply the same fix at the non-tracking function */
+        public void apply(StringBuilder s, StringBuilder result) {
+          result.setLength(0);
+          Matcher m = pattern.matcher(s);
+          if (!m.find()) return;
+          int pos = 0;
+          do {
+            for (int i = pos; i < m.start(); i++)
+              result.append(s.charAt(i));
+            pos = m.end();
+            String rep = newNumber(Integer.parseInt(m.group(1)) * 6350.29 + Integer.parseInt(m.group(2)) * 453.592, "g");
+            result.append(rep);           
+          } while (m.find());
+          for (int i = pos; i < s.length(); i++)
+            result.append(s.charAt(i));
+        }
+      },
       new FindReplace(POSINT + B + "(?:'|[Ff]t\\.?|[fF]eet)" + B + POSINT + B + "(?:\"|[iI]ns?\\.?|[iI]nch(?:es))" + WB, null) {
 
         /* applies the pattern-replacement 
@@ -676,6 +688,15 @@ public class NumberParser {
             result.append(s.charAt(i));
         }
       },
+
+      // The internal order of the patterns is essential!
+      new FindCompute("(pounds|pound|lb|lbs)", "g", 453.59237, 0), // TODO:
+      // The
+      // UK
+      // currency
+      // is
+      // a
+      // problem
 
       // --------- SI-Units ---------------
       new FindReplace(FLOAT + B + "/km\\^2", newNumber("$1", "/km^2")),
