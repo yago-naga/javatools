@@ -13,7 +13,7 @@ import javatools.administrative.D;
  * 
  * This class represents strings with 1 byte per character. Thus, they use
  * roughly half as much space as ordinary strings -- but they also cannot store
- * all characters.
+ * all characters. ByteStrings are always unique. they can be compared with ==.
  * 
  * @author Fabian M. Suchanek
  * 
@@ -32,23 +32,27 @@ public class ByteString implements CharSequence {
   /** is interned */
   public boolean isInterned = false;
 
-  public ByteString(ByteString s, int start, int end) {
+  /** Constructor*/
+  public static ByteString of(CharSequence s) {
+    ByteString newOne=new ByteString(s);
+    synchronized (values) {
+      ByteString canonic = values.get(newOne);
+      if (canonic != null) return (canonic);
+      values.put(newOne,newOne);
+      newOne.isInterned=true;
+      /* We need this flag, because if we go directly always by ==, then WeakHashMap will not be able to detect if the String is already there...*/
+    }
+    return (newOne);
+  }
+  
+  /** Use subSequence()*/
+  protected ByteString(ByteString s, int start, int end) {
     data = Arrays.copyOfRange(s.data, start, end);
     hashCode = Arrays.hashCode(data);
   }
 
-  public ByteString intern() {
-    if (isInterned) return (this);
-    synchronized (values) {
-      ByteString canonic = values.get(this);
-      if (canonic != null) return (canonic);
-      isInterned = true;
-      values.put(this, this);
-    }
-    return (this);
-  }
-
-  public ByteString(CharSequence s) {
+  /** Use of() */
+  protected ByteString(CharSequence s) {
     data = new byte[s.length()];
     for (int i = 0; i < s.length(); i++) {
       data[i] = (byte) (s.charAt(i) - 128);
@@ -91,10 +95,6 @@ public class ByteString implements CharSequence {
       b.append(charAt(i));
     }
     return b.toString();
-  }
-
-  public String objectId() {
-    return (super.toString());
   }
 
   public static void main(String[] args) throws Exception {
