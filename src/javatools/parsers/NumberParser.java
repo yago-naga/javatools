@@ -318,6 +318,8 @@ public class NumberParser {
   /** Holds the number patterns */
   private static final FindReplace[] patterns = new FindReplace[] {
       // --------- separators ------------
+      // Blank
+      new FindReplace("\u00A0", " "),
       // c.##
       new FindReplace(WB + "ca?\\.? ?(\\d)", "about $1"),
       // #-#
@@ -330,7 +332,7 @@ public class NumberParser {
       new FindReplace("(\\d+),(\\d{3}),?(\\d{3})?,?(\\d{3})?,?(\\d{3})?", "$1$2$3$4$5"),
       // 1,00 -> 1.00
       new FindReplace("(\\d),(\\d)", "$1.$2"),
-
+      
       // --------- 2-12 ------------
       new FindReplace(WB + "first" + WB, newNumber("1", "th")),
       new FindReplace(WB + "two" + WB, "2"),
@@ -819,6 +821,7 @@ public class NumberParser {
     for (FindReplace fr : patterns) {
       fr.apply(in, result);
       if (result.length() != 0) {
+        // D.p(fr.pattern,"--->    ",result); // For debugging
         StringBuilder temp = in;
         in = result;
         result = temp;
