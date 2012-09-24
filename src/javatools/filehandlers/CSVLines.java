@@ -35,7 +35,7 @@ public class CSVLines extends PeekIterator<List<String>> {
   /** Holds the next char in line */
   protected int nextChar;
   /** Holds the spearator */
-  protected char separator=",";
+  protected char separator=',';
 
   /** Constructs a CSVReader*/
   public CSVLines(File f) throws IOException {
