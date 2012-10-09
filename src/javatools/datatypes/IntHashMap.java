@@ -245,6 +245,11 @@ public class IntHashMap<K> extends AbstractSet<K> {
 		}
 	}
 
+	 /** Adds all integer values up */
+  public void addAll(IntHashMap<K> countBindings) {
+    add(countBindings);
+  }
+
 	/** increases the counters */
 	public void add(Collection<K> set) {
 		for (K k : set)
