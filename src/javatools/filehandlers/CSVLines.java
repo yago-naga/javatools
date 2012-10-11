@@ -39,7 +39,12 @@ public class CSVLines extends PeekIterator<List<String>> {
 
   /** Constructs a CSVReader*/
   public CSVLines(File f) throws IOException {
-    in=new FileReader(f);
+    this(new FileReader(f));
+  }
+  
+  /** Constructs a CSVReader*/
+  public CSVLines(Reader reader) throws IOException {
+    in=reader;
     nextChar=in.read();
     if(nextChar=='/') nextChar=in.read();
     if(nextChar=='#' || nextChar=='%' || nextChar=='/') {
