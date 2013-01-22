@@ -232,6 +232,14 @@ public abstract class StringModifier {
     return ngrams;
   }
   
+  /** applies lowercase to all Strings in an array, returns them as a set */
+  public static final Set<String> lowercase (String... ar){
+	    Set<String> s=new HashSet<String>(ar.length);
+	    for(String a:ar)
+	      s.add(a.toLowerCase());
+	    return s;
+	  }
+  
   /** Test method */
   public static void main(String[] argv) throws Exception {
     String array[]={"cat", "mouse", "cheese"}; 
