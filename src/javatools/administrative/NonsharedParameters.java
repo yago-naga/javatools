@@ -18,6 +18,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 import javatools.database.Database;
 import javatools.database.MySQLDatabase;
 import javatools.database.OracleDatabase;
@@ -654,9 +655,8 @@ public class NonsharedParameters implements Cloneable{
   }
   
   
-  /** Matches all parameters against a provided class attribute 
-   * If a parameter name, transformed to upper-case, matches the attribute 
-   * the value assigned to the parameter is returned as an object   
+  /** Checks whether a parameter matching the field name is available.
+   *  Returns the parameter value in the format corresponding the field. 
    * @param field  the attribute against which to match the parameters
    * @return  an object representing the value of a parameter that matches the given attribute
    *          iff there is a match, otherwise null
@@ -674,6 +674,49 @@ public class NonsharedParameters implements Cloneable{
       }
       return null;
   }  
+  
+  
+  /** 
+   * Checks for all full-upper-case class attributes whether there is a matching parameter 
+   * and sets its value to the parameter value.  
+   * @param classname  name of the class for which to check
+   * @param	object	object, which needs to be an instance of the given class
+   */
+  public void initiateClassAttributes(String className, Object object) {
+	  try{
+		  Class<?> cl=Class.forName(className);
+		  for (Field field : cl.getDeclaredFields()) {
+		      Object value=matchObjectAttribut(field);
+		      if(value!=null)
+		        field.set(this, value);
+		  }
+	  } catch (IllegalAccessException | ClassNotFoundException ex){
+		  throw new RuntimeException(ex); 
+	  }
+  }
+  
+  /** 
+   * Checks for all full-upper-case class attributes whether there is a matching parameter 
+   * and sets its value to the parameter value.  
+   * @param classname  name of the class for which to check
+   * @param	object	object, which needs to be an instance of the given class
+   */
+  public void initiateClassAttributes(Object object) {
+	  try{
+		  Class<?> cl=object.getClass();
+		  while(cl!=null){
+			  for (Field field : cl.getDeclaredFields()) {
+				  Object value=matchObjectAttribut(field);
+				  if(value!=null)
+					  field.set(this, value);
+			  }
+			  cl=cl.getSuperclass();
+		  }
+	  } catch (IllegalAccessException ex){
+		  throw new RuntimeException(ex); 
+	  }
+  }  
+  
   
   /** Returns all defined parameters*/
   public Set<String> parameters() {
