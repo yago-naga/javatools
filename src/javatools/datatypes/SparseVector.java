@@ -22,6 +22,8 @@ the YAGO-NAGA team (see http://mpii.de/yago-naga).
   for binary vectors. Supports k-means with eucledian, cosine or other distances.
  */
 public class SparseVector implements Serializable, Cloneable {
+  /** 	 */
+  private static final long serialVersionUID = 1L;
   /** Contains a double value associated to this Sparse Vector */
   protected double label;
   /** Contains the values of this vector (corresponding to dim). May change. May be set to BINARY. */

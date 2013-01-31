@@ -51,7 +51,7 @@ public class Pair<F,S> implements Comparable<Pair<F,S>> {
   
   @Override
   public boolean equals(Object obj) {   
-    return obj instanceof Pair && ((Pair)obj).first.equals(first) && ((Pair)obj).second.equals(second);
+    return obj instanceof Pair && ((Pair<?,?>)obj).first.equals(first) && ((Pair<?,?>)obj).second.equals(second);
   }
   /** Returns "first/second"*/
   public String toString() {

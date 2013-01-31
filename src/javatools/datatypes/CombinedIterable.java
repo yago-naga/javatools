@@ -44,12 +44,12 @@ public class CombinedIterable<T> implements  Iterable<T>, Closeable {
     iterables.offer(i2);
     iterables.offer(i3);
   }  
-  /** Adds a set */
-  @SuppressWarnings("unchecked")
+  /** Adds a set */ 
   public CombinedIterable(T i) {
     this(Arrays.asList(i));
   }
   /** Creates a CombinedIterator from some iterators (may give a (useless) Java compiler warning)*/
+  @SuppressWarnings("unchecked")
   public CombinedIterable(Iterable<? extends T>... its) {
     for(Iterable<? extends T> i : its) iterables.offer(i);
   }
@@ -58,8 +58,7 @@ public class CombinedIterable<T> implements  Iterable<T>, Closeable {
     iterables.offer(i);
     return(this);
   }
-  /** Adds a value */
-  @SuppressWarnings("unchecked")
+  /** Adds a value */  
   public CombinedIterable<T> add(T i) {
     return(add(Arrays.asList(i)));
   }

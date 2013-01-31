@@ -22,8 +22,8 @@ public class Triple<F, S, T> extends Pair<F, S> {
   }
 
   public boolean equals(Object obj) {
-    return (obj instanceof Triple) && ((Triple) obj).first().equals(first) && ((Triple) obj).second().equals(second)
-        && ((Triple) obj).third().equals(third);
+    return (obj instanceof Triple) && ((Triple<?,?,?>) obj).first().equals(first) && ((Triple<?,?,?>) obj).second().equals(second)
+        && ((Triple<?,?,?>) obj).third().equals(third);
   }
 
   /** Returns "first/second"*/

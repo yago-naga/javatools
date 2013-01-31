@@ -170,7 +170,7 @@ public class FrequencyVector<T, V extends Number & Comparable<V>> {
   
   @Override
   public boolean equals(Object obj) {   
-    return (obj!=null && obj instanceof FrequencyVector && ((FrequencyVector)obj).data.equals(data));
+    return (obj!=null && obj instanceof FrequencyVector && ((FrequencyVector<?,?>)obj).data.equals(data));
   }
   
   // ---------------------------------------------------------------------------
