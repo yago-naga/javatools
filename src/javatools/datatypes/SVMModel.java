@@ -20,7 +20,9 @@ Thorsten Joachim's SVM-light classifier (with permission by the author), see
 <A HREF=http://svmlight.joachims.org/ target=_blank>http://svmlight.joachims.org/</A>
 */
 public class SVMModel implements Serializable {
-  /** Defines the enum of the Kernel-type (LINEAR,POLY,RBF,SIGMOID)*/
+  private static final long serialVersionUID = 1L;
+
+/** Defines the enum of the Kernel-type (LINEAR,POLY,RBF,SIGMOID)*/
   public enum KernelType {LINEAR,POLY,RBF,SIGMOID};
   // Kernel parameters
   private KernelType kernel_type;

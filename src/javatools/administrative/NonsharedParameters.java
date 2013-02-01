@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -99,15 +100,7 @@ import javatools.filehandlers.FileLines;
      
 */
 public class NonsharedParameters implements Cloneable{
-  /** Thrown for an undefined Parameter */
-  public static class UndefinedParameterException extends RuntimeException {    
-    
-    private static final long serialVersionUID = -7648653481162390257L;
-    
-    public UndefinedParameterException(String s, File f) {
-      super("The parameter "+s+" is undefined in "+f);
-    }
-  }
+
   
  
    
@@ -138,19 +131,19 @@ public class NonsharedParameters implements Cloneable{
   
   /** Constructors*/
   public NonsharedParameters(){};
-  public NonsharedParameters(File iniFile)throws IOException{    
+  public NonsharedParameters(File iniFile) throws ParameterFileException{    
 	  init(iniFile);
   };
-  public NonsharedParameters(String iniFile)throws IOException{
+  public NonsharedParameters(String iniFile) throws ParameterFileException{
 	  init(iniFile);
   };
   
-  public NonsharedParameters(File iniFile, String localPath)throws IOException{    
+  public NonsharedParameters(File iniFile, String localPath) throws ParameterFileException{    
     if(localPath!=null)
     	basePath=localPath.endsWith("/")?localPath:localPath+"/";    		
     init(iniFile);
   };
-  public NonsharedParameters(String iniFile, String localPath)throws IOException{
+  public NonsharedParameters(String iniFile, String localPath) throws ParameterFileException{
 	if(localPath!=null)
 	   	basePath=localPath.endsWith("/")?localPath:localPath+"/";
     init(iniFile);
@@ -465,11 +458,12 @@ public class NonsharedParameters implements Cloneable{
 	  values.put(param.toLowerCase(), value);
   }
   
-  /** Initializes the parameters from a file*/
-  public void init(File f) throws IOException{
+  /** Initializes the parameters from a file
+ * @throws ParameterFileException */
+  public void init(File f) throws ParameterFileException {
     init(f,true);
   }
-  public void init(File f, boolean mainIni) throws IOException {
+  public void init(File f, boolean mainIni) throws ParameterFileException  {
     if(f.equals(iniFile)) return;    
     if(mainIni){
       values=new TreeMap<String,String>();    
@@ -477,7 +471,7 @@ public class NonsharedParameters implements Cloneable{
       if(basePath==null)
         basePath=(f.getParent()!=null?f.getParent()+"/":"");
     }
-            
+    try{        
     if (!iniFile.exists()) {
       Announce.error("The initialisation file",
           iniFile.getCanonicalPath(),
@@ -510,15 +504,19 @@ public class NonsharedParameters implements Cloneable{
         else lastAttrib=null;
       }
     }
+    } catch (IOException ex){
+		  throw new ParameterFileException("Problem when reading '"+iniFile.getPath()+"'",ex);
+    }
   }
   
-  /** Seeks the file in all given folders*/  
-  public void init(String filename, File... folders) throws IOException {
+  /** Seeks the file in all given folders
+ * @throws ParameterFileException */  
+  public void init(String filename, File... folders) throws ParameterFileException  {
     boolean found=false;
     for(File folder : folders) {
       if(new File(folder, filename).exists()) {
         if(found) 
-          throw new IOException("INI-file "+filename+"occurs twice in given folders");
+          throw new ParameterFileException("INI-file "+filename+"occurs twice in given folders");
         init(new File(folder, filename));
         found = true;
       }
@@ -526,11 +524,12 @@ public class NonsharedParameters implements Cloneable{
   }
 
   
-  /** Initializes the parameters from a file*/
-  public void init(String filename)throws IOException{
+  /** Initializes the parameters from a file
+ * @throws ParameterFileException */
+  public void init(String filename) throws ParameterFileException {
     init(filename,true);
   }
-  public void init(String file, boolean mainIni) throws IOException {
+  public void init(String file, boolean mainIni) throws ParameterFileException  {
     Announce.message("Loading ini file '"+file+"'");
     init(new File(file),mainIni);    
   }
@@ -601,8 +600,8 @@ public class NonsharedParameters implements Cloneable{
     values=null;
   }
   
-  /** Returns the database defined in this ini-file*/
-  public Database getDatabase() throws Exception {
+  /** Returns the database defined in this ini-file */
+  public Database getDatabase() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException {
     ensureParameters("databaseSystem - either Oracle, Postgres or MySQL",
         "databaseUser - the user name for the database (also: databaseDatabase, databaseInst,databasePort,databaseHost,databaseSchema)",
         "databasePassword - the password for the database"
@@ -660,7 +659,10 @@ public class NonsharedParameters implements Cloneable{
    * @param field  the attribute against which to match the parameters
    * @return  an object representing the value of a parameter that matches the given attribute
    *          iff there is a match, otherwise null
+   *  @Note	this will become protected, please use the initiateClassAttributes method
+   *  TODO: make protected
    */
+  @Deprecated
   public Object matchObjectAttribut(Field field) throws IllegalAccessException{   
       String parameterName = field.getName();
       if (parameterName.equals(parameterName.toUpperCase()) && isDefined(parameterName)) {
@@ -723,17 +725,59 @@ public class NonsharedParameters implements Cloneable{
     return(values.keySet());
   }
   
-  /** Stores the parameters in a given file */
-  public void saveAs(String file) throws IOException {
-    Writer w = new FileWriter(file, false);
-    for(Map.Entry<String, String> entry:values.entrySet())
-      w.write(entry.getKey() + " = " + entry.getValue() + "\n");
-    w.close();
+  /** Stores the parameters in a given file 
+ * @throws ParameterFileException */
+  public void saveAs(String file) throws ParameterFileException  {
+	  try{
+	    Writer w = new FileWriter(file, false);
+	    for(Map.Entry<String, String> entry:values.entrySet())
+	      w.write(entry.getKey() + " = " + entry.getValue() + "\n");
+	    w.close();
+	  } catch (IOException ex){
+		  throw new ParameterFileException("Problem when writing to '"+iniFile.getPath()+"'",ex);
+	  }
   }
   
-
-
   
+	/*****************************************************************************************************************    
+	 ****                                     Exceptions                                                          ****
+	 *****************************************************************************************************************/
+
+  /** Thrown for an undefined Parameter */
+  public static class UndefinedParameterException extends RuntimeException {    
+
+	  private static final long serialVersionUID = -7648653481162390257L;
+
+	  public UndefinedParameterException(String s, File f) {
+		  super("The parameter "+s+" is undefined in "+f);
+	  }
+  }
+
+
+
+  /** Reading or writing the parameters ini file failed for some reason 
+   *  In some cases the enclosing program might resolve the issue by providing another file */
+  public static class ParameterFileException extends IOException{
+	  private static final long serialVersionUID = 1L;
+	  public ParameterFileException(){
+		  super();
+	  }
+	  public ParameterFileException(String message){
+		  super(message);
+	  }
+	  public ParameterFileException(Throwable cause){
+		  super(cause);
+	  }         
+	  public ParameterFileException(String message, Throwable cause){
+		  super(message,cause);
+	  }   
+
+  }
+
+
+	/*****************************************************************************************************************    
+	 ****                                     Test Main                                                           ****
+	 *****************************************************************************************************************/
   
   /** Test routine */  
   public static void main(String[] args) throws Exception {    

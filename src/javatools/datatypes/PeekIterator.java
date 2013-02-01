@@ -183,8 +183,7 @@ public abstract class PeekIterator<T> implements Iterator<T>, Iterable<T>, Close
       this(Arrays.asList(elements));
     }
 
-    /** Constructs a PeekIterator for a given list of elements */
-    @SuppressWarnings("unchecked")
+    /** Constructs a PeekIterator for a given list of elements */    
     public SimplePeekIterator(T element) {
       this(Arrays.asList(element));
     }

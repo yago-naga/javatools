@@ -130,6 +130,7 @@ public class NameML {
   
   
   /** Simply call this function to initialize NameML with the default values */
+  //TODO: do away with the initialization...
   public static final void init(){
     if(hasBeenInitialized)
       return;
