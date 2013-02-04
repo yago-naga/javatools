@@ -345,7 +345,7 @@ public abstract class Database {
     this.autoReconnectOnUpdate = autoReconnectOnUpdate;
   }
 
-  /** time in miliseconds after which a connection is considered broken 
+  /** time in milliseconds after which a connection is considered broken 
    *  when no answer is received within that time frame
    */
   public int getValidityCheckTimeout() {
