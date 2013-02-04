@@ -124,7 +124,7 @@ public abstract class Database {
   /** number of milliseconds a connection validity check may 
    *  take until we decide the server won't answer 
    *  Note: If I'm not mistaken, typical latency over an averagely good internet connection (same continent) 
-   *  has a latency of around ~100 ms, that's why the limit is set to 150, 
+   *  has a latency of under 100 ms, that's why the limit is set to 150, 
    *  feel free to adapt if this seems problematic/too large
    *  Note: only has any effect iff autoReconnectOnX is true 
    *  Note: Only works for databases where the driver supports isValid checks
