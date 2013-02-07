@@ -708,9 +708,11 @@ public class NonsharedParameters implements Cloneable{
 		  Class<?> cl=object.getClass();
 		  while(cl!=null){
 			  for (Field field : cl.getDeclaredFields()) {
+				  field.setAccessible(true);
 				  Object value=matchObjectAttribut(field);
 				  if(value!=null)
-					  field.set(this, value);
+					  field.set(object, value);
+				  field.setAccessible(false);
 			  }
 			  cl=cl.getSuperclass();
 		  }
