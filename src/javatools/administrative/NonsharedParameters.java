@@ -659,10 +659,10 @@ public class NonsharedParameters implements Cloneable{
    * @param field  the attribute against which to match the parameters
    * @return  an object representing the value of a parameter that matches the given attribute
    *          iff there is a match, otherwise null
-   *  @Note	this will become protected, please use the initiateClassAttributes method
+   *  @Note	this will become protected, please use the initiateClassAttributes method (if it does not work for you, let me(Steffen) know
    *  TODO: make protected
    */
-  @Deprecated
+  @Deprecated //will become protected
   public Object matchObjectAttribut(Field field) throws IllegalAccessException{   
       String parameterName = field.getName();
       if (parameterName.equals(parameterName.toUpperCase()) && isDefined(parameterName)) {
@@ -688,9 +688,11 @@ public class NonsharedParameters implements Cloneable{
 	  try{
 		  Class<?> cl=Class.forName(className);
 		  for (Field field : cl.getDeclaredFields()) {
+			  field.setAccessible(true);
 		      Object value=matchObjectAttribut(field);
 		      if(value!=null)
 		        field.set(this, value);
+		      field.setAccessible(false);
 		  }
 	  } catch (IllegalAccessException | ClassNotFoundException ex){
 		  throw new RuntimeException(ex); 
