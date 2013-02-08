@@ -694,7 +694,9 @@ public class NonsharedParameters implements Cloneable{
 		        field.set(this, value);
 		      field.setAccessible(false);
 		  }
-	  } catch (IllegalAccessException | ClassNotFoundException ex){
+	  } catch (IllegalAccessException ex){
+		  throw new RuntimeException(ex); 
+	  } catch (ClassNotFoundException ex){
 		  throw new RuntimeException(ex); 
 	  }
   }
