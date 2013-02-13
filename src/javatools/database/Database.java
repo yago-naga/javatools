@@ -287,6 +287,21 @@ public abstract class Database {
     }
     closed = true;
   }
+  
+
+  /** Flush the connection 
+ * @throws SQLException */
+  public void flush() throws SQLException {
+    if (inTransactionMode) {
+      try {
+        commitTransaction();
+      } catch (TransactionSQLException ex) {
+        Announce.error(ex);
+      }
+    }
+    for(Inserter inserter:inserters)
+    	inserter.flush();
+  }
 
   /** Closes the connection */
   public void finalize() {
