@@ -13,13 +13,15 @@ Sleeps for a given time
 
 public class Sleep {
 
-  /** Sleeps for a given time*/
-  public static void sleep(String time) throws Exception {
+  /** Sleeps for a given time
+ * @throws InterruptedException 
+ * @throws NumberFormatException */
+  public static void sleep(String time) throws NumberFormatException, InterruptedException  {
     sleep((long)Double.parseDouble(NumberParser.getNumber(NumberParser.normalize(time))));
   }
 
-  /** Sleeps for a given time*/
-  public static void sleep(long seconds) throws Exception {
+  /** Sleeps for a given time */
+  public static void sleep(long seconds) throws InterruptedException {
     Announce.progressStart("Sleeping "+NumberFormatter.formatMS(seconds*1000),seconds);
     for(long slept=0;slept<seconds;slept++) {
       Announce.progressAt(slept);    
