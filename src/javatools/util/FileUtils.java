@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import javatools.filehandlers.FileLines;
 
@@ -75,6 +77,27 @@ public class FileUtils {
    */
   public static BufferedWriter getBufferedUTF8Writer(String fileName) throws FileNotFoundException {
     return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), Charset.forName("UTF-8")));
+  }  
+  
+  /**
+   * Returns the content of the (UTF-8 encoded) file as string. Linebreaks
+   * are encoded as unix newlines (\n)
+   * 
+   * @param file  File to get String content from
+   * @return      String content of file.
+   * @throws IOException 
+   */
+  public static String getFileContent(File file) throws IOException {
+    StringBuilder sb = new StringBuilder();
+    BufferedReader reader = getBufferedUTF8Reader(file);
+    for (String line = reader.readLine(); 
+        line != null; 
+        line = reader.readLine()) {
+      sb.append(line);
+      sb.append('\n');
+    }
+    reader.close();
+    return sb.toString();
   }
     
   /**
@@ -126,7 +149,35 @@ public class FileUtils {
     return true;
   }
   
+  /**
+   * Collects all non-directory files in the given input directory 
+   * (recursively).
+   * 
+   * @param directory Input directory.
+   * @return          All non-directory files, recursively.
+   */
+  public static Collection<File> getAllFiles(File directory) {
+    Collection<File> files = new LinkedList<File>();
+    getAllFilesRecursively(directory, files);
+    return files;
+  }
+  
+  /**
+   * Helper for getAllSubdirectories(directory).
+   */
+  private static void getAllFilesRecursively(
+      File directory, Collection<File> files) {
+    
+    for (File file : directory.listFiles()) {
+      if (file.isDirectory()) {
+        getAllFilesRecursively(file, files);
+      } else {
+        files.add(file);
+      }
+    }
+  }
+  
   public static void main(String[] args) throws IOException {
-    verifyOrderedFile(new File(args[0]), true);
+    verifyOrderedFile(new File(args[0]), false);
   }
 }
