@@ -240,6 +240,16 @@ public abstract class StringModifier {
 	    return s;
 	  }
   
+  /** checks for equality between two potential strings */
+  public static final boolean areEqual(String s1, String s2){
+	  if(s1==null)
+		  if(s2!=null)
+			  return false;
+		  else 
+			  return true;
+	  return s1.equals(s2);
+  }
+  
   /** Test method */
   public static void main(String[] argv) throws Exception {
     String array[]={"cat", "mouse", "cheese"}; 
