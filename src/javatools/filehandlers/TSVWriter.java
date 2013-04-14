@@ -2,6 +2,8 @@ package javatools.filehandlers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 
 public class TSVWriter {
 
@@ -53,6 +55,30 @@ public class TSVWriter {
       }
     }
     writer.writeln(pattern + "\t" + method + "\t" + sb.toString());
+  }
+  
+  /** writes arbitrary list of values into a tsv line 
+   * @throws IOException	in case writing to the tsv file fails 
+   */
+  public void write(String... values) throws IOException{
+	  write(Arrays.asList(values));
+  }
+  
+  /** writes arbitrary list of values into a tsv line 
+    * @throws IOException	in case writing to the tsv file fails 
+    */
+  public void write(Collection<String> values) throws IOException{
+	  if(values==null || values.isEmpty())
+		  throw new IllegalArgumentException();
+	  StringBuilder sb=new StringBuilder();
+	  int i=1;
+	  for(String value:values){
+		  if(i==values.size())
+			  sb.append(value);
+		  else sb.append(value).append("\t");
+		  i++;
+	  }
+	  writer.writeln(sb.toString());
   }
 
   /**

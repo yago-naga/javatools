@@ -37,13 +37,14 @@ Example:
 */
 public class MySQLDatabase extends Database {
   
-  /** holds the user name */
+  /** all the information needed to establish a connection to the database server */
   private String user=null;
   private String password=null;
   private String database=null;
   private String host=null;
-  private String port=null; 
+  private String port=null;
 
+  
   /** Constructs a new MySQLDatabase from a user and a password,
    * all other arguments may be null*/
   public MySQLDatabase(String user, String password, String database, String host, String port) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException  {
@@ -63,14 +64,28 @@ public class MySQLDatabase extends Database {
 	  type2SQL.put(Types.REAL, SQLType.ansifloat);	  
 	  type2SQL.put(Types.BLOB,blob);
 	  type2SQL.put(-4,blob);
-	
-	  //java2SQL.put(String.class,blob);
-      java2SQL.put(String.class, mysqlvarchar);
-      type2SQL.put(Types.VARCHAR, mysqlvarchar);
 
+	  enforceCaseSensitivity(false);
   }
 
   public MySQLDatabase() {
+  }
+  
+  
+  /** allows to make sure VARCHAR column field based queries are case-sensitive
+   *  even when the underlying table has a case-insensitive collation 
+   */
+  public void enforceCaseSensitivity(boolean enable){
+	  if(enable){
+		  //java2SQL.put(String.class,blob);
+	      java2SQL.put(String.class, ansivarcharbin);
+	      type2SQL.put(Types.VARCHAR, ansivarcharbin);
+	  }
+	  else {
+		  //java2SQL.put(String.class,blob);
+	      java2SQL.put(String.class, mysqlvarchar);
+	      type2SQL.put(Types.VARCHAR, mysqlvarchar);
+	  }
   }
   
   /** connects to the database specified */
@@ -110,6 +125,7 @@ public class MySQLDatabase extends Database {
   } 
 */
   
+/** VARCHAR type for MySQL */
   public static class MysqlVarchar extends SQLType.ANSIvarchar {
     public MysqlVarchar(int size) {
       super(size);
@@ -131,6 +147,7 @@ public class MySQLDatabase extends Database {
   }
 public static MysqlVarchar mysqlvarchar=new MysqlVarchar(); 
   
+/** BLOB/TEXT type for MySQL */
 	public static class Blob extends SQLType.ANSIblob {
 	    public Blob(int size) {
 	      super(size);
@@ -149,9 +166,10 @@ public static MysqlVarchar mysqlvarchar=new MysqlVarchar();
 	public static Blob blob=new Blob();	
   
   /** a VARCHAR BINARY type, making sure we are case-sensitive in varchar fields 
-	 *  (currently we assume case-sensitive collation is used, so using this is not necessary,
-	 *   if this is not given however, case-sensitive applications can use this sqltype instead
-	 *   of the normal varchar type)
+	 *  (currently we assume case-sensitive collation is used by default, 
+	 *   however, the method 'enforceCaseSensitivity' can replace the normal VARCHAR 
+	 *   representation by this one, so if the database collation is not case-sensitive
+	 *   case-sensitive applications can use this sqltype on demand)
 	 *  */
   public static class ANSIvarcharBin extends SQLType {
     public ANSIvarcharBin(int size) {
@@ -175,7 +193,8 @@ public static MysqlVarchar mysqlvarchar=new MysqlVarchar();
   
   /** Locks a table in write mode, i.e. other db connections can only read the table, but not write to it 
    * Be careful as to not run into deadlocks! 
-   * Especially do not try to lock tables independently in separate steps, lock all tables needed for some processing in one call*/
+   * Especially do not try to lock tables independently in separate steps, 
+   * lock all tables needed for some processing in one call */
   public void lockTableWriteAccess(Map<String, String> tablesAndAliases) throws SQLException{
 	  StringBuilder sql=new StringBuilder("LOCK TABLES ");
 	  Iterator<String> it=tablesAndAliases.keySet().iterator();
@@ -193,7 +212,8 @@ public static MysqlVarchar mysqlvarchar=new MysqlVarchar();
   
   /** Locks a table in read mode, i.e. only this connection can read or write the table
    *  Be careful as to not run into deadlocks! 
-   *  Especially do not try to lock tables independently in separate steps, lock all tables needed for some processing in one call*/
+   *  Especially do not try to lock tables independently in separate steps, 
+   *  lock all tables needed for some processing in one call */
   public void lockTableReadAccess(Map<String, String> tablesAndAliases) throws SQLException{	  
 	  StringBuilder sql=new StringBuilder("LOCK TABLES ");
 	  Iterator<String> it=tablesAndAliases.keySet().iterator();

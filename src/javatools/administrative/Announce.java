@@ -327,6 +327,21 @@ public class Announce {
         cause=(Exception)ob;
     throw cause!=null?new RuntimeException("Fatal Error.",cause):new RuntimeException("Fatal Error.");
   }
+  
+  /** Prints an error message and aborts by throwing a RuntimeException (aborts even if log level is mute) */
+  public static void errorException(String message, Exception cause) {
+    if (D.smaller(level, Level.ERROR)) throw new RuntimeException(message, cause);
+    while(doingLevel>0) failed();
+    newLine();
+    if(debug)
+      print("[!Error: "+CallStack.toString(new CallStack().ret().top()) + "] ");
+    else
+      print("Error: ");
+    print(message);
+    newLine();
+    throw new RuntimeException(message,cause);
+  }
+
 
   /** Prints an exception and aborts by throwing a RuntimeException (aborts even if log level is mute)*/
   public static void errorException(Exception e) {
