@@ -23,7 +23,9 @@ Example:
 </PRE>
 */
 public class FinalMap<T1 extends Comparable,T2> extends TreeMap<T1,T2>{
-  /** Constructs a FinalMap from an array that contains key/value sequences */  
+	private static final long serialVersionUID = 1L;
+
+/** Constructs a FinalMap from an array that contains key/value sequences */  
   @SuppressWarnings("unchecked")
   public FinalMap(Object... a) {
     super();    

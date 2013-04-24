@@ -195,6 +195,11 @@ public class Announce {
     return(oldLevel);
   }
   
+  /** Provides the current announce level */
+  public static Level getActiveLevel(){
+	  return level;
+  }
+  
   /** Tells whether the given level is within the currently active levels */
   public static boolean isActiveLevel(Level l){
     return (!D.smaller(level, l));

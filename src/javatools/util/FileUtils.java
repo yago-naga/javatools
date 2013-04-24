@@ -120,7 +120,8 @@ public class FileUtils {
     
     long lineCount = 0;
     
-    for (String line : new FileLines(check, "UTF-8", "Verifying that '" + check + "' is sorted")) {
+    FileLines lines=new FileLines(check, "UTF-8", "Verifying that '" + check + "' is sorted");
+    for (String line : lines) {
       lineCount++;
       
       if (first) {
@@ -129,6 +130,7 @@ public class FileUtils {
         first = false;
         continue;
       }
+      lines.close();
       
       one = two;
       two = line;

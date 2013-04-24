@@ -424,8 +424,9 @@ public abstract class Database {
         return false;
       }
     } catch (SQLException ex){
-      //return false;
-      throw new RuntimeException("This is very unexpected and actually should never happen.", ex);
+    	Announce.warning("Connection check failed, this should not happen.",ex);
+      return false;
+      //throw new RuntimeException("This is very unexpected and actually should never happen.", ex);
     }    
   }
 
@@ -437,7 +438,7 @@ public abstract class Database {
   protected void attemptReconnect(SQLException cause, boolean autoReconnect)
   throws SQLException{
     boolean connected=connected();
-    /* if execution fails, the connection might be broken or there is an actual problem
+    /* if execution fails, the connection might be broken or there is another problem (with the query)
      * if connection is broken and reconnecting enabled, we try to reconnect, otherwise:
      * if connection is alive, we throw the actual error else a ConnectionIsBrokenSQLException */
     if(connected)
@@ -857,12 +858,17 @@ public abstract class Database {
    * @note if there is any error with the database connection,
    * the function will also return false. */
   public boolean existsTable(String table) {
+	  ResultSet rs=null;
     try {
-      ResultSet rs = query("SELECT * FROM " + table + " LIMIT 1");
-      Database.close(rs);
+    	Announce.debug("SELECT * FROM " + table + " LIMIT 1"); //TODO: comment out
+      rs = query("SELECT * FROM " + table + " LIMIT 1");      
     } catch (SQLException ex) {
+    	Announce.warning(ex); //TODO: comment out //hook here for debugging
       return false;
     }
+    if(rs!=null)
+    	Database.close(rs);
+    
     return true;
   }
 

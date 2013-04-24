@@ -69,8 +69,9 @@ import javatools.administrative.D;
  */
 
 public class WordNet implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-  /** Types of words in Wordnet */
+/** Types of words in Wordnet */
   public enum WordType {
     NOUN, VERB, ADJECTIVE, ADVERB
   };
@@ -100,8 +101,9 @@ public class WordNet implements Serializable {
 
   /** Represents a WordNet synset */
   public static class Synset implements Serializable, Comparable<Synset> {
+	private static final long serialVersionUID = 1L;
 
-    /** Id as given in the WordNet Prolog files */
+	/** Id as given in the WordNet Prolog files */
     protected int id;
 
     /** Words of this synset */
