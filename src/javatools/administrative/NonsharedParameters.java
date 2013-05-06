@@ -58,7 +58,15 @@ import javatools.filehandlers.FileLines;
   It may also contain comments or section headers (i.e. anything that does not match the
   above pattern). Parameter names are not case sensitive. Initial and terminal spaces
   are trimmed for both parameter names and values. Boolean parameters accept multiple
-  ways of expressing "true" (namely "on", "true", "yes" and "active").<P>
+  ways of expressing "true" (namely "on", "true", "yes" and "active").
+  
+  You may also use ${param} constructs to refer to parameters set earlier, 
+  these references are replaced at the time the file is read by the current value of 'param' (null if it does not have a value!)
+  
+  Alternatively you can use $[param] references, 
+  they will be replaced by the current value of 'param' at runtime.
+  Thus, param could be set/overriden after the actual reference appears, i.e. always reflects current settings. 
+  
   
   This class does function as an object. 
   Example:
@@ -115,6 +123,8 @@ public class NonsharedParameters implements Cloneable{
 
   /** Holds the pattern used for ini-file-entries */
   public static Pattern INIPATTERN=Pattern.compile(" *(\\w+) *= *(.*) *");
+  public static Pattern READTIMEVARIABLEPATTERN=Pattern.compile("(.*)\\$\\{(\\w+)\\}(.*)");
+  public static Pattern RUNTIMVARIABLEPATTERN=Pattern.compile("(.*)\\$\\[(\\w+)\\](.*)");
 
   /** Holds words that count as "no" for boolean parameters */
   public static FinalSet<String> no=new FinalSet<String>(new String [] {
@@ -192,7 +202,7 @@ public class NonsharedParameters implements Cloneable{
       return get(s);
     else{
       String path=get(s);
-      if(path.startsWith("[CONFDIR]"))
+      if(path.startsWith("[CONFDIR]"))  //TODO: generally allow to use $[param] to refer to other parameters inside parameter values in contrast to ${param} style this would reflect dynamic changes at runtime!
         return basePath+path.substring(9);
 //      else if(path.startsWith("../"))
 //          return basePath+path;
@@ -353,8 +363,15 @@ public class NonsharedParameters implements Cloneable{
   public String get(String s) throws UndefinedParameterException  {
     if(values==null) throw new RuntimeException("Call init() before get()!");
     String pname=s.indexOf(' ')==-1?s:s.substring(0,s.indexOf(' '));
+
     String v=values.get(pname.toLowerCase());
     if(v==null) throw new UndefinedParameterException(s,iniFile);
+    
+	Matcher m = RUNTIMVARIABLEPATTERN.matcher(v);
+	if(m.matches()){
+		v=m.group(1)+get(m.group(2))+m.group(3);
+	}
+        
     return(v);
   }
 
@@ -479,7 +496,11 @@ public class NonsharedParameters implements Cloneable{
     }
     String lastAttrib=null;
     for (String l : new FileLines(f)) {
-      Matcher m = INIPATTERN.matcher(l);
+    	Matcher m = READTIMEVARIABLEPATTERN.matcher(l);
+    	if(m.matches()){
+    		l=m.group(1)+values.get(m.group(2))+m.group(3);
+    	}
+      m = INIPATTERN.matcher(l);
       if (!m.matches()) {
         if(lastAttrib!=null) {
           values.put(lastAttrib, values.get(lastAttrib)+l);
@@ -492,6 +513,7 @@ public class NonsharedParameters implements Cloneable{
         s = s.substring(1);
       if (s.endsWith("\""))
         s = s.substring(0, s.length() - 1);
+      
       if(m.group(1).toLowerCase().equals("include")){
         if(s.startsWith("/"))
           init(s,false);
