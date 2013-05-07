@@ -859,11 +859,10 @@ public abstract class Database {
    * the function will also return false. */
   public boolean existsTable(String table) {
 	  ResultSet rs=null;
-    try {
-    	Announce.debug("SELECT * FROM " + table + " LIMIT 1"); //TODO: comment out
+    try {    	
       rs = query("SELECT * FROM " + table + " LIMIT 1");      
-    } catch (SQLException ex) {
-    	Announce.warning(ex); //TODO: comment out //hook here for debugging
+    } catch (SQLException ex) {    	
+    	Announce.debug(ex); 
       return false;
     }
     if(rs!=null)
