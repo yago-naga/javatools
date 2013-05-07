@@ -95,7 +95,7 @@ public abstract class StringModifier {
     if(!it.hasNext())
       return "";
     else{
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       sb.append(database.format(it.next()));
       while (it.hasNext()){
         sb.append(delim);
@@ -112,7 +112,7 @@ public abstract class StringModifier {
     if(col.length<=0)
       return "";
     else{
-      StringBuffer sb = new StringBuffer();
+    	StringBuilder sb = new StringBuilder();
       sb.append(database.format(col[0]));
       for (int i=1;i<col.length;i++){
         sb.append(delim);
