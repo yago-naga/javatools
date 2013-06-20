@@ -540,7 +540,7 @@ public class Announce {
     if(progressLevel<0)
       return;
     if (d > progressEnd[progressLevel]) return;
-    if (!D.smaller(level, Level.STATE) && !printedEstimatedTime[progressLevel] && System.currentTimeMillis() - progressStart[progressLevel] > 60000) { //60000
+    if (!D.smaller(level, Level.STATE) && !printedEstimatedTime[progressLevel] && System.currentTimeMillis() - progressStart[progressLevel] > 60000) { 
       print("("+progressID[progressLevel]+NumberFormatter.formatMS((long) ((System.currentTimeMillis() - progressStart[progressLevel]) * (progressEnd[progressLevel] - d) / d))+" to go)");
       printedEstimatedTime[progressLevel] = true;
       lastEstimation[progressLevel]=System.currentTimeMillis();
@@ -569,7 +569,7 @@ public class Announce {
   
   /** One progress step (use alternatively to progressAt) */
   public static void progressStep() {
-    progressAt(progressCounter[progressLevel]++);
+    progressAt(++progressCounter[progressLevel]);
   }
 
 
