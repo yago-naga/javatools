@@ -99,6 +99,19 @@ public class FileUtils {
     reader.close();
     return sb.toString();
   }
+  
+  /**
+   * Writes the content of the string to the (UTF-8 encoded) file.
+   * 
+   * @param file  File to write String content to.
+   * @return      Content of file.
+   * @throws IOException 
+   */
+  public static void writeFileContent(File file, String content) throws IOException {
+    BufferedWriter writer = getBufferedUTF8Writer(file);
+    writer.write(content);
+    writer.close();
+  }
     
   /**
    * Verifies that a file is lexicographically order (ascending or descending)
