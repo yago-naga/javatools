@@ -416,6 +416,7 @@ public class DateParser {
         out = in;
         in = temp;
       }
+      
     }
 
     m = Pattern.compile("&DEC(\\d++)").matcher(in);
@@ -947,6 +948,10 @@ public class DateParser {
           split[0] = "##";
         }
       }
+      // A year cannot be more than 4 digits
+      if(split[0].length()>4)
+    	return result;
+      
       // checks the month value
       if (!split[1].contains("#")) {
         Integer value = NumberParser.parseInt(split[1]);
@@ -1132,7 +1137,7 @@ public class DateParser {
       String in = D.r();
       System.out.println(normalize(in));
       System.out.println(getDates(normalize(in)));
-      System.out.println(NumberFormatter.ISOtime(asCalendar(normalize(in))));
+//      System.out.println(NumberFormatter.ISOtime(asCalendar(normalize(in))));
     }
   }
 
