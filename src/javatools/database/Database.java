@@ -149,6 +149,10 @@ public abstract class Database {
 
   /** The concurrency type of the resultSet (read only by default) */
   protected int resultSetConcurrency = ResultSet.CONCUR_READ_ONLY;
+  
+  /** The fetchsize to be used on default, i.e. number of rows to be pulled at once 
+   *  (default:0 means all results are pulled in directly) */
+  protected int fetchsize = 0;
 
   /** The Driver registered for this database instance
    * TODO: it may be more reasonable to share the same driver instance for all database insances
@@ -359,8 +363,24 @@ public abstract class Database {
   public void setAutoReconnectOnUpdate(boolean autoReconnectOnUpdate) {
     this.autoReconnectOnUpdate = autoReconnectOnUpdate;
   }
+  
+  /** gets the current default fetchsize affecting all queries 
+   *  where no specific fetchsize is provided as query argument
+   *  The fetchsize determines how many result rows are pulled in from the server at once. 
+   *  @Note: Not all database drivers may implement this properly/in a way supported by this class */
+  public int getFetchsize() {
+	return fetchsize;
+}
 
-  /** time in milliseconds after which a connection is considered broken 
+  /** sets the default fetchsize affecting all following queries 
+   *  where no specific fetchsize is provided as query argument
+   *  The fetchsize determines how many result rows are pulled in from the server at once. 
+   *  @Note: Not all database drivers may implement this properly/in a way supported by this class */
+  public void setFetchsize(int fetchsize) {
+	this.fetchsize = fetchsize;
+  }
+
+/** time in milliseconds after which a connection is considered broken 
    *  when no answer is received within that time frame
    */
   public int getValidityCheckTimeout() {
@@ -472,6 +492,7 @@ public abstract class Database {
   throws SQLException {
     Statement stmnt = connection.createStatement(resultSetType, resultSetConcurrency);
     if (fetchsize != null) stmnt.setFetchSize(fetchsize);
+    else stmnt.setFetchSize(this.fetchsize);
     return (stmnt.executeQuery(sql));    
   }
   

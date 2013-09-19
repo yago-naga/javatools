@@ -638,6 +638,7 @@ public class NonsharedParameters implements Cloneable{
     String inst=null;
     String port=null;
     String database=null;
+    Integer fetchsize=this.getInteger("databaseFetchSize");
 
     
     // Retrieve the optional parameters
@@ -660,19 +661,24 @@ public class NonsharedParameters implements Cloneable{
     } catch(UndefinedParameterException e) {Announce.debug("Warning: "+e);}    
     
     // Initialize the database
+    Database db=null;
     // ------ ORACLE ----------
     if(system.equals("ORACLE")) {
-      return(new OracleDatabase(user,password,host,port,inst));
+      db=(new OracleDatabase(user,password,host,port,inst));
     }
     //  ------ MySQL----------
     if(system.equals("MYSQL")) {
-      return(new MySQLDatabase(user,password,database,host,port));
+      db=(new MySQLDatabase(user,password,database,host,port));
     }
     //  ------ Postgres----------
     if(system.equals("POSTGRES")) {
-      return(new PostgresDatabase(user,password,database,host,port,schema));
+      db=(new PostgresDatabase(user,password,database,host,port,schema));
     }
-    throw new RuntimeException("Unsupported database system "+system);        
+    if (db==null)
+    	throw new RuntimeException("Unsupported database system "+system);
+    if(fetchsize!=null)
+    	db.setFetchsize(fetchsize);
+    return db;    	
   }
   
   
