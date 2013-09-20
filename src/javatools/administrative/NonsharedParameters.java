@@ -731,11 +731,11 @@ public class NonsharedParameters implements Cloneable{
   
   /** 
    * Checks for all full-upper-case class attributes whether there is a matching parameter 
-   * and sets its value to the parameter value.  
+   * and sets its value to the parameter value. Does this also for parameters inherited from super-classes.
    * @param classname  name of the class for which to check
    * @param	object	object, which needs to be an instance of the given class
-   */
-  public void initiateClassAttributes(Object object) {
+   */  
+  public void initiateAllClassAttributes(Object object) {
 	  try{
 		  Class<?> cl=object.getClass();
 		  while(cl!=null){
@@ -751,7 +751,29 @@ public class NonsharedParameters implements Cloneable{
 	  } catch (IllegalAccessException ex){
 		  throw new RuntimeException(ex); 
 	  }
+  }
+  
+  /** 
+   * Checks for all full-upper-case class attributes whether there is a matching parameter 
+   * and sets its value to the parameter value.  
+   * @param classname  name of the class for which to check
+   * @param	object	object, which needs to be an instance of the given class
+   */  
+  public void initiateClassAttributes(Object object) {
+	  try{
+		  Class<?> cl=object.getClass();		  
+			  for (Field field : cl.getDeclaredFields()) {
+				  field.setAccessible(true);
+				  Object value=matchObjectAttribut(field);
+				  if(value!=null)
+					  field.set(object, value);
+				  field.setAccessible(false);
+			  }			  		  
+	  } catch (IllegalAccessException ex){
+		  throw new RuntimeException(ex); 
+	  }
   }  
+
   
   
   /** Returns all defined parameters*/
