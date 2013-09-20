@@ -375,7 +375,8 @@ public abstract class Database {
   /** sets the default fetchsize affecting all following queries 
    *  where no specific fetchsize is provided as query argument
    *  The fetchsize determines how many result rows are pulled in from the server at once. 
-   *  @Note: Not all database drivers may implement this properly/in a way supported by this class */
+   *  @Note: Not all database drivers may implement this properly/in a way supported by this class 
+   *  	e.g. for Postgre this has only an effect when using transactions */
   public void setFetchsize(int fetchsize) {
 	this.fetchsize = fetchsize;
   }
