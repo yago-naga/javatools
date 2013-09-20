@@ -653,25 +653,33 @@ public abstract class Database {
     } catch (SQLException ex2) {
       throw new RollbackTransactionSQLException("Could not rollback transaction.");
     }
-    endTransaction(false);
+    endTransaction();
   }
 
-  /** executes the transaction and switches back from transaction mode into autocommit mode */
-  public void endTransaction(boolean flush) throws TransactionSQLException {
-    if (inTransactionMode) {
-      if (flush) commitTransaction();
-      try {
-        connection.setTransactionIsolation(originalTransactionMode);
-      } catch (SQLException ex) {
-        throw new TransactionSQLException("Could not shutdown transaction mode\n Error was:" + ex, ex);
-      }
-      try {
-        if (autoCommitWasOn) connection.setAutoCommit(true);
-      } catch (SQLException ex) {
-        throw new StartAutoCommitSQLException("Could not start autocommit\n Error was:" + ex, ex);
-      }
-      inTransactionMode = false;
-    }
+  /** executes the transaction and switches back from transaction mode into autocommit mode */  
+  public void endTransaction() throws TransactionSQLException {
+	    if (inTransactionMode) {
+	        commitTransaction();
+	        try {
+	          connection.setTransactionIsolation(originalTransactionMode);
+	        } catch (SQLException ex) {
+	          throw new TransactionSQLException("Could not shutdown transaction mode\n Error was:" + ex, ex);
+	        }
+	        try {
+	          if (autoCommitWasOn) connection.setAutoCommit(true);
+	        } catch (SQLException ex) {
+	          throw new StartAutoCommitSQLException("Could not start autocommit\n Error was:" + ex, ex);
+	        }
+	        inTransactionMode = false;
+	      }
+  }
+  
+  /** Please use the version without parameter
+   *  @param	flush	deprecated, will be removed 
+   *  @Note The flush parameter is deprecated and will be removed as the transaction end always requires a commit */
+  @Deprecated  //TODO: remove after a while
+  public void endTransaction(@Deprecated boolean flush) throws TransactionSQLException {
+	  endTransaction();
   }
 
   
