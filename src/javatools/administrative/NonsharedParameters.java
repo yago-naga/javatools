@@ -259,7 +259,10 @@ public class NonsharedParameters implements Cloneable{
   
   /** Returns a value for an integer parameter returning the default value if undefined*/
   public Integer getInteger(String s, Integer defaultValue) throws UndefinedParameterException {
-    return(isDefined(s)?Integer.parseInt(get(s)):defaultValue);
+    if(isDefined(s))
+    	return Integer.parseInt(get(s));
+    else 
+    	return defaultValue;
   }
   
   /** Returns a value for an integer parameter*/
@@ -638,7 +641,7 @@ public class NonsharedParameters implements Cloneable{
     String inst=null;
     String port=null;
     String database=null;
-    Integer fetchsize=this.getInteger("databaseFetchSize");
+    Integer fetchsize=this.getInteger("databaseFetchSize",null);
 
     
     // Retrieve the optional parameters
