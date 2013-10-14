@@ -595,6 +595,11 @@ public class Announce {
     if(progressLevel<-1)
       progressLevel=-1;
   }
+  
+  /** returns the time passed in the current tracked progress since its start */
+  public static long progressTimePassed(){
+	  return System.currentTimeMillis() - progressStart[progressLevel];
+  }
 
   /** Writes "failed NEWLINE"*/
   public static void progressFailed() {
