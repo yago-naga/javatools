@@ -686,6 +686,9 @@ public class NonsharedParameters implements Cloneable{
   
   
   /** Checks whether a parameter matching the field name is available.
+   *  There are two ways to declare attributes to configurable parameters,
+   *  either write them all upper case of use the prefix "cp_"; 
+   *  in the latter case the prefix is ignored when matching parameters to the field.
    *  Returns the parameter value in the format corresponding the field. 
    * @param field  the attribute against which to match the parameters
    * @return  an object representing the value of a parameter that matches the given attribute
@@ -693,10 +696,10 @@ public class NonsharedParameters implements Cloneable{
    *  @Note	this will become protected, please use the initiateClassAttributes method (if it does not work for you, let me(Steffen) know
    *  TODO: make protected
    */
-  @Deprecated //will become protected
+  @Deprecated //will become protected, use the initiateClassAttributes method instead
   public Object matchObjectAttribut(Field field) throws IllegalAccessException{   
-      String parameterName = field.getName();
-      if (parameterName.equals(parameterName.toUpperCase()) && isDefined(parameterName)) {
+      String parameterName = (field.getName().startsWith("cp_")?field.getName().substring(2):field.getName());
+      if ((parameterName.equals(parameterName.toUpperCase())||field.getName().startsWith("cp_")) && isDefined(parameterName)) {
         if (field.getType() == Integer.class || field.getType() == int.class) return getInteger(parameterName);
         else if (field.getType() == Boolean.class || field.getType() == boolean.class) return new Boolean(getBoolean(parameterName));
         else if (field.getType() == Float.class || field.getType() == float.class) return new Float(getFloat(parameterName));
