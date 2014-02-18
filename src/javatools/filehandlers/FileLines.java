@@ -172,6 +172,33 @@ public class FileLines extends PeekIterator<String> implements Iterable<String>,
 			}
 		}
 	}
+	 
+	 /**
+	 * Reads until one of the strings is found, returns its index or -1.
+	 * 
+	 * @throws IOException
+	 */
+	public static int find(Reader in, StringBuilder b, String... findMe) throws IOException {
+		int[] pos = new int[findMe.length];
+		while (true) {
+			int c = in.read();
+			b.append((char) c);
+			if (c == -1)
+				return (-1);
+			if (c == -2)
+				continue; // Let's be compliant with HTMLReader: Skip tags
+			for (int i = 0; i < findMe.length; i++) {
+				if (c == findMe[i].charAt(pos[i]))
+					pos[i]++;
+				else
+					pos[i] = 0;
+				if (pos[i] == findMe[i].length()) {
+					b.setLength(b.length() - findMe[i].length());
+					return (i);
+				}
+			}
+		}
+	}
 
 	/**
 	 * Reads until one of the strings is found, returns its index or -1.
