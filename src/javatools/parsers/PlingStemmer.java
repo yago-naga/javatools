@@ -225,7 +225,8 @@ public class PlingStemmer {
    "cruises",
    "premises",
    "houses",
-   "course"
+   "courses",
+   "cases"
   );
 
   /** Words that do not have a distinct plural form (like "atlas" etc.)*/
