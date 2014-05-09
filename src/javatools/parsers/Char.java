@@ -2,6 +2,8 @@ package javatools.parsers;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -684,7 +686,53 @@ public class Char {
     n[0] = len * 3;
     return (utf8);
   }
-
+  
+  /** Eats an HTML ampersand code from a List of Characters*/
+  public static char eatAmpersand(List<Character> a, int[] n) {
+    n[0] = 0;
+    if (a.get(0) != '&') return ((char) 0);
+    // Seek to ';'
+    // We also accept spaces and the end of the String as a delimiter
+    while (n[0] < a.size() && !Character.isSpaceChar(a.get(n[0])) && a.get(n[0]) != ';')
+      n[0]++;
+    if (n[0] <= 1) {
+      n[0] = -1;
+      return ((char) 0);
+    }
+    List<Character> sublist = a.subList(1, n[0]);
+    StringBuilder sb = new StringBuilder();
+    for (Character c : sublist) {
+      sb.append(c);
+    }
+    String b = sb.toString();
+    if (n[0] < a.size() && a.get(n[0]) == ';') {
+      n[0]++;
+    }
+    // Hexadecimal characters
+    if (b.startsWith("#x")) {
+      try {
+        return ((char) Integer.parseInt(b.substring(2), 16));
+      } catch (Exception e) {
+        n[0] = -1;
+        return ((char) 0);
+      }
+    }
+    // Decimal characters
+    if (b.startsWith("#")) {
+      try {
+        return ((char) Integer.parseInt(b.substring(1)));
+      } catch (Exception e) {
+        n[0] = -1;
+        return ((char) 0);
+      }
+    }
+    // Others
+    if (ampersandMap.get(b) != null) return (ampersandMap.get(b));
+    else if (ampersandMap.get(b.toLowerCase()) != null) return (ampersandMap.get(b.toLowerCase()));
+    n[0] = -1;
+    return ((char) 0);
+  }
+  
   /** Eats an HTML ampersand code from a String*/
   public static char eatAmpersand(String a, int[] n) {
     n[0] = 0;
@@ -939,14 +987,20 @@ public class Char {
     if(s==null || s.indexOf('&')==-1) return(s);
     StringBuilder result = new StringBuilder();
     int[] eatLength = new int[1];// add this in order to multithread safe
-    while (s.length() != 0) {
-      char c = eatAmpersand(s, eatLength);
+    List<Character> chars = new LinkedList<Character>();
+    for (int i = 0; i < s.length(); ++i) {
+      chars.add(s.charAt(i));
+    }
+    while (chars.size() != 0) {
+      char c = eatAmpersand(chars, eatLength);
       if (eatLength[0] > 1) {
         result.append(c);
-        s = s.substring(eatLength[0]);
+        for (int i = 0; i < eatLength[0]; ++i) {
+          chars.remove(0);
+        }
       } else {
-        result.append(s.charAt(0));
-        s = s.substring(1);
+        result.append(chars.get(0));
+        chars.remove(0);
       }
     }
     return (result.toString());
