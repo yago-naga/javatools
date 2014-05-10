@@ -324,8 +324,9 @@ public class Announce {
 	public static void error(Object... o) {
 		if (D.smaller(level, Level.ERROR))
 			System.exit(255);
-		while (doingLevel > 0)
+		if (doingLevel > 0)
 			failed();
+		doingLevel=0;
 		newLine();
 		if (debug)
 			print("[!Error: " + CallStack.toString(new CallStack().ret().top())
@@ -334,6 +335,7 @@ public class Announce {
 			print("Error: ");
 		print(o);
 		newLine();
+		//print(new CallStack().ret());
 		System.exit(255);
 	}
 
