@@ -1,11 +1,12 @@
 package javatools.filehandlers;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
-import javatools.parsers.Char;
+import javatools.parsers.Char17;
 
 /** 
 This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
@@ -27,73 +28,79 @@ Example:
 */
 public class UTF8Writer extends Writer {
 
-  /** The real writer */
-  protected OutputStream out;
-  
-  /** Writes to a file*/
-  public UTF8Writer(File f, boolean append) throws IOException{
-    this(new FileOutputStream(f,append));
-  }
-  
-  /** Writes to a file*/
-  public UTF8Writer(File f) throws IOException{
-    this(f,false);
-  }
+	/** The real writer */
+	protected OutputStream out;
 
-  /** Writes nowhere*/
-  public UTF8Writer() {
-  }
+	/** Writes to a file*/
+	public UTF8Writer(File f, boolean append) throws IOException {
+		this(new FileOutputStream(f, append));
+	}
 
-  /** Writes to a file*/
-  public UTF8Writer(String f) throws IOException{
-    this(new File(f));
-  }
-  
-  /** Writes to a writer*/
-  public UTF8Writer(OutputStream f){
-    out=f;
-  }
+	/** Writes to a file*/
+	public UTF8Writer(File f) throws IOException {
+		this(f, false);
+	}
 
-  @Override
-  public void close() throws IOException {
-    synchronized(lock){
-     if(out!=null) out.close();
-    }
-  }
+	/** Writes nowhere*/
+	public UTF8Writer() {
+	}
 
-  @Override
-  public void flush() throws IOException {
-    synchronized(lock){
-    if(out!=null) out.flush();
-    }
-  }
+	/** Writes to a file*/
+	public UTF8Writer(String f) throws IOException {
+		this(new File(f));
+	}
 
-  @Override
-  public void write(char[] cbuf, int off, int len) throws IOException {
-    synchronized(lock){
-    for(int i=off;i<off+len;i++) write(cbuf[i]);
-    }
-  }
+	/** Writes to a writer*/
+	public UTF8Writer(OutputStream f) {
+		out = f;
+	}
 
-  @Override
-  public void write(int c) throws IOException {
-    
-    synchronized(lock){
-    if(out==null) return;
-    String s=Char.encodeUTF8(c);
-    for(int i=0;i<s.length();i++) out.write((byte)s.charAt(i));
-    }
-  }
-  
-  /** Writes a line*/
-  public void writeln(String s) throws IOException {
-    write(s);
-    write('\n');
-  }
-  
-  /** Writes a string*/
-  public void write(String s) throws IOException {
-    for(int i=0;i<s.length();i++) write(s.charAt(i));
-  }
-  
+	@Override
+	public void close() throws IOException {
+		synchronized (lock) {
+			if (out != null)
+				out.close();
+		}
+	}
+
+	@Override
+	public void flush() throws IOException {
+		synchronized (lock) {
+			if (out != null)
+				out.flush();
+		}
+	}
+
+	@Override
+	public void write(char[] cbuf, int off, int len) throws IOException {
+		synchronized (lock) {
+			for (int i = off; i < off + len; i++)
+				write(cbuf[i]);
+		}
+	}
+
+	@Override
+	public void write(int c) throws IOException {
+
+		synchronized (lock) {
+			if (out == null)
+				return;
+			String s = Char17.encodeUTF8((char) c);
+			for (int i = 0; i < s.length(); i++)
+				out.write((byte) s.charAt(i));
+		}
+	}
+
+	/** Writes a line*/
+	public void writeln(String s) throws IOException {
+		write(s);
+		write('\n');
+	}
+
+	/** Writes a string*/
+	public void write(String s) throws IOException {
+		for (int i = 0; i < s.length(); i++)
+			write(s.charAt(i));
+	}
+
 }

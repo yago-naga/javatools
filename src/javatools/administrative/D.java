@@ -14,7 +14,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-import javatools.parsers.Char;
+import javatools.parsers.Char17;
 
 /** 
  This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
@@ -196,7 +196,7 @@ public class D {
 
   /** Writes a line to a writer. Yes, this is possible */
   public static void writeln(OutputStream out, Object s) throws IOException {
-    String string = Char.encodeUTF8(s.toString());
+    String string = Char17.encodeUTF8(s.toString());
     for (int i = 0; i < string.length(); i++)
       out.write(string.charAt(i));
     out.write('\n');

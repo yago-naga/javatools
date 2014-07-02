@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javatools.parsers.Char;
+import javatools.parsers.Char17;
 import javatools.parsers.NumberFormatter;
 
 import javax.imageio.ImageIO;
@@ -243,7 +243,7 @@ public class FigureProducer {
       graphics.setColor(Color.BLACK);
       String header = table.rows.get(row).get(0).toString();
       while (graphics.getFontMetrics().stringWidth(header) > ROWWIDTH)
-        header = Char.cutLast(header);
+        header = Char17.cutLast(header);
       if (header.length() != table.rows.get(row).get(0).toString().length()) header += '.';
       graphics.drawString(header, SPACELEFT + ROWWIDTH * row, TITLEHEIGHT + COLHEIGHT + LABELHEIGHT - 2);
       for (int column = 1; column < table.numColumns(); column++) {

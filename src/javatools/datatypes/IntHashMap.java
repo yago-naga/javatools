@@ -48,12 +48,31 @@ public class IntHashMap<K> extends AbstractSet<K> {
 			add(k);
 	}
 
-	 /** Creates an intHashMap with these keys set to 1 */
-  public IntHashMap(Collection<K> keys) {
-    this();
-    for (K k : keys)
-      add(k);
-  }
+	/** Creates an intHashMap from a list that contains keys and values in alternation*/
+	@SuppressWarnings("unchecked")
+	public IntHashMap(List<Object> keyValuePairs) {
+		this();
+		for (int i = 0; i < keyValuePairs.size(); i += 2) {
+			Object value = keyValuePairs.get(i + 1);
+			if (value instanceof Integer)
+				put((K) keyValuePairs.get(i), (Integer) value);
+			else if (value instanceof Character)
+				put((K) keyValuePairs.get(i), ((Character) value).charValue());
+			else if (value instanceof Byte)
+				put((K) keyValuePairs.get(i), ((Byte) value).intValue());
+			else if (value instanceof Short)
+				put((K) keyValuePairs.get(i), ((Short) value).intValue());
+			else
+				throw new RuntimeException("Values have to be integers");
+		}
+	}
+
+	/** Creates an intHashMap with these keys set to 1 */
+	public IntHashMap(Collection<K> keys) {
+		this();
+		for (K k : keys)
+			add(k);
+	}
 
 	/** Creates an intHashMap with the same keys and the sizes */
 	public IntHashMap(Map<K, IntHashMap<K>> map) {
@@ -245,37 +264,38 @@ public class IntHashMap<K> extends AbstractSet<K> {
 		}
 	}
 
-	 /** Adds all integer values up */
-  public void addAll(IntHashMap<K> countBindings) {
-    add(countBindings);
-  }
+	/** Adds all integer values up */
+	public void addAll(IntHashMap<K> countBindings) {
+		add(countBindings);
+	}
 
 	/** increases the counters */
 	public void add(Collection<K> set) {
 		for (K k : set)
 			add(k);
 	}
-	  
-  @Override
-  public String toString() {   
-    if(isEmpty()) return("{}");
-    StringBuilder b=new StringBuilder("{");
-    int counter=30;
-    for(K key : keys()) {
-      if(counter--==0) {
-        b.append("..., ");
-        break;
-      }
-      b.append(key).append('=').append(get(key)).append(", ");
-    }
-    b.setLength(b.length()-2);
-    return(b.append("}").toString());
-  }
-  
-  /** returns the keys in increasing order*/
-  public List<K> increasingKeys() {
-    List<K> result=keys().asList();    
-    Collections.sort(result, new Comparator<K>(){
+
+	@Override
+	public String toString() {
+		if (isEmpty())
+			return ("{}");
+		StringBuilder b = new StringBuilder("{");
+		int counter = 30;
+		for (K key : keys()) {
+			if (counter-- == 0) {
+				b.append("..., ");
+				break;
+			}
+			b.append(key).append('=').append(get(key)).append(", ");
+		}
+		b.setLength(b.length() - 2);
+		return (b.append("}").toString());
+	}
+
+	/** returns the keys in increasing order*/
+	public List<K> increasingKeys() {
+		List<K> result = keys().asList();
+		Collections.sort(result, new Comparator<K>() {
 			@Override
 			public int compare(K o1, K o2) {
 				int i1 = get(o1);
@@ -308,17 +328,18 @@ public class IntHashMap<K> extends AbstractSet<K> {
 		IntHashMap<?> other = (IntHashMap<?>) o;
 		if (other.size() != this.size())
 			return (false);
-		for(int i=0;i<keys.length;i++) {
-			if(keys[i]!=null && values[i]!=other.get(keys[i])) return(false);
+		for (int i = 0; i < keys.length; i++) {
+			if (keys[i] != null && values[i] != other.get(keys[i]))
+				return (false);
 		}
-		return(true);
+		return (true);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return Arrays.hashCode(values);
 	}
-	
+
 	/** Finds the maximum value*/
 	public int findMax() {
 		int max = Integer.MIN_VALUE;
@@ -331,9 +352,10 @@ public class IntHashMap<K> extends AbstractSet<K> {
 
 	/** Computes the sum*/
 	public long computeSum() {
-		long sum=0;
+		long sum = 0;
 		for (int i = 0; i < keys.length; i++) {
-			if (keys[i] != null) sum+=values[i];
+			if (keys[i] != null)
+				sum += values[i];
 		}
 		return (sum);
 	}

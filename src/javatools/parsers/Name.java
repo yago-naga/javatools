@@ -1222,13 +1222,13 @@ public class Name {
 
   /** Returns TRUE for US State abbreviations*/
   public static boolean isUSStateAbbreviation(String s) {
-    if(s.endsWith(".")) s=Char.cutLast(s);
+    if(s.endsWith(".")) s=Char17.cutLast(s);
     return(usStates.containsKey(s.toUpperCase()));
   }
 
   /** Returns the US sate for an abbreviation (or NULL) */
   public static String unabbreviateUSState(String s) {
-    if(s.endsWith(".")) s=Char.cutLast(s);
+    if(s.endsWith(".")) s=Char17.cutLast(s);
     return(usStates.get(s.toUpperCase()));
   }
 
@@ -1430,7 +1430,7 @@ public class Name {
 
     /** Returns TRUE for languages*/
     public static boolean isLanguage(String s) {
-      return(languageCodes.values().contains(Char.upCaseFirst(s)));
+      return(languageCodes.values().contains(Char17.upCaseFirst(s)));
     }
 
     /** Returns TRUE for language codes*/

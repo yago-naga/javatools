@@ -10,19 +10,19 @@ public class CharTest {
   @Test
   public void testDecodeAmpersand() {
     String s = "This is &amp;";
-    String sDec = Char.decodeAmpersand(s);
+    String sDec = Char17.decodeAmpersand(s);
     assertEquals("This is &", sDec);
     
     s = "This&amp;is";
-    sDec = Char.decodeAmpersand(s);
+    sDec = Char17.decodeAmpersand(s);
     assertEquals("This&is", sDec);
     
     s = "&amp;This is";
-    sDec = Char.decodeAmpersand(s);
+    sDec = Char17.decodeAmpersand(s);
     assertEquals("&This is", sDec);
     
     s = "This is";
-    sDec = Char.decodeAmpersand(s);
+    sDec = Char17.decodeAmpersand(s);
     assertEquals("This is", sDec);
   }
 }

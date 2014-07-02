@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javatools.administrative.D;
-import javatools.parsers.Char;
+import javatools.parsers.Char17;
 /** 
 This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
 It is licensed under the Creative Commons Attribution License 
@@ -98,8 +98,8 @@ public class CompressedString implements CharSequence, Comparable<CompressedStri
   public CharSequence normalize(CharSequence s) {
     if(s instanceof CompressedString) return(s);
     if(BITSPERCHAR==8) return(s);
-    if(BITSPERCHAR==7) return(Char.normalize(s.toString()));
-    return(Char.normalize(s.toString()).toUpperCase());
+    if(BITSPERCHAR==7) return(Char17.normalize(s.toString()));
+    return(Char17.normalize(s.toString()).toUpperCase());
   }
   
   /** 1 if this CompressedString is lexically larger than the 

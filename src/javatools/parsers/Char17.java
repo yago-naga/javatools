@@ -1,7 +1,5 @@
 package javatools.parsers;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 
 import javatools.datatypes.IntHashMap;
@@ -477,8 +475,7 @@ public class Char17 {
 		return (UNKNOWN);
 	}
 
-	/** Eats a String of the form "%xx" from a string, where
-	 * xx is a hexadecimal code.*/
+	/** Decodes percentage characters of the form "%xx" in a string. Also does UTF8 decoding.*/
 	public static String decodePercentage(String string) {
 		int pos = string.indexOf('%');
 		if (pos == -1)
@@ -494,10 +491,46 @@ public class Char17 {
 						string.substring(i + 1, i + 3), 16));
 				i += 2;
 			} catch (Exception e) {
-				// Illegal percentage code
+				// Illegal percentage code, just keep it literally
+				result.append('%');
 			}
 		}
 		return (decodeUtf8(result.toString()));
+	}
+
+	/** Decodes an HTML ampersand code such as "& amp", returns -1 in case of failure*/
+	public static int decodeAmpersandChar(String b) {
+		// Get just the code portion
+		if (b.startsWith("&"))
+			b = b.substring(1);
+		if (b.endsWith(";"))
+			b = cutLast(b);
+		// Hexadecimal characters
+		if (b.startsWith("#x")) {
+			try {
+				return (((char) Integer.parseInt(b.substring(2), 16)));
+			} catch (Exception e) {
+				// Invalid char
+				return (-1);
+			}
+		}
+		// Decimal characters
+		if (b.startsWith("#")) {
+			try {
+				return (((char) Integer.parseInt(b.substring(1))));
+			} catch (Exception e) {
+				// Invalid char
+				return (-1);
+			}
+		}
+		// Others
+		if (ampersandMap.get(b) != -1) {
+			return (ampersandMap.get(b));
+		} else if (ampersandMap.get(b.toLowerCase()) != -1) {
+			return (ampersandMap.get(b.toLowerCase()));
+		}
+		// Invalid char
+		return (-1);
 	}
 
 	/** Eats an HTML ampersand code from a List of Characters*/
@@ -518,41 +551,16 @@ public class Char17 {
 					&& !Character.isSpaceChar(string.charAt(end))
 					&& string.charAt(end) != ';')
 				end++;
-			String b = string.substring(i+1, end);
+			String b = string.substring(i + 1, end);
 			if (end < string.length() && string.charAt(end) == ';')
 				end++;
-			// Hexadecimal characters
-			if (b.startsWith("#x")) {
-				try {
-					result.append(((char) Integer.parseInt(b.substring(2), 16)));
-					i = end - 1;
-				} catch (Exception e) {
-					// Invalid char
-				}
-				continue;
-			}
-			// Decimal characters
-			if (b.startsWith("#")) {
-				try {
-					result.append(((char) Integer.parseInt(b.substring(1))));
-					i = end - 1;
-				} catch (Exception e) {
-					// Invalid char
-				}
-				continue;
-			}
-			// Others
-			if (ampersandMap.get(b) != -1) {
-				result.append(ampersandMap.get(b));
+			int c = decodeAmpersandChar(b);
+			if (c == -1) {
+				result.append('&');
+			} else {
+				result.append((char) c);
 				i = end - 1;
-				continue;
-			} else if (ampersandMap.get(b.toLowerCase()) != -1) {
-				result.append(ampersandMap.get(b.toLowerCase()));
-				i = end - 1;
-				continue;
 			}
-			// Otherwise
-			result.append('&');
 		}
 		return (result.toString());
 	}
@@ -576,7 +584,7 @@ public class Char17 {
 		return (-1);
 	}
 
-	/** Eats a UTF8 code from a String. There is also a built-in way in Java that converts
+	/** Decodes UTF8 characters in a string. There is also a built-in way in Java that converts
 	 * UTF8 to characters and back, but it does not work with all characters. */
 	public static String decodeUtf8(String string) {
 		if (string.isEmpty())
@@ -587,31 +595,30 @@ public class Char17 {
 			if (string.length() - i >= len)
 				switch (len) {
 				case 2:
-					if ((string.charAt(i+1) & 0xC0) != 0x80)
+					if ((string.charAt(i + 1) & 0xC0) != 0x80)
 						break;
-					result.append((char)(((string.charAt(i) & 0x1F) << 6)+(string.charAt(i+1) & 0x3F)));
+					result.append((char) (((string.charAt(i) & 0x1F) << 6) + (string
+							.charAt(i + 1) & 0x3F)));
 					i++;
 					continue;
 				case 3:
-					if ((string.charAt(i+1) & 0xC0) != 0x80
-							|| (string.charAt(i+2) & 0xC0) != 0x80)
+					if ((string.charAt(i + 1) & 0xC0) != 0x80
+							|| (string.charAt(i + 2) & 0xC0) != 0x80)
 						break;
-					result.append((char)
-							(((string.charAt(i+0) & 0x0F) << 12)
-							+((string.charAt(i+1) & 0x3F) << 6) 
-							+((string.charAt(i+2) & 0x3F))));
+					result.append((char) (((string.charAt(i + 0) & 0x0F) << 12)
+							+ ((string.charAt(i + 1) & 0x3F) << 6) + ((string
+							.charAt(i + 2) & 0x3F))));
 					i += 2;
 					continue;
 				case 4:
-					if ((string.charAt(i+1) & 0xC0) != 0x80
-							|| (string.charAt(i+2) & 0xC0) != 0x80
-							|| (string.charAt(i+3) & 0xC0) != 0x80)
+					if ((string.charAt(i + 1) & 0xC0) != 0x80
+							|| (string.charAt(i + 2) & 0xC0) != 0x80
+							|| (string.charAt(i + 3) & 0xC0) != 0x80)
 						break;
-					result.append((char)
-							(((string.charAt(i+0) & 0x07) << 18)
-							+ ((string.charAt(i+1) & 0x3F) << 12)
-							+ ((string.charAt(i+2) & 0x3F) << 6) 
-							+ ((string.charAt(i+3) & 0x3F))));
+					result.append((char) (((string.charAt(i + 0) & 0x07) << 18)
+							+ ((string.charAt(i + 1) & 0x3F) << 12)
+							+ ((string.charAt(i + 2) & 0x3F) << 6) + ((string
+							.charAt(i + 3) & 0x3F))));
 					i += 3;
 					continue;
 				}
@@ -619,7 +626,7 @@ public class Char17 {
 		}
 		return (result.toString());
 	}
-	
+
 	/** Used for encoding selected characters*/
 	public static interface Legal {
 		public boolean isLegal(char c);
@@ -629,7 +636,7 @@ public class Char17 {
 	public static String encodeBackslash(CharSequence s, Legal legal) {
 		StringBuilder b = new StringBuilder((int) (s.length() * 1.5));
 		for (int i = 0; i < s.length(); i++) {
-			if (legal.isLegal(s.charAt(i))) {
+			if (legal.isLegal(s.charAt(i)) && s.charAt(i) != '\\') {
 				b.append(s.charAt(i));
 			} else {
 				if (charToBackslash.containsKey(s.charAt(i))) {
@@ -653,7 +660,7 @@ public class Char17 {
 			return (string);
 		StringBuilder result = new StringBuilder(string.length());
 		for (int i = 0; i < string.length(); i++) {
-			if (string.charAt(i) != '\\' || string.length() < i + 1) {
+			if (string.charAt(i) != '\\' || i + 1 >= string.length()) {
 				result.append(string.charAt(i));
 				continue;
 			}
@@ -756,12 +763,12 @@ public class Char17 {
 		return (result.toString());
 	}
 
-	/** Encodes non-legal*/
+	/** Encodes non-legal characters to Ampersand codes*/
 	public static String encodeAmpersand(String string, Legal legal) {
 		StringBuilder result = new StringBuilder(string.length() * 12 / 10);
 		for (int i = 0; i < string.length(); i++) {
 			char c = string.charAt(i);
-			if (legal.isLegal(c)) {
+			if (legal.isLegal(c) && c != '&') {
 				result.append(c);
 				continue;
 			}
@@ -775,13 +782,13 @@ public class Char17 {
 		return (result.toString());
 	}
 
-	/** Encodes a string into Percentage codes.*/
+	/** Encodes a string into Percentage codes. Also does UTF8 encoding.*/
 	public static String encodePercentage(String string, Legal legal) {
 		string = encodeUTF8(string);
 		StringBuilder result = new StringBuilder(string.length() * 12 / 10);
 		for (int i = 0; i < string.length(); i++) {
 			char c = string.charAt(i);
-			if (legal.isLegal(c)) {
+			if (legal.isLegal(c) && c != '%') {
 				result.append(c);
 				continue;
 			}
@@ -821,6 +828,25 @@ public class Char17 {
 				encoded.append(c);
 		}
 		return encoded.toString();
+	}
+
+	/** Returns an HTML-String of the String */
+	public static String toHTML(String s) {
+		return (Char17.encodeAmpersand(s, alphaNumericAndSpace).replace(
+				"&#10;", "<BR>"));
+	}
+
+	/** Replaces illegal characters in the string by hex codes (cannot be undone)*/
+	public static String encodeHex(String s, Legal legal) {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (legal.isLegal(c))
+				result.append(c);
+			else
+				result.append(Integer.toHexString(s.charAt(i)).toUpperCase());
+		}
+		return (result.toString());
 	}
 
 	/** Tells whether a char is in a range*/
@@ -868,12 +894,14 @@ public class Char17 {
 		return (isUnreserved(c) || isSubDelim(c) || in(c, "@"));
 	}
 
-	public static final Legal pChar = new Legal() {
+	/** Legal path components in the sense of URIs*/
+	public static final Legal uriPathComponent = new Legal() {
 		public boolean isLegal(char c) {
 			return isPchar(c);
 		}
 	};
 
+	/** True for ASCII alphanumeric and space*/
 	public static final Legal alphaNumericAndSpace = new Legal() {
 		public boolean isLegal(char c) {
 			return isAlphanumeric(c) || c == ' ';
@@ -882,10 +910,11 @@ public class Char17 {
 
 	/** Encodes a char to percentage code, if it is not a path character in the sense of URIs*/
 	public static String encodeURIPathComponent(String s) {
-		return (encodePercentage(s, pChar));
+		return (encodePercentage(s, uriPathComponent));
 	}
 
-	public static final Legal xmlPchar = new Legal() {
+	/** TRUE for XML path components*/
+	public static final Legal xmlPathComponent = new Legal() {
 		public boolean isLegal(char c) {
 			return isPchar(c) && c != '&' && c != '"';
 		}
@@ -893,7 +922,7 @@ public class Char17 {
 
 	/** Encodes a char to percentage code, if it is not a path character in the sense of XMLs*/
 	public static String encodeURIPathComponentXML(String string) {
-		return (encodePercentage(string, xmlPchar));
+		return (encodePercentage(string, xmlPathComponent));
 	}
 
 	/** Decodes a URI path component*/
@@ -928,35 +957,6 @@ public class Char17 {
 	public static StringBuilder cutLast(StringBuilder s) {
 		s.setLength(s.length() - 1);
 		return (s);
-	}
-
-	/** Returns an HTML-String of the String */
-	public static String toHTML(String s) {
-		return (Char17.encodeAmpersand(s, alphaNumericAndSpace).replace("&#10;",
-				"<BR>"));
-	}
-
-	/** Returns the chars of a String in hex */
-	public static String hexAll(String s) {
-		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < s.length(); i++) {
-			result.append(Integer.toHexString(s.charAt(i)).toUpperCase())
-					.append(' ');
-		}
-		return (result.toString());
-	}
-
-	/** Replaces special characters in the string by hex codes (cannot be undone)*/
-	public static String encodeHex(String s) {
-		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < s.length(); i++) {
-			char c = s.charAt(i);
-			if (isAlphanumeric(c))
-				result.append(c);
-			else
-				result.append(Integer.toHexString(s.charAt(i)).toUpperCase());
-		}
-		return (result.toString());
 	}
 
 	/** Upcases the first character in a String*/
@@ -1005,7 +1005,6 @@ public class Char17 {
 				s.length() - end.length(), s.length()).equals(end));
 	}
 
-
 	/** IndexOf */
 	public static int indexOf(char c, CharSequence string) {
 		for (int i = 0; i < string.length(); i++) {
@@ -1015,35 +1014,50 @@ public class Char17 {
 		return (-1);
 	}
 
+	/** Prints a test case*/
+	public static boolean testCase(String name, String s1, String s2) {
+		if (s1.equals(s2)) {
+			System.out.println(name + ": OK");
+			return (true);
+		} else {
+			System.out.println(name + ": " + s1 + "!=" + s2);
+			return (false);
+		}
+	}
+
+	/** Tests all methods*/
+	public static void test() {
+		String in, out;
+		testCase("EncAmp",
+				encodeAmpersand(in = "a+A&bä", alphaNumericAndSpace),
+				out = "a&#43;A&amp;b&#228;");
+		testCase("DecAmp", decodeAmpersand(out), in);
+		testCase("DecAmp'", decodeAmpersand("&amp;&inv;&#228;&amp &"),
+				"&&inv;ä& &");
+		testCase("EncBack",
+				encodeBackslash(in = "a+A\\bä\n", alphaNumericAndSpace),
+				out = "a\\u002bA\\\\b\\u00e4\\n");
+		testCase("DecBack", decodeBackslash(out), in);
+		testCase("DecBack'", decodeBackslash("\\00101a\\\\a\\n\\k\\"),
+				"Aa\\a\n\\k\\");
+		testCase("EncHex", encodeHex("a+A\\bä", alphaNumericAndSpace),
+				"a2BA5CbE4");
+		testCase("EncPerc",
+				encodePercentage(in = "a+A%bä", alphaNumericAndSpace),
+				out = "a%2BA%25b%C3%A4");
+		testCase("DecPerc", decodePercentage(out), in);
+		testCase("DecPerc'", decodePercentage("%C3%A4%X%"), "ä%X%");
+		testCase("EncURI", encodeURIPathComponent(in = "a+A/b ä&"),
+				out = "a+A%2Fb%20%C3%A4&");
+		testCase("DecURI", decodeURIPathComponent(out), in);
+		testCase("EncXML", encodeURIPathComponentXML("a+A/b ä&"),
+				"a+A%2Fb%20%C3%A4%26");
+		testCase("EncUTF8", encodeUTF8("a+A/b ä<"), "a+A/b Ã¤<");
+	}
+
 	/** Test routine */
 	public static void main(String argv[]) throws Exception {
-		decodeAmpersand("&#228;");
-		System.out
-				.println("Enter a string with HTML ampersand codes, umlauts and/or UTF-8 codes and hit ENTER.");
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		while (true) {
-			String s = in.readLine();
-			if(s.isEmpty()) break;
-			System.out.println("Decode percentage: " + decodePercentage(s));
-			System.out.println("Decode UTF8: " + decodeUtf8(s));
-			System.out.println("Decode backslash: "
-					+ decodeBackslash(s));
-			System.out.println("Decode ampersand: "
-					+ decodeAmpersand(s));
-			System.out.println("Decoded: "
-					+ decode(s));
-			s=decode(s);
-			System.out.println("Normalized: " + normalize(s));
-			System.out.println("As UTF8: " + encodeUTF8(s));
-			System.out.println("As percentage: "
-					+ encodePercentage(s, alphaNumericAndSpace));
-			System.out.println("As backslash: "
-					+ encodeBackslash(s, alphaNumericAndSpace));
-			System.out.println("As ampersand: "
-					+ encodeAmpersand(s, alphaNumericAndSpace));
-			System.out
-					.println("As URI component: " + encodeURIPathComponent(s));
-		}
+		test();
 	}
 
 }

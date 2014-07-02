@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javatools.datatypes.PeekIterator;
-import javatools.parsers.Char;
+import javatools.parsers.Char17;
 
 /**
 This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
@@ -91,11 +91,11 @@ public class CSVLines extends PeekIterator<List<String>> {
         component.append((char)nextChar);
         nextChar=in.read();
       }
-      while(Character.isWhitespace(Char.last(component))) component.setLength(component.length()-1);
+      while(Character.isWhitespace(Char17.last(component))) component.setLength(component.length()-1);
     }
     // Skip following comma
     if(nextChar==separator) nextChar=in.read();
-    return(Char.decode(component.toString()));
+    return(Char17.decode(component.toString()));
   }
 
   @Override
