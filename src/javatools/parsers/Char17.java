@@ -10,10 +10,10 @@ This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
 It is licensed under the Creative Commons Attribution License 
 (see http://creativecommons.org/licenses/by/3.0) by 
 the YAGO-NAGA team (see http://mpii.de/yago-naga).
-
+<p>
 This class is the improved version of the original Char class,
 which takes into account that Java 1.7 performs a copy for substring()
-
+<p>
 This class provides static methods to <I>decode, encode</I> and <I>normalize</I> Strings.<BR>
 <B>Decoding</B> converts the following codes to Java 16-bit characters (<TT>char</TT>):
   <UL>
