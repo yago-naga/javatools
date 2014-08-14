@@ -1,7 +1,5 @@
 package javatools.parsers;
 
-import java.util.Arrays;
-
 import javatools.datatypes.IntHashMap;
 import javatools.datatypes.IntKeyMap;
 
@@ -54,26 +52,26 @@ public class Char17 {
 			'\\', "\\\\", '\n', "\\n");
 
 	/** Maps HTML ampersand sequences to strings */
-	public static IntHashMap<String> ampersandMap = new IntHashMap<String>(
-			Arrays.asList((Object) "nbsp", (char) 160, "iexcl", (char) 161,
-					"cent", (char) 162, "pound", (char) 163, "curren",
-					(char) 164, "yen", (char) 165, "brvbar", (char) 166,
-					"sect", (char) 167, "uml", (char) 168, "copy", (char) 169,
-					"ordf", (char) 170, "laquo", (char) 171, "not", (char) 172,
-					"shy", (char) 173, "reg", (char) 174, "macr", (char) 175,
-					"deg", (char) 176, "plusmn", (char) 177, "sup2",
-					(char) 178, "sup3", (char) 179, "acute", (char) 180,
-					"micro", (char) 181, "para", (char) 182, "middot",
-					(char) 183, "cedil", (char) 184, "sup1", (char) 185,
-					"ordm", (char) 186, "raquo", (char) 187, "frac14",
-					(char) 188, "frac12", (char) 189, "frac34", (char) 190,
-					"iquest", (char) 191, "Agrave", (char) 192, "Aacute",
-					(char) 193, "Acirc", (char) 194, "Atilde", (char) 195,
-					"Auml", (char) 196, "Aring", (char) 197, "AElig",
-					(char) 198, "Ccedil", (char) 199, "Egrave", (char) 200,
-					"Eacute", (char) 201, "Ecirc", (char) 202, "Euml",
-					(char) 203, "Igrave", (char) 204, "Iacute", (char) 205,
-					"Icirc", (char) 206, "Iuml", (char) 207, "ETH", (char) 208,
+	public static IntHashMap<String> ampersandMap = new IntHashMap<String>()
+			.putAll((Object) "nbsp", (char) 160, "iexcl", (char) 161, "cent",
+					(char) 162, "pound", (char) 163, "curren", (char) 164,
+					"yen", (char) 165, "brvbar", (char) 166, "sect",
+					(char) 167, "uml", (char) 168, "copy", (char) 169, "ordf",
+					(char) 170, "laquo", (char) 171, "not", (char) 172, "shy",
+					(char) 173, "reg", (char) 174, "macr", (char) 175, "deg",
+					(char) 176, "plusmn", (char) 177, "sup2", (char) 178,
+					"sup3", (char) 179, "acute", (char) 180, "micro",
+					(char) 181, "para", (char) 182, "middot", (char) 183,
+					"cedil", (char) 184, "sup1", (char) 185, "ordm",
+					(char) 186, "raquo", (char) 187, "frac14", (char) 188,
+					"frac12", (char) 189, "frac34", (char) 190, "iquest",
+					(char) 191, "Agrave", (char) 192, "Aacute", (char) 193,
+					"Acirc", (char) 194, "Atilde", (char) 195, "Auml",
+					(char) 196, "Aring", (char) 197, "AElig", (char) 198,
+					"Ccedil", (char) 199, "Egrave", (char) 200, "Eacute",
+					(char) 201, "Ecirc", (char) 202, "Euml", (char) 203,
+					"Igrave", (char) 204, "Iacute", (char) 205, "Icirc",
+					(char) 206, "Iuml", (char) 207, "ETH", (char) 208,
 					"Ntilde", (char) 209, "Ograve", (char) 210, "Oacute",
 					(char) 211, "Ocirc", (char) 212, "Otilde", (char) 213,
 					"Ouml", (char) 214, "times", (char) 215, "Oslash",
@@ -158,7 +156,7 @@ public class Char17 {
 					"rdquo", (char) 8221, "bdquo", (char) 8222, "dagger",
 					(char) 8224, "Dagger", (char) 8225, "permil", (char) 8240,
 					"lsaquo", (char) 8249, "rsaquo", (char) 8250, "euro",
-					(char) 8364, "apos", '\''));
+					(char) 8364, "apos", '\'');
 
 	/** Maps characters to normalizations */
 	public static IntKeyMap<String> normalizeMap = new IntKeyMap<String>(

@@ -50,21 +50,21 @@ public class IntHashMap<K> extends AbstractSet<K> {
 
 	/** Creates an intHashMap from a list that contains keys and values in alternation*/
 	@SuppressWarnings("unchecked")
-	public IntHashMap(List<Object> keyValuePairs) {
-		this();
-		for (int i = 0; i < keyValuePairs.size(); i += 2) {
-			Object value = keyValuePairs.get(i + 1);
+	public IntHashMap<K> putAll(Object... keyValuePairs) {
+		for (int i = 0; i < keyValuePairs.length; i += 2) {
+			Object value = keyValuePairs[i + 1];
 			if (value instanceof Integer)
-				put((K) keyValuePairs.get(i), (Integer) value);
+				put((K) keyValuePairs[i], (Integer) value);
 			else if (value instanceof Character)
-				put((K) keyValuePairs.get(i), ((Character) value).charValue());
+				put((K) keyValuePairs[i], ((Character) value).charValue());
 			else if (value instanceof Byte)
-				put((K) keyValuePairs.get(i), ((Byte) value).intValue());
+				put((K) keyValuePairs[i], ((Byte) value).intValue());
 			else if (value instanceof Short)
-				put((K) keyValuePairs.get(i), ((Short) value).intValue());
+				put((K) keyValuePairs[i], ((Short) value).intValue());
 			else
 				throw new RuntimeException("Values have to be integers");
 		}
+		return (this);
 	}
 
 	/** Creates an intHashMap with these keys set to 1 */
