@@ -3,43 +3,53 @@ package javatools.parsers;
 import javatools.datatypes.IntHashMap;
 import javatools.datatypes.IntKeyMap;
 
-/** 
-This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
-It is licensed under the Creative Commons Attribution License 
-(see http://creativecommons.org/licenses/by/3.0) by 
-the YAGO-NAGA team (see http://mpii.de/yago-naga).
-<p>
-This class is the improved version of the original Char class,
-which takes into account that Java 1.7 performs a copy for substring()
-<p>
-This class provides static methods to <I>decode, encode</I> and <I>normalize</I> Strings.<BR>
-<B>Decoding</B> converts the following codes to Java 16-bit characters (<TT>char</TT>):
-  <UL>
-   <LI>all HTML ampersand codes (like &amp;nbsp;) as specified by the W3C
-   <LI>all backslash codes (like \ b) as specified by the Java language specification
-   <LI>all percentage codes (like %2C) as used in URLs and E-Mails
-   <LI>all UTF-8 codes (like ī) as specified in Wikipedia
-  </UL>
-  <P>
-<B>Encoding</B> is the inverse operation. It takes a Java 16-bit character (<TT>char</TT>) and
-outputs its encoding in HTML, as a backslash code, as a percentage code or in UTF8.
-<P>
-<B>Normalization</B> converts the following Unicode characters (Java 16-bit <TT>char</TT>s)
-to ASCII-characters in the range 0x20-0x7F:
-  <UL>
-   <LI>all ASCII control characters (0x00-0x1F)
-   <LI>all Latin-1 characters (0x80-0xFF) to the closest transliteration
-   <LI>all Latin Extended-A characters (0x100-0x17F) to the closest transliteration
-   <LI>all Greek characters (0x374-0x3D6) to the closest transliteration as specified in Wikipedia
-   <LI>all General-Punctuation characters (0x2016-0x2055) to the closest ASCII punctuation
-   <LI>most mathematical symbols (in the range of 0x2000) to the common program code identifier or text
-   <LI>all ligatures (0xFB00-0xFB06, the nasty things you get when you copy/paste from PDFs) to
-       the separate characters
-  </UL>
+/**
+ * This class is part of the Java Tools (see
+ * http://mpii.de/yago-naga/javatools). It is licensed under the Creative
+ * Commons Attribution License (see http://creativecommons.org/licenses/by/3.0)
+ * by the YAGO-NAGA team (see http://mpii.de/yago-naga).
+ * <p>
+ * This class is the improved version of the original Char class, which takes
+ * into account that Java 1.7 performs a copy for substring()
+ * <p>
+ * This class provides static methods to <I>decode, encode</I> and
+ * <I>normalize</I> Strings.<BR>
+ * <B>Decoding</B> converts the following codes to Java 16-bit characters (
+ * <TT>char</TT>):
+ * <UL>
+ * <LI>all HTML ampersand codes (like &amp;nbsp;) as specified by the W3C
+ * <LI>all backslash codes (like \ b) as specified by the Java language
+ * specification
+ * <LI>all percentage codes (like %2C) as used in URLs and E-Mails
+ * <LI>all UTF-8 codes (like ī) as specified in Wikipedia
+ * </UL>
+ * <P>
+ * <B>Encoding</B> is the inverse operation. It takes a Java 16-bit character (
+ * <TT>char</TT>) and outputs its encoding in HTML, as a backslash code, as a
+ * percentage code or in UTF8.
+ * <P>
+ * <B>Normalization</B> converts the following Unicode characters (Java 16-bit
+ * <TT>char</TT>s) to ASCII-characters in the range 0x20-0x7F:
+ * <UL>
+ * <LI>all ASCII control characters (0x00-0x1F)
+ * <LI>all Latin-1 characters (0x80-0xFF) to the closest transliteration
+ * <LI>all Latin Extended-A characters (0x100-0x17F) to the closest
+ * transliteration
+ * <LI>all Greek characters (0x374-0x3D6) to the closest transliteration as
+ * specified in Wikipedia
+ * <LI>all General-Punctuation characters (0x2016-0x2055) to the closest ASCII
+ * punctuation
+ * <LI>most mathematical symbols (in the range of 0x2000) to the common program
+ * code identifier or text
+ * <LI>all ligatures (0xFB00-0xFB06, the nasty things you get when you
+ * copy/paste from PDFs) to the separate characters
+ * </UL>
  */
 public class Char17 {
 
-	/** String returned by the default implementation of defaultNormalizer, "[?]"*/
+	/**
+	 * String returned by the default implementation of defaultNormalizer, "[?]"
+	 */
 	public static String UNKNOWN = "[?]";
 
 	/** Maps a special character to a HTML ampersand sequence */
@@ -377,11 +387,13 @@ public class Char17 {
 			(char) 0xFB03, "ffi", (char) 0xFB04, "ffl", (char) 0xFB05, "ft",
 			(char) 0xFB06, "st");
 
-	/** Normalizes a character to a String of characters in the range 0x20-0x7F.
-	 *  Returns a String, because some characters are
-	  * normalized to multiple characters (e.g. umlauts) and
-	  * some characters are normalized to zero characters (e.g. special Unicode space chars).
-	  * Returns null for the EndOfFile character -1 */
+	/**
+	 * Normalizes a character to a String of characters in the range 0x20-0x7F.
+	 * Returns a String, because some characters are normalized to multiple
+	 * characters (e.g. umlauts) and some characters are normalized to zero
+	 * characters (e.g. special Unicode space chars). Returns null for the
+	 * EndOfFile character -1
+	 */
 	public static String normalize(int c) {
 		// EOF
 		if (c == -1)
@@ -473,7 +485,10 @@ public class Char17 {
 		return (UNKNOWN);
 	}
 
-	/** Decodes percentage characters of the form "%xx" in a string. Also does UTF8 decoding.*/
+	/**
+	 * Decodes percentage characters of the form "%xx" in a string. Also does
+	 * UTF8 decoding.
+	 */
 	public static String decodePercentage(String string) {
 		int pos = string.indexOf('%');
 		if (pos == -1)
@@ -496,7 +511,10 @@ public class Char17 {
 		return (decodeUtf8(result.toString()));
 	}
 
-	/** Decodes an HTML ampersand code such as "& amp", returns -1 in case of failure*/
+	/**
+	 * Decodes an HTML ampersand code such as "& amp", returns -1 in case of
+	 * failure
+	 */
 	public static int decodeAmpersandChar(String b) {
 		// Get just the code portion
 		if (b.startsWith("&"))
@@ -531,7 +549,7 @@ public class Char17 {
 		return (-1);
 	}
 
-	/** Eats an HTML ampersand code from a List of Characters*/
+	/** Eats an HTML ampersand code from a List of Characters */
 	public static String decodeAmpersand(String string) {
 		int pos = string.indexOf('&');
 		if (pos == -1)
@@ -563,9 +581,11 @@ public class Char17 {
 		return (result.toString());
 	}
 
-	/** Tells from the first UTF-8 code character how long the code is.
-	 * Returns -1 if the character is not an UTF-8 code start.
-	 * Returns 1 if the character is ASCII<128*/
+	/**
+	 * Tells from the first UTF-8 code character how long the code is. Returns
+	 * -1 if the character is not an UTF-8 code start. Returns 1 if the
+	 * character is ASCII<128
+	 */
 	public static int Utf8Length(char c) {
 		// 0xxx xxxx
 		if ((c & 0x80) == 0x00)
@@ -582,8 +602,11 @@ public class Char17 {
 		return (-1);
 	}
 
-	/** Decodes UTF8 characters in a string. There is also a built-in way in Java that converts
-	 * UTF8 to characters and back, but it does not work with all characters. */
+	/**
+	 * Decodes UTF8 characters in a string. There is also a built-in way in Java
+	 * that converts UTF8 to characters and back, but it does not work with all
+	 * characters.
+	 */
 	public static String decodeUtf8(String string) {
 		if (string.isEmpty())
 			return (string);
@@ -625,12 +648,12 @@ public class Char17 {
 		return (result.toString());
 	}
 
-	/** Used for encoding selected characters*/
+	/** Used for encoding selected characters */
 	public static interface Legal {
 		public boolean isLegal(char c);
 	}
 
-	/** Encodes with backslash all illegal characters*/
+	/** Encodes with backslash all illegal characters */
 	public static String encodeBackslash(CharSequence s, Legal legal) {
 		StringBuilder b = new StringBuilder((int) (s.length() * 1.5));
 		for (int i = 0; i < s.length(); i++) {
@@ -651,7 +674,7 @@ public class Char17 {
 		return (b.toString());
 	}
 
-	/** Decodes a backslash sequence*/
+	/** Decodes a backslash sequence */
 	public static String decodeBackslash(String string) {
 		int pos = string.indexOf('\\');
 		if (pos == -1)
@@ -740,7 +763,7 @@ public class Char17 {
 		return (decodeAmpersand(decodeUtf8(decodeBackslash(decodePercentage(string)))));
 	}
 
-	/** Encodes a character to UTF8*/
+	/** Encodes a character to UTF8 */
 	public static String encodeUTF8(char c) {
 		if (c <= 0x7F)
 			return ("" + (char) c);
@@ -751,7 +774,7 @@ public class Char17 {
 					+ (char) (0x80 + ((c >> 6) & 0x3F)) + (char) (0x80 + (c & 0x3F)));
 	}
 
-	/** Encodes a string to UTF8*/
+	/** Encodes a string to UTF8 */
 	public static String encodeUTF8(String string) {
 		StringBuilder result = new StringBuilder(string.length() * 12 / 10);
 		for (int i = 0; i < string.length(); i++) {
@@ -761,7 +784,7 @@ public class Char17 {
 		return (result.toString());
 	}
 
-	/** Encodes non-legal characters to Ampersand codes*/
+	/** Encodes non-legal characters to Ampersand codes */
 	public static String encodeAmpersand(String string, Legal legal) {
 		StringBuilder result = new StringBuilder(string.length() * 12 / 10);
 		for (int i = 0; i < string.length(); i++) {
@@ -780,7 +803,7 @@ public class Char17 {
 		return (result.toString());
 	}
 
-	/** Encodes a string into Percentage codes. Also does UTF8 encoding.*/
+	/** Encodes a string into Percentage codes. Also does UTF8 encoding. */
 	public static String encodePercentage(String string, Legal legal) {
 		string = encodeUTF8(string);
 		StringBuilder result = new StringBuilder(string.length() * 12 / 10);
@@ -799,9 +822,11 @@ public class Char17 {
 	}
 
 	/**
-	 * Encodes a String with reserved XML characters into a valid xml string for attributes.  
+	 * Encodes a String with reserved XML characters into a valid xml string for
+	 * attributes.
+	 * 
 	 * @param str
-	 * @return 
+	 * @return
 	 */
 	public static String encodeXmlAttribute(String str) {
 		if (str == null)
@@ -834,7 +859,9 @@ public class Char17 {
 				"&#10;", "<BR>"));
 	}
 
-	/** Replaces illegal characters in the string by hex codes (cannot be undone)*/
+	/**
+	 * Replaces illegal characters in the string by hex codes (cannot be undone)
+	 */
 	public static String encodeHex(String s, Legal legal) {
 		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < s.length(); i++) {
@@ -847,83 +874,99 @@ public class Char17 {
 		return (result.toString());
 	}
 
-	/** Tells whether a char is in a range*/
+	/** Tells whether a char is in a range */
 	public static boolean in(char c, char a, char b) {
 		return (c >= a && c <= b);
 	}
 
-	/** Tells whether a char is in a string*/
+	/** Tells whether a char is in a string */
 	public static boolean in(char c, String s) {
 		return (s.indexOf(c) != -1);
 	}
 
-	/** Tells whether a char is alphanumeric in the sense of URIs*/
+	/** Tells whether a char is alphanumeric in the sense of URIs */
 	public static boolean isAlphanumeric(char c) {
 		return (in(c, 'a', 'z') || in(c, 'A', 'Z') || in(c, '0', '9'));
 	}
 
-	/** Tells whether a char is reserved in the sense of URIs*/
+	/** Tells whether a char is reserved in the sense of URIs */
 	public static boolean isReserved(char c) {
 		return (isSubDelim(c) || isGenDelim(c));
 	}
 
-	/** Tells whether a char is unreserved in the sense of URIs (not the same as !reserved)*/
+	/**
+	 * Tells whether a char is unreserved in the sense of URIs (not the same as
+	 * !reserved)
+	 */
 	public static boolean isUnreserved(char c) {
 		return (isAlphanumeric(c) || in(c, "-._~"));
 	}
 
-	/** Tells whether a string is escaped in the sense of URIs*/
+	/** Tells whether a string is escaped in the sense of URIs */
 	public static boolean isEscaped(String s) {
 		return (s.matches("%[0-9A-Fa-f]{2}"));
 	}
 
-	/** Tells whether a char is a sub-delimiter in the sense of URIs*/
+	/** Tells whether a char is a sub-delimiter in the sense of URIs */
 	public static boolean isSubDelim(char c) {
 		return (in(c, "!$&'()*+,="));
 	}
 
-	/** Tells whether a char is a general delimiter in the sense of URIs*/
+	/** Tells whether a char is a general delimiter in the sense of URIs */
 	public static boolean isGenDelim(char c) {
 		return (in(c, ":/?#[]@"));
 	}
 
-	/** Tells whether a char is a valid path component in the sense of URIs*/
+	/** Tells whether a char is a valid path component in the sense of URIs */
 	public static boolean isPchar(char c) {
 		return (isUnreserved(c) || isSubDelim(c) || in(c, "@"));
 	}
 
-	/** Legal path components in the sense of URIs*/
+	/** Legal path components in the sense of URIs */
 	public static final Legal uriPathComponent = new Legal() {
 		public boolean isLegal(char c) {
 			return isPchar(c);
 		}
 	};
 
-	/** True for ASCII alphanumeric and space*/
+	/** True for ASCII alphanumeric and space */
 	public static final Legal alphaNumericAndSpace = new Legal() {
 		public boolean isLegal(char c) {
 			return isAlphanumeric(c) || c == ' ';
 		}
 	};
 
-	/** Encodes a char to percentage code, if it is not a path character in the sense of URIs*/
+	/** Any characters that can appear in HTML attributes*/
+	public static final Legal html = new Legal() {
+		public boolean isLegal(char c) {
+			return c >= ' ' && c <= '}' && !in(c, "&<>'\"");
+		}
+	};
+
+	/**
+	 * Encodes a char to percentage code, if it is not a path character in the
+	 * sense of URIs
+	 */
 	public static String encodeURIPathComponent(String s) {
 		return (encodePercentage(s, uriPathComponent));
 	}
 
-	/** TRUE for XML path components*/
+	/** TRUE for XML path components */
 	public static final Legal xmlPathComponent = new Legal() {
 		public boolean isLegal(char c) {
 			return isPchar(c) && c != '&' && c != '"';
 		}
 	};
 
-	/** Encodes a char to percentage code, if it is not a path character in the sense of XMLs*/
+	/**
+	 * Encodes a char to percentage code, if it is not a path character in the
+	 * sense of XMLs
+	 */
 	public static String encodeURIPathComponentXML(String string) {
 		return (encodePercentage(string, xmlPathComponent));
 	}
 
-	/** Decodes a URI path component*/
+	/** Decodes a URI path component */
 	public static String decodeURIPathComponent(String s) {
 		return (Char17.decodePercentage(s));
 	}
@@ -941,7 +984,7 @@ public class Char17 {
 		return (b.toString());
 	}
 
-	/** Returns the last character of a String or 0*/
+	/** Returns the last character of a String or 0 */
 	public static char last(CharSequence s) {
 		return (s.length() == 0 ? (char) 0 : s.charAt(s.length() - 1));
 	}
@@ -957,14 +1000,14 @@ public class Char17 {
 		return (s);
 	}
 
-	/** Upcases the first character in a String*/
+	/** Upcases the first character in a String */
 	public static String upCaseFirst(String s) {
 		if (s == null || s.length() == 0)
 			return (s);
 		return (Character.toUpperCase(s.charAt(0)) + s.substring(1));
 	}
 
-	/** Lowcases the first character in a String*/
+	/** Lowcases the first character in a String */
 	public static String lowCaseFirst(String s) {
 		if (s == null || s.length() == 0)
 			return (s);
@@ -983,7 +1026,7 @@ public class Char17 {
 		return (result);
 	}
 
-	/** Capitalizes words and lowercases the rest*/
+	/** Capitalizes words and lowercases the rest */
 	public static String capitalize(String s) {
 		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < s.length(); i++) {
@@ -1012,7 +1055,7 @@ public class Char17 {
 		return (-1);
 	}
 
-	/** Prints a test case*/
+	/** Prints a test case */
 	public static boolean testCase(String name, String s1, String s2) {
 		if (s1.equals(s2)) {
 			System.out.println(name + ": OK");
@@ -1023,7 +1066,7 @@ public class Char17 {
 		}
 	}
 
-	/** Tests all methods*/
+	/** Tests all methods */
 	public static void test() {
 		String in, out;
 		testCase("EncAmp",
