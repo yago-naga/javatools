@@ -238,6 +238,17 @@ public class D {
     coll.add(value);
   }
 
+
+  /** Given a map that maps to EnumSets, adds a new key/value pair or introduces the key*/
+  public static <K, V extends Enum<V>> void addKeyValue(Map<K, EnumSet<V>> map, K key, V value) {
+    EnumSet<V> coll = map.get(key);
+    if (coll == null) {
+        map.put(key, EnumSet.of(value));
+        return;
+    }
+    coll.add(value);
+  }
+
   /** Given a map that maps to collections, adds a new key/value pair or introduces the key*/
   @SuppressWarnings({ "rawtypes" })
   public static <K, V, C extends Collection<V>, L extends Collection> void addKeyValues(Map<K, C> map, K key, C values, Class<L> collectionType) {
