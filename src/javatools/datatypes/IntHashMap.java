@@ -162,7 +162,7 @@ public class IntHashMap<K> extends AbstractSet<K> {
 			protected K internalNext() throws Exception {
 				pos++;
 				for (; pos < keys.length; pos++) {
-					if (e[pos] != null) {
+					if (e[pos] != null && e[pos] != DEL) {
 						return ((K) e[pos]);
 					}
 				}
@@ -193,7 +193,7 @@ public class IntHashMap<K> extends AbstractSet<K> {
 	protected boolean put(Object[] keys, int[] values, Object key, int value) {
 		int i = index(key, keys.length);
 		while (true) {
-			if (keys[i] == null) {
+			if (keys[i] == null || keys[i]==DEL) {
 				keys[i] = key;
 				values[i] = value;
 				return (true);
@@ -208,26 +208,29 @@ public class IntHashMap<K> extends AbstractSet<K> {
 		}
 	}
 
+	protected Object DEL=new Object();
+	
+	@Override
+	public boolean remove(Object arg0) {
+		int pos=find(arg0);
+		if(keys[pos]==null) return(false);
+		keys[pos]=DEL;
+		values[pos]=0;
+		size--;
+		rehash();
+		return(true);
+	}
+	
 	/** Rehashes */
 	protected void rehash() {
 		Object[] newKeys = new Object[keys.length * 2];
 		int[] newValues = new int[keys.length * 2];
 		for (int i = 0; i < keys.length; i++) {
-			if (keys[i] != null)
+			if (keys[i] != null && keys[i]!=DEL)
 				put(newKeys, newValues, keys[i], values[i]);
 		}
 		keys = newKeys;
 		values = newValues;
-	}
-
-	/** Test */
-	public static void main(String[] args) throws Exception {
-		IntHashMap<String> m = new IntHashMap<String>();
-		for (int i = 1; i < 3000; i *= 2)
-			m.put("#" + i, i);
-		m.put("#0", 17);
-		for (String key : m.keys())
-			D.p(key, m.get(key));
 	}
 
 	@Override
@@ -358,6 +361,18 @@ public class IntHashMap<K> extends AbstractSet<K> {
 				sum += values[i];
 		}
 		return (sum);
+	}
+
+	/** Test */
+	public static void main(String[] args) throws Exception {
+		IntHashMap<String> m = new IntHashMap<String>();
+		for (int i = 1; i < 3000; i *= 2)
+			m.put("#" + i, i);
+		m.put("#0", 17);		
+		m.remove("#300000");
+		m.remove("#32");
+		for (String key : m.keys())
+			D.p(key, m.get(key));
 	}
 
 }
