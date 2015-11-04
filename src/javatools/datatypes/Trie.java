@@ -1,6 +1,7 @@
 package javatools.datatypes;
 
 import java.util.AbstractSet;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -37,6 +38,12 @@ public class Trie extends AbstractSet<CharSequence> {
   /** Constructs a Trie*/
   protected Trie(Trie p) {
     parent = p;
+  }
+
+  /** Constructs a trie*/
+  public Trie(Collection<String> keySet) {
+    for (String s : keySet)
+      add(s);
   }
 
   @Override
