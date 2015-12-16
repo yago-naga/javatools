@@ -2,50 +2,37 @@ package javatools.datatypes;
 
 import static org.junit.Assert.*;
 
+import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.junit.Test;
 
 
-
 public class MultiMapTest {
-  
+
   @Test
   public void iteratorTest() {
     MultiMap<String, String> mm = new MultiMap<String, String>();
-    
+
+    // Initialize map
     mm.put("A", "b");
     mm.put("A", "c");
     mm.put("B", "z");
     mm.put("B", "y");
+    
+    // Check values for key A
+    Set<String> valuesA = new HashSet<String>();
+    valuesA.add("b");
+    valuesA.add("c");
+    
+    assertEquals(mm.get("A"), valuesA);
 
+    // Check values for key B
+    Set<String> valuesB = new HashSet<String>();
+    valuesB.add("z");
+    valuesB.add("y");
     
-    int i=-1;
-    
-    for (Entry<String, String> e : mm) {
-      i++;
-      
-      switch (i) {
-        case 0:
-          assertTrue(e.getKey().equals("A"));
-          assertTrue(e.getValue().equals("b"));
-          break;
-        case 1:
-          assertTrue(e.getKey().equals("A"));
-          assertTrue(e.getValue().equals("c"));
-          break;
-        case 2:
-          assertTrue(e.getKey().equals("B"));
-          assertTrue(e.getValue().equals("z"));
-          break;
-        case 3:
-          assertTrue(e.getKey().equals("B"));
-          assertTrue(e.getValue().equals("y"));
-          break;
-        default:
-          assertTrue(false);
-          break;
-      }
-    }
+    assertEquals(mm.get("B"), valuesB);
   }
 }
