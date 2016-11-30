@@ -8,14 +8,19 @@ import java.util.Set;
 import javatools.administrative.D;
 
 /**
- * This class is part of the Java Tools (see
- * http://mpii.de/yago-naga/javatools). It is licensed under the Creative
- * Commons Attribution License (see http://creativecommons.org/licenses/by/3.0)
- * by the YAGO-NAGA team (see http://mpii.de/yago-naga).
+ * Copyright 2016 Fabian M. Suchanek
  * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
  * 
- * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
  * 
  * This class provides a very simple container implementation with zero
  * overhead. A FinalSet bases on a sorted, unmodifiable array. The constructor
@@ -32,57 +37,59 @@ import javatools.administrative.D;
  *    --> b
  * </PRE>
  */
-public class FinalSet<T extends Comparable<?>> extends AbstractList<T>
-		implements Set<T> {
-	/** Holds the data, must be sorted */
-	public T[] data;
+public class FinalSet<T extends Comparable<?>> extends AbstractList<T> implements Set<T> {
 
-	/** Constructs a FinalSet from an array, clones the array if indicated. */
-	@SuppressWarnings("unchecked")
-	public FinalSet(boolean clone, T... a) {
-		if (clone) {
-			Comparable<?>[] b = new Comparable[a.length];
-			System.arraycopy(a, 0, b, 0, a.length);
-			a = (T[]) b;
-		}
-		Arrays.sort(a);
-		data = a;
-	}
+  /** Holds the data, must be sorted */
+  public T[] data;
 
-	/** Constructs a FinalSet from an array that does not need to be cloned */
-	public FinalSet(T... a) {
-		this(false, a);
-	}
+  /** Constructs a FinalSet from an array, clones the array if indicated. */
+  @SuppressWarnings("unchecked")
+  public FinalSet(boolean clone, T... a) {
+    if (clone) {
+      Comparable<?>[] b = new Comparable[a.length];
+      System.arraycopy(a, 0, b, 0, a.length);
+      a = (T[]) b;
+    }
+    Arrays.sort(a);
+    data = a;
+  }
 
-	/** Tells whether x is in the container */
-	public boolean contains(T x) {
-		return (Arrays.binarySearch(data, x) >= 0);
-	}
+  /** Constructs a FinalSet from an array that does not need to be cloned */
+  public FinalSet(T... a) {
+    this(false, a);
+  }
 
-	/** Returns the position in the array or -1 */
-	public int indexOf(T x) {
-		int r = Arrays.binarySearch(data, x);
-		return (r >= 0 ? r : -1);
-	}
+  /** Tells whether x is in the container */
+  public boolean contains(T x) {
+    return (Arrays.binarySearch(data, x) >= 0);
+  }
 
-	/** Returns the element at position i */
-	public T get(int i) {
-		return (data[i]);
-	}
+  /** Returns the position in the array or -1 */
+  public int indexOf(T x) {
+    int r = Arrays.binarySearch(data, x);
+    return (r >= 0 ? r : -1);
+  }
 
-	/** Returns the number of elements in this FinalSet */
-	public int size() {
-		return (data.length);
-	}
+  /** Returns the element at position i */
+  @Override
+  public T get(int i) {
+    return (data[i]);
+  }
 
-	/*public Spliterator<T> spliterator() {
+  /** Returns the number of elements in this FinalSet */
+  @Override
+  public int size() {
+    return (data.length);
+  }
+
+  /*public Spliterator<T> spliterator() {
     return super.spliterator();
-	  
-	}*/
-	
-	/** Test routine */
-	public static void main(String[] args) {
-		FinalSet<String> f = new FinalSet<String>("b", "a", "c");
-		D.p(f.get(1));
-	}
+    
+  }*/
+
+  /** Test routine */
+  public static void main(String[] args) {
+    FinalSet<String> f = new FinalSet<String>("b", "a", "c");
+    D.p(f.get(1));
+  }
 }

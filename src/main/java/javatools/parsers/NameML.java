@@ -20,15 +20,21 @@ import javatools.administrative.D;
 import javatools.administrative.NonsharedParameters;
 import javatools.datatypes.FinalMap;
 import javatools.filehandlers.FileLines;
-import javatools.parsers.Char17;
-
 
 /**
- * This class is part of the Java Tools (see
- * http://mpii.de/yago-naga/javatools). It is licensed under the Creative
- * Commons Attribution License (see http://creativecommons.org/licenses/by/3.0)
- * by the YAGO-NAGA team (see http://mpii.de/yago-naga).
+ * Copyright 2016 Fabian M. Suchanek
  * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
  * 
  * This class is a multi-language extension of the Name class. Its functionality
  * is synonymous to that of the Name class, but given corresponding word lists
@@ -88,33 +94,29 @@ import javatools.parsers.Char17;
  * TODO: Turn completely into an instantiable object? then we would not need to init nor to load all languages while only using 1
  */
 
-
 public class NameML {
 
-  static File CONFIG_DIR =  null;
-  static final String PARSINGRESOURCES_PATH="/javatools/resources/parsing/";
-  
+  static File CONFIG_DIR = null;
 
-
+  static final String PARSINGRESOURCES_PATH = "/javatools/resources/parsing/";
 
   /** Holds the general default name */
   public static final String ANYNAME = "NAME";
-  
-  
+
   // -----------------------------------------------------------------------------------
   // Initialization
   //
   // NOTE that you need to initialize NameML with any of the following init functions
   // BEFORE doing any other call on a NameML method.
   // -----------------------------------------------------------------------------------
-  
-  protected static boolean hasBeenInitialized=false;
-  
-  public static final void init(NonsharedParameters params){
+
+  protected static boolean hasBeenInitialized = false;
+
+  public static final void init(NonsharedParameters params) {
     //CONFIG_DIR=new File(params.get("javatoolsConfigDir")+"parsing/");
     init();
   }
-  
+
   /** If you like to use your own stopword lists etc. (see javatools.resources.parsing)
    *  then you can set a path where NameML will look for such files 
    *  instead of the default resource location (javatools.resources.parsing).
@@ -122,57 +124,52 @@ public class NameML {
    *   best start by copying the files from src/javatools/resources/parsing/.)
    * @param configPath  The path that contains all word lists.
    */
-  public static final void init(String configPath){
-    CONFIG_DIR=new File(configPath+"parsing/");
+  public static final void init(String configPath) {
+    CONFIG_DIR = new File(configPath + "parsing/");
     init();
   }
-  
-  
-  
+
   /** Simply call this function to initialize NameML with the default values */
   //TODO: do away with the initialization...
-  public static final void init(){
-    if(hasBeenInitialized)
-      return;
-    
+  public static final void init() {
+    if (hasBeenInitialized) return;
+
     /** Matches common titles (like "Mr.") */
     titlePatternEn = createTitlePattern(Language.ENGLISH);
     titlePatternDe = createTitlePattern(Language.GERMAN);
     titlePatternFr = createTitlePattern(Language.FRENCH);
     titlePatternEs = createTitlePattern(Language.SPANISH);
     titlePatternIt = createTitlePattern(Language.ITALIAN);
-    
+
     /** given name titles */
     titlesForGivenNamesEn = NameML.readTextFileLinesSet("titles." + Language.ENGLISH.getId());
-    titlesForGivenNamesDe = NameML.readTextFileLinesSet( "titles." + Language.GERMAN.getId());
+    titlesForGivenNamesDe = NameML.readTextFileLinesSet("titles." + Language.GERMAN.getId());
     titlesForGivenNamesEs = NameML.readTextFileLinesSet("titles." + Language.SPANISH.getId());
     titlesForGivenNamesFr = NameML.readTextFileLinesSet("titles." + Language.FRENCH.getId());
-    titlesForGivenNamesIt = NameML.readTextFileLinesSet( "titles." + Language.ITALIAN.getId());
-    
+    titlesForGivenNamesIt = NameML.readTextFileLinesSet("titles." + Language.ITALIAN.getId());
+
     /** stop words */
-    stopWordDE = NameML.readTextFileLinesSet( "stopwords." + Language.GERMAN.getId());
-    stopWordFR = NameML.readTextFileLinesSet( "stopwords." + Language.FRENCH.getId());
-    stopWordES = NameML.readTextFileLinesSet( "stopwords." + Language.SPANISH.getId());
-    stopWordEN = NameML.readTextFileLinesSet( "stopwords." + Language.ENGLISH.getId());
-    stopWordIT = NameML.readTextFileLinesSet( "stopwords." + Language.ITALIAN.getId());
-    
-    
+    stopWordDE = NameML.readTextFileLinesSet("stopwords." + Language.GERMAN.getId());
+    stopWordFR = NameML.readTextFileLinesSet("stopwords." + Language.FRENCH.getId());
+    stopWordES = NameML.readTextFileLinesSet("stopwords." + Language.SPANISH.getId());
+    stopWordEN = NameML.readTextFileLinesSet("stopwords." + Language.ENGLISH.getId());
+    stopWordIT = NameML.readTextFileLinesSet("stopwords." + Language.ITALIAN.getId());
+
     /** person name patterns */
     laxPersonNamePatternEn = createLaxPersonNamePattern(titlePatternEn);
     laxPersonNamePatternDe = createLaxPersonNamePattern(titlePatternDe);
     laxPersonNamePatternEs = createLaxPersonNamePattern(titlePatternEs);
     laxPersonNamePatternFr = createLaxPersonNamePattern(titlePatternFr);
     laxPersonNamePatternIt = createLaxPersonNamePattern(titlePatternIt);
-    
-    
+
     safePersonNamePatternEn = createSafePersonNamePattern(titlePatternEn);
     safePersonNamePatternDe = createSafePersonNamePattern(titlePatternDe);
     safePersonNamePatternEs = createSafePersonNamePattern(titlePatternEs);
     safePersonNamePatternFr = createSafePersonNamePattern(titlePatternFr);
     safePersonNamePatternIt = createSafePersonNamePattern(titlePatternIt);
-    
-    hasBeenInitialized=true;
-    
+
+    hasBeenInitialized = true;
+
   }
 
   // -----------------------------------------------------------------------------------
@@ -283,10 +280,10 @@ public class NameML {
       "DBE|" + // Knight or Dame Commander
       "GBE|" + // Knight or Dame Grand Cross
       "[jJ]r\\.?|" + "[jJ]unior|" + "hijo|" + "hija|" + "P[hH]\\.?[dD]\\.?|" + "KBE|" + // Knight
-      // or
-      // Dame
-      // Commander
-      "MBE|" + // Member
+  // or
+  // Dame
+  // Commander
+  "MBE|" + // Member
       "M\\.?D\\.|" + "OBE|" + // Officer
       "[sS]enior|" + "[sS]r\\.?)";
 
@@ -318,18 +315,16 @@ public class NameML {
     StringBuilder titleRegExp = new StringBuilder();
     titleRegExp.append("\\b(?:");
     List<String> titles;
-    boolean first=true;
+    boolean first = true;
     try {
-      titles = NameML.readTextFileLines( "titles." + lang.getId(), "UTF-8");
-      
+      titles = NameML.readTextFileLines("titles." + lang.getId(), "UTF-8");
+
       for (String title : titles) {
         title = title.trim();
         if (!title.startsWith("##") && title.length() > 0) {
-          if(first)
-            first=false;
-          else
-            titleRegExp.append('|');
-          titleRegExp.append(title);         
+          if (first) first = false;
+          else titleRegExp.append('|');
+          titleRegExp.append(title);
         }
       }
       titleRegExp.append(")");
@@ -362,7 +357,7 @@ public class NameML {
   protected static Set<String> titlesForGivenNamesFr;
 
   protected static Set<String> titlesForGivenNamesIt;
-  
+
   protected static Set<String> stopWordDE;
 
   protected static Set<String> stopWordFR;
@@ -459,8 +454,7 @@ public class NameML {
 
   /** TRUE for stopwords */
   public static boolean isStopWord(String w, Language l) {
-    if(w==null)
-      return true;
+    if (w == null) return true;
     if (l == Language.ENGLISH) {
       return stopWordEN.contains(w);
     } else if (l == Language.FRENCH) {
@@ -490,6 +484,7 @@ public class NameML {
   protected String normalized;
 
   /** Returns the original name */
+  @Override
   public String toString() {
     return (original);
   }
@@ -546,12 +541,10 @@ public class NameML {
   }
 
   public static InputStream getConfigFileStream(String configfile) throws FileNotFoundException {
-    if(CONFIG_DIR!=null)
-      return new FileInputStream(new File(CONFIG_DIR,configfile));
-    else
-      return NameML.class.getResourceAsStream(PARSINGRESOURCES_PATH+configfile);
+    if (CONFIG_DIR != null) return new FileInputStream(new File(CONFIG_DIR, configfile));
+    else return NameML.class.getResourceAsStream(PARSINGRESOURCES_PATH + configfile);
   }
-  
+
   /**
    * Read set from an UTF-8 text file, ignoring lines starting with "##"
    * 
@@ -598,12 +591,14 @@ public class NameML {
       if (!laxAbbreviationPattern.matcher(s).matches()) return;
     }
 
+    @Override
     public String normalize() {
       if (normalized == null) normalized = super.normalize().toUpperCase();
       return (normalized);
     }
 
     /** Returns a description */
+    @Override
     public String describe() {
       return ("Abbreviation\n" + "  Original: " + original + "\n" + "  Normalized: " + normalize());
     }
@@ -618,8 +613,8 @@ public class NameML {
   public static final Pattern laxCompanyPattern = Pattern.compile("(" + laxNamePattern + ")" + BC + "(" + companyNameSuffix + ")");
 
   /** Contains the safe pattern for companies */
-  public static final Pattern safeCompanyPattern = Pattern.compile("(" + safeNamesPatternNoPrep + opt(opt(B) + "&" + opt(B) + safeNamesPatternNoPrep)
-      + ")" + BC + "(" + companyNameSuffix + ")");
+  public static final Pattern safeCompanyPattern = Pattern
+      .compile("(" + safeNamesPatternNoPrep + opt(opt(B) + "&" + opt(B) + safeNamesPatternNoPrep) + ")" + BC + "(" + companyNameSuffix + ")");
 
   /** Tells if the string is a company name with high probability */
   public static boolean isCompanyName(String s) {
@@ -655,13 +650,16 @@ public class NameML {
       return suffix;
     }
 
+    @Override
     public String normalize() {
       return (name);
     }
 
     /** Returns a description */
+    @Override
     public String describe() {
-      return ("CompanyName\n" + "  Original: " + original + "\n" + "  Name: " + name + "\n" + "  Suffix: " + suffix + "\n" + "  Normalized: " + normalize());
+      return ("CompanyName\n" + "  Original: " + original + "\n" + "  Name: " + name + "\n" + "  Suffix: " + suffix + "\n" + "  Normalized: "
+          + normalize());
     }
   }
 
@@ -700,15 +698,15 @@ public class NameML {
         + opt(B + c(nickName)));
   }
 
-  public static  Pattern laxPersonNamePatternEn;
+  public static Pattern laxPersonNamePatternEn;
 
-  public static  Pattern laxPersonNamePatternDe;
+  public static Pattern laxPersonNamePatternDe;
 
-  public static  Pattern laxPersonNamePatternEs;
+  public static Pattern laxPersonNamePatternEs;
 
-  public static  Pattern laxPersonNamePatternFr;
+  public static Pattern laxPersonNamePatternFr;
 
-  public static  Pattern laxPersonNamePatternIt;
+  public static Pattern laxPersonNamePatternIt;
 
   /**
    * @param titlePattern
@@ -716,9 +714,9 @@ public class NameML {
    */
   private static Pattern createSafePersonNamePattern(Pattern titlePattern) {
     return Pattern.compile(
-    // Mr. Bob Carl Miller
+        // Mr. Bob Carl Miller
         titlePattern.pattern() + B + givenNames + B + opt(familyNamePrefix + B) + familyName + opt(BC + familyNameSuffix) + or +
-        // Mr. Miller
+            // Mr. Miller
             titlePattern.pattern() + B + opt(familyNamePrefix + B) + familyName + opt(BC + familyNameSuffix) + or +
             // Bob XI
             givenName + B + roman + or +
@@ -732,11 +730,11 @@ public class NameML {
             givenName + B + U + "\\." + B + U + "\\." + B + opt(familyNamePrefix + B) + familyName + opt(BC + familyNameSuffix));
   }
 
-  public static  Pattern safePersonNamePatternEn;
+  public static Pattern safePersonNamePatternEn;
 
   public static Pattern safePersonNamePatternDe;
 
-  public static  Pattern safePersonNamePatternEs;
+  public static Pattern safePersonNamePatternEs;
 
   public static Pattern safePersonNamePatternFr;
 
@@ -907,6 +905,7 @@ public class NameML {
     }
 
     /** Normalizes a person name. */
+    @Override
     public String normalize() {
       String given = givenNames();
 
@@ -931,11 +930,13 @@ public class NameML {
     }
 
     /** Returns a description */
+    @Override
     public String describe() {
       return ("PersonName\n" + "  Original: " + original + "\n" + "  Titles: " + titles() + "\n" + "  Given Name: " + givenName() + "\n"
           + "  Given Names: " + givenNames() + "\n" + "  Nickname: " + nickname() + "\n" + "  Family Name Prefix: " + familyNamePrefix() + "\n"
           + "  Attribute Prefix: " + attributePrefix() + "\n" + "  Family Name: " + familyName() + "\n" + "  Attribute: " + attribute() + "\n"
-          + "  Family Name Suffix: " + familyNameSuffix() + "\n" + "  Roman: " + roman() + "\n" + "  City: " + city() + "\n" + "  Normalized: " + normalize());
+          + "  Family Name Suffix: " + familyNameSuffix() + "\n" + "  Roman: " + roman() + "\n" + "  City: " + city() + "\n" + "  Normalized: "
+          + normalize());
     }
 
   }
@@ -984,24 +985,23 @@ public class NameML {
       "Breton", "bs", "Bosnian", "ca", "Catalan", "ce", "Chechen", "ch", "Chamorro", "co", "Corsican", "cr", "Cree", "cs", "Czech", "cu", "Church",
       "cv", "Chuvash", "cy", "Welsh", "da", "Danish", "de", "German", "dv", "Divehi", "dz", "Dzongkha", "ee", "Ewe", "el", "Greek", "en", "English",
       "eo", "Esperanto", "es", "Spanish", "et", "Estonian", "eu", "Basque", "fa", "Persian", "ff", "Fulah", "fi", "Finnish", "fj", "Fijian", "fo",
-      "Faroese", "fr", "French", "fy", "Western Frisian", "ga", "Irish", "gd", "Scottish", "gl", "Galician", "gn", "Guaran�", "gu", "Gujarati",
-      "gv", "Manx", "ha", "Hausa", "he", "Hebrew", "hi", "Hindi", "ho", "Hiri", "hr", "Croatian", "ht", "Haitian", "hu", "Hungarian", "hy",
-      "Armenian", "hz", "Herero", "ia", "Interlingua", "id", "Indonesian", "ie", "Interlingue", "ig", "Igbo", "ii", "Sichuan", "ik", "Inupiaq", "io",
-      "Ido", "is", "Icelandic", "it", "Italian", "iu", "Inuktitut", "ja", "Japanese", "jv", "Javanese", "ka", "Georgian", "kg", "Kongo", "ki",
-      "Kikuyu", "kj", "Kwanyama", "kk", "Kazakh", "kl", "Kalaallisut", "km", "Khmer", "kn", "Kannada", "ko", "Korean", "kr", "Kanuri", "ks",
-      "Kashmiri", "ku", "Kurdish", "kv", "Komi", "kw", "Cornish", "ky", "Kirghiz", "la", "Latin", "lb", "Luxembourgish", "lg", "Ganda", "li",
-      "Limburgish", "ln", "Lingala", "lo", "Lao", "lt", "Lithuanian", "lu", "Luba-Katanga", "lv", "Latvian", "mg", "Malagasy", "mh", "Marshallese",
-      "mi", "Maori", "mk", "Macedonian", "ml", "Malayalam", "mn", "Mongolian", "mo", "Moldavian", "mr", "Marathi", "ms", "Malay", "mt", "Maltese",
-      "my", "Burmese", "na", "Nauru", "nb", "Norwegian", "nd", "North", "ne", "Nepali", "ng", "Ndonga", "nl", "Dutch", "nn", "Norwegian", "no",
-      "Norwegian", "nr", "South", "nv", "Navajo", "ny", "Chichewa", "oc", "Occitan", "oj", "Ojibwa", "om", "Oromo", "or", "Oriya", "os", "Ossetian",
-      "pa", "Panjabi", "pi", "Pali", "pl", "Polish", "ps", "Pashto", "pt", "Portuguese", "qu", "Quechua", "rm", "Raeto-Romance", "rn", "Kirundi",
-      "ro", "Romanian", "ru", "Russian", "rw", "Kinyarwanda", "ry", "Rusyn", "sa", "Sanskrit", "sc", "Sardinian", "sd", "Sindhi", "se", "Northern",
-      "sg", "Sango", "sh", "Serbo-Croatian", "si", "Sinhalese", "sk", "Slovak", "sl", "Slovenian", "sm", "Samoan", "sn", "Shona", "so", "Somali",
-      "sq", "Albanian", "sr", "Serbian", "ss", "Swati", "st", "Sotho", "su", "Sundanese", "sv", "Swedish", "sw", "Swahili", "ta", "Tamil", "te",
-      "Telugu", "tg", "Tajik", "th", "Thai", "ti", "Tigrinya", "tk", "Turkmen", "tl", "Tagalog", "tn", "Tswana", "to", "Tonga", "tr", "Turkish",
-      "ts", "Tsonga", "tt", "Tatar", "tw", "Twi", "ty", "Tahitian", "ug", "Uighur", "uk", "Ukrainian", "ur", "Urdu", "uz", "Uzbek", "ve", "Venda",
-      "vi", "Vietnamese", "vo", "Volapük", "wa", "Walloon", "wo", "Wolof", "xh", "Xhosa", "yi", "Yiddish", "yo", "Yoruba", "za", "Zhuang", "zh",
-      "Chinese", "zu", "Zulu");
+      "Faroese", "fr", "French", "fy", "Western Frisian", "ga", "Irish", "gd", "Scottish", "gl", "Galician", "gn", "Guaran�", "gu", "Gujarati", "gv",
+      "Manx", "ha", "Hausa", "he", "Hebrew", "hi", "Hindi", "ho", "Hiri", "hr", "Croatian", "ht", "Haitian", "hu", "Hungarian", "hy", "Armenian",
+      "hz", "Herero", "ia", "Interlingua", "id", "Indonesian", "ie", "Interlingue", "ig", "Igbo", "ii", "Sichuan", "ik", "Inupiaq", "io", "Ido", "is",
+      "Icelandic", "it", "Italian", "iu", "Inuktitut", "ja", "Japanese", "jv", "Javanese", "ka", "Georgian", "kg", "Kongo", "ki", "Kikuyu", "kj",
+      "Kwanyama", "kk", "Kazakh", "kl", "Kalaallisut", "km", "Khmer", "kn", "Kannada", "ko", "Korean", "kr", "Kanuri", "ks", "Kashmiri", "ku",
+      "Kurdish", "kv", "Komi", "kw", "Cornish", "ky", "Kirghiz", "la", "Latin", "lb", "Luxembourgish", "lg", "Ganda", "li", "Limburgish", "ln",
+      "Lingala", "lo", "Lao", "lt", "Lithuanian", "lu", "Luba-Katanga", "lv", "Latvian", "mg", "Malagasy", "mh", "Marshallese", "mi", "Maori", "mk",
+      "Macedonian", "ml", "Malayalam", "mn", "Mongolian", "mo", "Moldavian", "mr", "Marathi", "ms", "Malay", "mt", "Maltese", "my", "Burmese", "na",
+      "Nauru", "nb", "Norwegian", "nd", "North", "ne", "Nepali", "ng", "Ndonga", "nl", "Dutch", "nn", "Norwegian", "no", "Norwegian", "nr", "South",
+      "nv", "Navajo", "ny", "Chichewa", "oc", "Occitan", "oj", "Ojibwa", "om", "Oromo", "or", "Oriya", "os", "Ossetian", "pa", "Panjabi", "pi",
+      "Pali", "pl", "Polish", "ps", "Pashto", "pt", "Portuguese", "qu", "Quechua", "rm", "Raeto-Romance", "rn", "Kirundi", "ro", "Romanian", "ru",
+      "Russian", "rw", "Kinyarwanda", "ry", "Rusyn", "sa", "Sanskrit", "sc", "Sardinian", "sd", "Sindhi", "se", "Northern", "sg", "Sango", "sh",
+      "Serbo-Croatian", "si", "Sinhalese", "sk", "Slovak", "sl", "Slovenian", "sm", "Samoan", "sn", "Shona", "so", "Somali", "sq", "Albanian", "sr",
+      "Serbian", "ss", "Swati", "st", "Sotho", "su", "Sundanese", "sv", "Swedish", "sw", "Swahili", "ta", "Tamil", "te", "Telugu", "tg", "Tajik",
+      "th", "Thai", "ti", "Tigrinya", "tk", "Turkmen", "tl", "Tagalog", "tn", "Tswana", "to", "Tonga", "tr", "Turkish", "ts", "Tsonga", "tt", "Tatar",
+      "tw", "Twi", "ty", "Tahitian", "ug", "Uighur", "uk", "Ukrainian", "ur", "Urdu", "uz", "Uzbek", "ve", "Venda", "vi", "Vietnamese", "vo",
+      "Volapük", "wa", "Walloon", "wo", "Wolof", "xh", "Xhosa", "yi", "Yiddish", "yo", "Yoruba", "za", "Zhuang", "zh", "Chinese", "zu", "Zulu");
 
   /** Returns TRUE for languages */
   public static boolean isLanguage(String s) {
@@ -1030,50 +1030,49 @@ public class NameML {
       "Albanian", "Albania", "Algerian", "Algeria", "American Samoan", "American Samoa", "Andorran", "Andorra", "Angolan", "Angola", "Anguillan",
       "Anguilla", "Antiguan", "Antigua and Barbuda", "Argentine", "Argentina", "Argentinean", "Argentina", "Argentinian", "Argentina", "Armenian",
       "Armenia", "Aruban", "Aruba", "Austrian", "Austria", "Azerbaijani", "Azerbaijan", "Azeri", "Azerbaijan", "Bahamian", "Bahamas", "Bahraini",
-      "Bahrain", "Bangladeshi", "Bangladesh", "Barbadian", "Barbados", "Bajan", "Barbados", "Belarusian", "Belarus", "Belgian", "Belgium",
-      "Belizean", "Belize", "Beninese", "Benin", "Bermudian", "Bermuda", "Bermudan", "Bermuda", "Bhutanese", "Bhutan", "Bolivian", "Bolivia",
-      "Bosnian", "Bosnia and Herzegovina", "Bosniak", "Bosnia and Herzegovina", "Herzegovinian", "Bosnia and Herzegovina", "Botswanan", "Botswana",
-      "Brazilian", "Brazil", "British Virgin Island", "British Virgin Islands", "Bruneian", "Brunei", "Bulgarian", "Bulgaria", "Burkinabe",
-      "Burkina Fasoa", "Burmese", "Burmab", "Burundian", "Burundi", "Cambodian", "Cambodia", "Cameroonian", "Cameroon", "Canadian", "Canada",
-      "Cape Verdean", "Cape Verde", "Caymanian", "Cayman Islands", "Central African", "Central African Republic", "Chadian", "Chad", "Chilean",
-      "Chile", "Chinese", "People's Republic of China", "See Taiwan", "Republic of China", "Christmas Island", "Christmas Island", "Cocos Island",
+      "Bahrain", "Bangladeshi", "Bangladesh", "Barbadian", "Barbados", "Bajan", "Barbados", "Belarusian", "Belarus", "Belgian", "Belgium", "Belizean",
+      "Belize", "Beninese", "Benin", "Bermudian", "Bermuda", "Bermudan", "Bermuda", "Bhutanese", "Bhutan", "Bolivian", "Bolivia", "Bosnian",
+      "Bosnia and Herzegovina", "Bosniak", "Bosnia and Herzegovina", "Herzegovinian", "Bosnia and Herzegovina", "Botswanan", "Botswana", "Brazilian",
+      "Brazil", "British Virgin Island", "British Virgin Islands", "Bruneian", "Brunei", "Bulgarian", "Bulgaria", "Burkinabe", "Burkina Fasoa",
+      "Burmese", "Burmab", "Burundian", "Burundi", "Cambodian", "Cambodia", "Cameroonian", "Cameroon", "Canadian", "Canada", "Cape Verdean",
+      "Cape Verde", "Caymanian", "Cayman Islands", "Central African", "Central African Republic", "Chadian", "Chad", "Chilean", "Chile", "Chinese",
+      "People's Republic of China", "See Taiwan", "Republic of China", "Christmas Island", "Christmas Island", "Cocos Island",
       "Cocos (Keeling) Islands", "Colombian", "Colombia", "Comorian", "Comoros", "Congolese", "Democratic Republic of the Congo", "Cook Island",
-      "Cook Islands", "Costa Rican", "Costa Rica", "Ivorian", "Côte d'Ivoire", "Croatian", "Croatia", "Cuban", "Cuba", "Cypriot", "Cyprus",
-      "Czech", "Czech Republic", "Danish", "Denmark", "Djiboutian", "Djibouti", "Dominicand", "Dominica", "Dominicane", "Dominican Republic",
-      "Timorese", "East Timor", "Ecuadorian", "Ecuador", "Egyptian", "Egypt", "Salvadoran", "El Salvador", "English", "England",
-      "Equatorial Guinean", "Equatorial Guinea", "Eritrean", "Eritrea", "Estonian", "Estonia", "Ethiopian", "Ethiopia", "Falkland Island",
-      "Falkland Islands", "Faroese", "Faroe Islands", "Fijian", "Fiji", "Finnish", "Finland", "French", "France", "French Guianese", "French Guiana",
-      "French Polynesian", "French Polynesia", "Gabonese", "Gabon", "Gambian", "Gambia", "Georgian", "Georgia", "German", "Germany", "Ghanaian",
-      "Ghana", "Gibraltar", "Gibraltar", "Greek", "Greece", "Greenlandic", "Greenland", "Grenadian", "Grenada", "Guadeloupe", "Guadeloupe",
-      "Guamanian", "Guam", "Guatemalan", "Guatemala", "Guinean", "Guinea", "Guyanese", "Guyana", "Haitian", "Haiti", "Honduran", "Honduras",
-      "Hong Kong", "Hong Kong", "Hungarian", "Hungary", "Icelandic", "Iceland", "Indian", "India", "Indonesian", "Indonesia", "Iranian", "Iran",
-      "Iraqi", "Iraq", "Manx", "Isle of Man", "Israeli", "Israel", "Italian", "Italy", "Jamaican", "Jamaica", "Japanese", "Japan", "Jordanian",
-      "Jordan", "Kazakhstaniz", "Kazakhstan", "Kenyan", "Kenya", "I-Kiribati", "Kiribati", "North Korean", "North Korea", "South Korean",
-      "South Korea", "Kosovar", "Kosovo", "Kuwaiti", "Kuwait", "Kyrgyzstani", "Kyrgyzstan", "Laotian", "Laos", "Latvian", "Latvia", "Lebanese",
-      "Lebanon", "Basotho", "Lesotho", "Liberian", "Liberia", "Libyan", "Libya", "Liechtenstein", "Liechtenstein", "Lithuanian", "Lithuania",
-      "Luxembourg", "Luxembourg", "Macanese", "Macau", "Macedonian", "Republic of Macedonia", "Malagasy", "Madagascar", "Malawian", "Malawi",
-      "Malaysian", "Malaysia", "Maldivian", "Maldives", "Malian", "Mali", "Maltese", "Malta", "Marshallese", "Marshall Islands", "Martiniquais",
-      "Martinique", "Mauritanian", "Mauritania", "Mauritian", "Mauritius", "Mahoran", "Mayotte", "Mexican", "Mexico", "Micronesian", "Micronesia",
-      "Moldovan", "Moldova", "Monégasque", "Monaco", "Mongolian", "Mongolia", "Montenegrin", "Montenegro", "Montserratian", "Montserrat",
-      "Moroccan", "Morocco", "Mozambican", "Mozambique", "Namibian", "Namibia", "Nauruan", "Nauru", "Nepali", "Nepal", "Dutch", "Netherlands",
-      "Dutch Antillean", "Netherlands Antilles", "New Caledonian", "New Caledonia", "New Zealand", "New Zealand", "Nicaraguan", "Nicaragua",
-      "Niuean", "Niue", "Nigerien", "Niger", "Nigerian", "Nigeria", "Norwegian", "Norway", "Northern Irish", "Northern Ireland", "Northern Marianan",
-      "Northern Marianas", "Omani", "Oman", "Pakistani", "Pakistan", "Palestinian", "Palestinian territories", "Palauan", "Palau", "Panamanian",
-      "Panama", "Papua New Guinean", "Papua New Guinea", "Paraguayan", "Paraguay", "Peruvian", "Peru", "Philippine", "Philippines", "Filipino",
-      "Philippines", "Pitcairn Island", "Pitcairn Island", "Polish", "Poland", "Portuguese", "Portugal", "Puerto Rican", "Puerto Rico", "Qatari",
-      "Qatar", "Irish", "Republic of Ireland", "Réunionese", "Réunion", "Romanian", "Romania", "Russian", "Russia", "Rwandan", "Rwanda",
-      "St. Helenian", "St. Helena", "Kittitian", "St. Kitts and Nevis", "St. Lucian", "St. Lucia", "Saint-Pierrais", "Saint-Pierre and Miquelon",
-      "St. Vincentian", "St. Vincent and the Grenadines", "Samoan", "Samoa", "Sammarinese", "San Marino", "São Toméan",
-      "São Tomé and Príncipe", "Saudi", "Saudi Arabia", "Scottish", "Scotland", "Senegalese", "Senegal", "Serbian", "Serbia", "Seychellois",
-      "Seychelles", "Sierra Leonean", "Sierra Leone", "Singaporean", "Singapore", "Slovak", "Slovakia", "Slovene", "Slovenia", "Slovenian",
-      "Slovenia", "Solomon Island", "Solomon Islands", "Somali", "Somalia", "Somaliland", "Somaliland", "South African", "South Africa", "Spanish",
-      "Spain", "Sri Lankan", "Sri Lanka", "Sudanese", "Sudan", "Surinamese", "Surinam", "Swazi", "Swaziland", "Swedish", "Sweden", "Swiss",
-      "Switzerland", "Syrian", "Syria", "Taiwanese", "Taiwan", "Tajikistani", "Tajikistan", "Tanzanian", "Tanzania", "Thai", "Thailand", "Togolese",
-      "Togo", "Tongan", "Tonga", "Trinidadian", "Trinidad and Tobago", "Tunisian", "Tunisia", "Turkish", "Turkey", "Turkmen", "Turkmenistan",
-      "Tuvaluan", "Tuvalu", "Ugandan", "Uganda", "Ukrainian", "Ukraine", "Emirati", "United Arab Emirates", "British", "United Kingdom", "American",
-      "United States of America", "Uruguayan", "Uruguay", "Uzbekistani", "Uzbekistan", "Uzbek", "Uzbekistan", "Vanuatuan", "Vanuatu", "Venezuelan",
-      "Venezuela", "Vietnamese", "Vietnam", "Virgin Island", "Virgin Islands", "Welsh", "Wales", "Wallisian", "Wallis and Futuna", "Sahrawi",
-      "Western Sahara", "Yemeni", "Yemen", "Zambian", "Zambia", "Zimbabwean", "Zimbabwe");
+      "Cook Islands", "Costa Rican", "Costa Rica", "Ivorian", "Côte d'Ivoire", "Croatian", "Croatia", "Cuban", "Cuba", "Cypriot", "Cyprus", "Czech",
+      "Czech Republic", "Danish", "Denmark", "Djiboutian", "Djibouti", "Dominicand", "Dominica", "Dominicane", "Dominican Republic", "Timorese",
+      "East Timor", "Ecuadorian", "Ecuador", "Egyptian", "Egypt", "Salvadoran", "El Salvador", "English", "England", "Equatorial Guinean",
+      "Equatorial Guinea", "Eritrean", "Eritrea", "Estonian", "Estonia", "Ethiopian", "Ethiopia", "Falkland Island", "Falkland Islands", "Faroese",
+      "Faroe Islands", "Fijian", "Fiji", "Finnish", "Finland", "French", "France", "French Guianese", "French Guiana", "French Polynesian",
+      "French Polynesia", "Gabonese", "Gabon", "Gambian", "Gambia", "Georgian", "Georgia", "German", "Germany", "Ghanaian", "Ghana", "Gibraltar",
+      "Gibraltar", "Greek", "Greece", "Greenlandic", "Greenland", "Grenadian", "Grenada", "Guadeloupe", "Guadeloupe", "Guamanian", "Guam",
+      "Guatemalan", "Guatemala", "Guinean", "Guinea", "Guyanese", "Guyana", "Haitian", "Haiti", "Honduran", "Honduras", "Hong Kong", "Hong Kong",
+      "Hungarian", "Hungary", "Icelandic", "Iceland", "Indian", "India", "Indonesian", "Indonesia", "Iranian", "Iran", "Iraqi", "Iraq", "Manx",
+      "Isle of Man", "Israeli", "Israel", "Italian", "Italy", "Jamaican", "Jamaica", "Japanese", "Japan", "Jordanian", "Jordan", "Kazakhstaniz",
+      "Kazakhstan", "Kenyan", "Kenya", "I-Kiribati", "Kiribati", "North Korean", "North Korea", "South Korean", "South Korea", "Kosovar", "Kosovo",
+      "Kuwaiti", "Kuwait", "Kyrgyzstani", "Kyrgyzstan", "Laotian", "Laos", "Latvian", "Latvia", "Lebanese", "Lebanon", "Basotho", "Lesotho",
+      "Liberian", "Liberia", "Libyan", "Libya", "Liechtenstein", "Liechtenstein", "Lithuanian", "Lithuania", "Luxembourg", "Luxembourg", "Macanese",
+      "Macau", "Macedonian", "Republic of Macedonia", "Malagasy", "Madagascar", "Malawian", "Malawi", "Malaysian", "Malaysia", "Maldivian",
+      "Maldives", "Malian", "Mali", "Maltese", "Malta", "Marshallese", "Marshall Islands", "Martiniquais", "Martinique", "Mauritanian", "Mauritania",
+      "Mauritian", "Mauritius", "Mahoran", "Mayotte", "Mexican", "Mexico", "Micronesian", "Micronesia", "Moldovan", "Moldova", "Monégasque", "Monaco",
+      "Mongolian", "Mongolia", "Montenegrin", "Montenegro", "Montserratian", "Montserrat", "Moroccan", "Morocco", "Mozambican", "Mozambique",
+      "Namibian", "Namibia", "Nauruan", "Nauru", "Nepali", "Nepal", "Dutch", "Netherlands", "Dutch Antillean", "Netherlands Antilles",
+      "New Caledonian", "New Caledonia", "New Zealand", "New Zealand", "Nicaraguan", "Nicaragua", "Niuean", "Niue", "Nigerien", "Niger", "Nigerian",
+      "Nigeria", "Norwegian", "Norway", "Northern Irish", "Northern Ireland", "Northern Marianan", "Northern Marianas", "Omani", "Oman", "Pakistani",
+      "Pakistan", "Palestinian", "Palestinian territories", "Palauan", "Palau", "Panamanian", "Panama", "Papua New Guinean", "Papua New Guinea",
+      "Paraguayan", "Paraguay", "Peruvian", "Peru", "Philippine", "Philippines", "Filipino", "Philippines", "Pitcairn Island", "Pitcairn Island",
+      "Polish", "Poland", "Portuguese", "Portugal", "Puerto Rican", "Puerto Rico", "Qatari", "Qatar", "Irish", "Republic of Ireland", "Réunionese",
+      "Réunion", "Romanian", "Romania", "Russian", "Russia", "Rwandan", "Rwanda", "St. Helenian", "St. Helena", "Kittitian", "St. Kitts and Nevis",
+      "St. Lucian", "St. Lucia", "Saint-Pierrais", "Saint-Pierre and Miquelon", "St. Vincentian", "St. Vincent and the Grenadines", "Samoan", "Samoa",
+      "Sammarinese", "San Marino", "São Toméan", "São Tomé and Príncipe", "Saudi", "Saudi Arabia", "Scottish", "Scotland", "Senegalese", "Senegal",
+      "Serbian", "Serbia", "Seychellois", "Seychelles", "Sierra Leonean", "Sierra Leone", "Singaporean", "Singapore", "Slovak", "Slovakia", "Slovene",
+      "Slovenia", "Slovenian", "Slovenia", "Solomon Island", "Solomon Islands", "Somali", "Somalia", "Somaliland", "Somaliland", "South African",
+      "South Africa", "Spanish", "Spain", "Sri Lankan", "Sri Lanka", "Sudanese", "Sudan", "Surinamese", "Surinam", "Swazi", "Swaziland", "Swedish",
+      "Sweden", "Swiss", "Switzerland", "Syrian", "Syria", "Taiwanese", "Taiwan", "Tajikistani", "Tajikistan", "Tanzanian", "Tanzania", "Thai",
+      "Thailand", "Togolese", "Togo", "Tongan", "Tonga", "Trinidadian", "Trinidad and Tobago", "Tunisian", "Tunisia", "Turkish", "Turkey", "Turkmen",
+      "Turkmenistan", "Tuvaluan", "Tuvalu", "Ugandan", "Uganda", "Ukrainian", "Ukraine", "Emirati", "United Arab Emirates", "British",
+      "United Kingdom", "American", "United States of America", "Uruguayan", "Uruguay", "Uzbekistani", "Uzbekistan", "Uzbek", "Uzbekistan",
+      "Vanuatuan", "Vanuatu", "Venezuelan", "Venezuela", "Vietnamese", "Vietnam", "Virgin Island", "Virgin Islands", "Welsh", "Wales", "Wallisian",
+      "Wallis and Futuna", "Sahrawi", "Western Sahara", "Yemeni", "Yemen", "Zambian", "Zambia", "Zimbabwean", "Zimbabwe");
 
   /** Returns TRUE for nations */
   public static boolean isNation(String s) {
@@ -1109,7 +1108,7 @@ public class NameML {
     for (String s : new FileLines("./testdata/NameParserTest.txt")) {
       //D.p(Name.of(s).describe());
       D.p(NameML.of(s, Language.ENGLISH).describe());
-    }        
+    }
     Announce.done();
     Announce.doing("Testing for German");
     for (String s : new FileLines("./testdata/NameParserTestDe.txt")) {
@@ -1117,7 +1116,6 @@ public class NameML {
       D.p(NameML.of(s, Language.GERMAN).describe());
     }
     Announce.done();
-    
-    
+
   }
 }

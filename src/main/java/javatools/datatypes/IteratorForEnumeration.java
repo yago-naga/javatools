@@ -6,14 +6,20 @@ import java.util.Iterator;
 import java.util.List;
 
 /** 
-This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
-It is licensed under the Creative Commons Attribution License 
-(see http://creativecommons.org/licenses/by/3.0) by 
-the YAGO-NAGA team (see http://mpii.de/yago-naga).
-  
+Copyright 2016 Fabian M. Suchanek
 
-  
- 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. 
+
 
   This class provides a simple converter from Enumerations to Iterators.
   It accepts untyped Enumerations, but yields always typed Iterators.
@@ -29,28 +35,32 @@ public class IteratorForEnumeration<T> implements Iterator<T>, Iterable<T> {
 
   /** Holds the enumeration object*/
   public Enumeration<T> enumerator;
-    
+
   @SuppressWarnings("unchecked")
-  public IteratorForEnumeration(Enumeration enumerator) {   
-    this.enumerator=enumerator;
+  public IteratorForEnumeration(Enumeration enumerator) {
+    this.enumerator = enumerator;
   }
 
+  @Override
   public boolean hasNext() {
-    return(enumerator.hasMoreElements());
+    return (enumerator.hasMoreElements());
   }
 
+  @Override
   public T next() {
-    return(enumerator.nextElement());
+    return (enumerator.nextElement());
   }
 
+  @Override
   public void remove() {
-   throw new UnsupportedOperationException("Remove on IteratirForEnumeration");
+    throw new UnsupportedOperationException("Remove on IteratirForEnumeration");
   }
 
-  public Iterator<T> iterator() {    
+  @Override
+  public Iterator<T> iterator() {
     return this;
   }
-  
+
   /** Returns the rest of the enumeration as a list*/
   public List<T> asList() {
     return Collections.list(enumerator);

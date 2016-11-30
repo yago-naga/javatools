@@ -11,15 +11,22 @@ import java.util.StringTokenizer;
 import javatools.administrative.D;
 import javatools.datatypes.ArrayQueue;
 import javatools.datatypes.PeekIterator;
-/** 
-This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
-It is licensed under the Creative Commons Attribution License 
-(see http://creativecommons.org/licenses/by/3.0) by 
-the YAGO-NAGA team (see http://mpii.de/yago-naga).
-  
 
-  
- 
+/** 
+Copyright 2016 Fabian M. Suchanek
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. 
+
 
    The class represents a regular expression. You can walk through the regular expression 
    by RegExStates. Each RegExState represents one position in the regular expression.
@@ -45,35 +52,38 @@ the YAGO-NAGA team (see http://mpii.de/yago-naga).
 public class RegularExpression implements Iterable<List<String>> {
 
   /** RegExStates with which the RegularExpression starts */
-  public List<RegExState> entries=new ArrayList<RegExState>();
-  /** Valid exit states of this RegularExpression */    
-  public List<RegExState> exits=new ArrayList<RegExState>();
+  public List<RegExState> entries = new ArrayList<RegExState>();
+
+  /** Valid exit states of this RegularExpression */
+  public List<RegExState> exits = new ArrayList<RegExState>();
+
   /** Holds the original regex */
   public String original;
-  
+
   /** returns the original */
   public String getOrginal() {
-    return(original);
+    return (original);
   }
-  
+
   /** Returns a RegularExpression for a string*/
   public static RegularExpression compile(String regex) {
-    regex=regex.replaceAll("([^\\| \\(])\\(","$1 (");
-    regex=regex.replaceAll("\\)([^\\| \\)\\*\\+])",") $1");          
-    regex=regex.replaceAll("\\*([^\\| \\)])","* $1");
-    regex=regex.replaceAll("\\+([^\\| \\)])","+ $1");   
-    RegularExpression result=parseSimple(new StringTokenizer(regex,"|*+ ()",true));
-    result.original=regex;
-    return(result);
+    regex = regex.replaceAll("([^\\| \\(])\\(", "$1 (");
+    regex = regex.replaceAll("\\)([^\\| \\)\\*\\+])", ") $1");
+    regex = regex.replaceAll("\\*([^\\| \\)])", "* $1");
+    regex = regex.replaceAll("\\+([^\\| \\)])", "+ $1");
+    RegularExpression result = parseSimple(new StringTokenizer(regex, "|*+ ()", true));
+    result.original = regex;
+    return (result);
   }
-  
+
+  @Override
   public String toString() {
-    return(original);
+    return (original);
   }
-  
+
   /** Internal constructor*/
   protected RegularExpression(String token) {
-    RegExState r=new RegExState(token);
+    RegExState r = new RegExState(token);
     entries.add(r);
     exits.add(r);
   }
@@ -81,117 +91,127 @@ public class RegularExpression implements Iterable<List<String>> {
   /** Internal constructor*/
   protected RegularExpression() {
   }
-  
+
   /** Tells whether this RegExState is a valid exit*/
   public boolean isExit(RegExState e) {
-    return(exits.contains(e));
+    return (exits.contains(e));
   }
-  
+
   /** Returns the entry states of this RegularExpression */
   public List<RegExState> getEntries() {
-    return(entries);
+    return (entries);
   }
-  
+
   /** Parses a regex from a StringTokenizer*/
   public static RegularExpression parseSimple(StringTokenizer regex) {
-    boolean disjunctMode=false;
-    RegularExpression result=null;
-    while(regex.hasMoreElements()) {      
+    boolean disjunctMode = false;
+    RegularExpression result = null;
+    while (regex.hasMoreElements()) {
       // Retrieve the next regular expression
-      String next=regex.nextToken();
+      String next = regex.nextToken();
       RegularExpression nextRegEx;
-      if(next.equals("(")) {
-        nextRegEx=parseSimple(regex);
+      if (next.equals("(")) {
+        nextRegEx = parseSimple(regex);
       } else {
-        if(next.length()==0 || next.length()==1 && "|*+ ()".indexOf(next.charAt(0))!=-1) {
-          throw new RuntimeException("Invalid token in regular expression "+next);
+        if (next.length() == 0 || next.length() == 1 && "|*+ ()".indexOf(next.charAt(0)) != -1) {
+          throw new RuntimeException("Invalid token in regular expression " + next);
         }
-        nextRegEx=new RegularExpression(next);
+        nextRegEx = new RegularExpression(next);
       }
       // Retrieve the delimiter
-      String delim=regex.hasMoreTokens()?regex.nextToken():")";
-      boolean star=delim.equals("*");
+      String delim = regex.hasMoreTokens() ? regex.nextToken() : ")";
+      boolean star = delim.equals("*");
       // Add self-loops
-      if(delim.equals("+") || delim.equals("*")) {
-        for(RegExState c : nextRegEx.exits) c.addSuccessors(nextRegEx.entries);
-        delim=regex.hasMoreTokens()?regex.nextToken():")";
-      }  
-      disjunctMode=disjunctMode||delim.equals("|");
-      if(result==null) {
-        result=nextRegEx;
-      } else {  
-        if(disjunctMode) {
+      if (delim.equals("+") || delim.equals("*")) {
+        for (RegExState c : nextRegEx.exits)
+          c.addSuccessors(nextRegEx.entries);
+        delim = regex.hasMoreTokens() ? regex.nextToken() : ")";
+      }
+      disjunctMode = disjunctMode || delim.equals("|");
+      if (result == null) {
+        result = nextRegEx;
+      } else {
+        if (disjunctMode) {
           result.entries.addAll(nextRegEx.entries);
           result.exits.addAll(nextRegEx.exits);
-        } else if(star) {
-          for(RegExState c : result.exits) c.addSuccessors(nextRegEx.entries);
+        } else if (star) {
+          for (RegExState c : result.exits)
+            c.addSuccessors(nextRegEx.entries);
           result.exits.addAll(nextRegEx.exits);
         } else {
-          for(RegExState c : result.exits) c.addSuccessors(nextRegEx.entries);
-          result.exits=nextRegEx.exits;
+          for (RegExState c : result.exits)
+            c.addSuccessors(nextRegEx.entries);
+          result.exits = nextRegEx.exits;
         }
-      }  
-      if(delim.equals(")")) {
+      }
+      if (delim.equals(")")) {
         break;
       }
-    } 
-    return(result);
+    }
+    return (result);
   }
-  
+
   /** returns a nice String description */
-  public String describe() { 
-    StringBuilder b=new StringBuilder();
+  public String describe() {
+    StringBuilder b = new StringBuilder();
     b.append(original).append("\nEntries: ").append(entries).append("\nExits: ").append(exits).append('\n');
-    for(RegExState s : entries) b.append(s.describe());
-    return(b.toString());
-  }    
+    for (RegExState s : entries)
+      b.append(s.describe());
+    return (b.toString());
+  }
 
   /** Returns the set of States (expensive)*/
   public List<RegExState> getStates() {
-    List<RegExState> result=new ArrayList<RegExState>();
+    List<RegExState> result = new ArrayList<RegExState>();
     result.addAll(getEntries());
-    for(int i=0;i<result.size();i++) {
-      for(RegExState s : result.get(i).getSuccessors()) {
-        if(!result.contains(s)) result.add(s);
+    for (int i = 0; i < result.size(); i++) {
+      for (RegExState s : result.get(i).getSuccessors()) {
+        if (!result.contains(s)) result.add(s);
       }
     }
-    return(result);
+    return (result);
   }
-  
+
   /** Returns the inverse of this Regular Expression (expensive) */
   public RegularExpression inverse() {
-    RegularExpression result=new RegularExpression();
-    result.original="Inverse of "+original;
-    List<RegExState> resultStates=new ArrayList<RegExState>();
-    List<RegExState> states=getStates();
-    for(RegExState s : states) resultStates.add(new RegExState(s.getToken()));
-    for(int i=0;i<states.size();i++) {
-      RegExState resultState=resultStates.get(i);
-      RegExState state=states.get(i);
-      for(int j=0;j<states.size();j++) {
-        if(states.get(j).getSuccessors().contains(state)) resultState.addSuccessor(resultStates.get(j));
+    RegularExpression result = new RegularExpression();
+    result.original = "Inverse of " + original;
+    List<RegExState> resultStates = new ArrayList<RegExState>();
+    List<RegExState> states = getStates();
+    for (RegExState s : states)
+      resultStates.add(new RegExState(s.getToken()));
+    for (int i = 0; i < states.size(); i++) {
+      RegExState resultState = resultStates.get(i);
+      RegExState state = states.get(i);
+      for (int j = 0; j < states.size(); j++) {
+        if (states.get(j).getSuccessors().contains(state)) resultState.addSuccessor(resultStates.get(j));
       }
-      if(entries.contains(state)) result.exits.add(resultState);
-      if(exits.contains(state)) result.entries.add(resultState);
+      if (entries.contains(state)) result.exits.add(resultState);
+      if (exits.contains(state)) result.entries.add(resultState);
     }
-    return(result);
+    return (result);
   }
+
   /** Represents one position in a regular expression*/
   public static class RegExState implements Comparable<RegExState> {
+
     /** Counts all RegExStates to have an id for each (for toString)*/
-    public static int idcounter=0;
+    public static int idcounter = 0;
+
     /** Id for toString*/
-    public final int id=++idcounter;
+    public final int id = ++idcounter;
+
     /** Holds all positions that can follow from here */
-    public List<RegExState> successors=new ArrayList<RegExState>();
+    public List<RegExState> successors = new ArrayList<RegExState>();
+
     /** Holds the token name at the current position*/
-    public String token=null;
+    public String token = null;
 
     /** Changes the token */
     public void setToken(String t) {
-      token=t;
+      token = t;
     }
-    
+
     /** Adds one successor */
     public void addSuccessor(RegExState s) {
       successors.add(s);
@@ -214,61 +234,71 @@ public class RegularExpression implements Iterable<List<String>> {
 
     /** Constructs a RegExChunk with a token*/
     public RegExState(String token) {
-      this.token=token;
-    }    
+      this.token = token;
+    }
 
     /** Returns the id and the token*/
+    @Override
     public String toString() {
-      return((token==null?"null":token.toString())+"("+id+")");
+      return ((token == null ? "null" : token.toString()) + "(" + id + ")");
     }
 
     /** Returns a nice description string*/
     public String describe() {
-      StringBuilder b=new StringBuilder();
-      Collection<RegExState> s=new ArrayList<RegExState>();
-      describe(b,s);
-      return(b.toString());
+      StringBuilder b = new StringBuilder();
+      Collection<RegExState> s = new ArrayList<RegExState>();
+      describe(b, s);
+      return (b.toString());
     }
-    
+
     /** Helper method for describe()*/
     protected void describe(StringBuilder b, Collection<RegExState> done) {
-      if(done.contains(this)) return;
+      if (done.contains(this)) return;
       b.append(this.toString());
-      b.append(" -> ").append(successors).append("\n");      
+      b.append(" -> ").append(successors).append("\n");
       done.add(this);
-      for(RegExState c : successors) c.describe(b,done);
+      for (RegExState c : successors)
+        c.describe(b, done);
     }
 
-    public int compareTo(RegExState o) {            
-      return(o.id<id?-1:o.id>id?1:0);
+    @Override
+    public int compareTo(RegExState o) {
+      return (o.id < id ? -1 : o.id > id ? 1 : 0);
     }
 
+    @Override
     public boolean equals(Object o) {
-      return(o!= null & o instanceof RegExState && ((RegExState)o).id==id);
+      return (o != null & o instanceof RegExState && ((RegExState) o).id == id);
     }
 
+    @Override
     public int hashCode() {
       return id;
     }
-    
+
   }
-  
+
   /** Returns an iterator over incarnations of the expression */
+  @Override
   public PeekIterator<List<String>> iterator() {
     return new PeekIterator<List<String>>() {
+
       Queue<List<RegExState>> queue = new ArrayQueue<List<RegExState>>();
+
       {
-        for(RegExState r : getEntries()) {
+        for (RegExState r : getEntries()) {
           queue.add(Arrays.asList(r));
         }
       }
+
+      @Override
       public List<String> internalNext() {
         List<RegExState> next;
         RegExState end;
         do {
           if (queue.size() == 0) return (null);
           next = queue.poll();
-          end= next.get(next.size() - 1);
+          end = next.get(next.size() - 1);
           for (RegExState followUp : end.getSuccessors()) {
             List<RegExState> nextPlusFollowUp = new ArrayList<RegExState>(next);
             nextPlusFollowUp.add(followUp);
@@ -282,17 +312,18 @@ public class RegularExpression implements Iterable<List<String>> {
       }
     };
   }
+
   /** Test routine */
-  public static void main(String[] args) {   
-    while(true) {
+  public static void main(String[] args) {
+    while (true) {
       D.p("Enter a regular expression");
-      RegularExpression r=RegularExpression.compile(D.r());
+      RegularExpression r = RegularExpression.compile(D.r());
       D.p(r.describe());
       D.p();
       D.p("Inverse:");
       D.p(r.inverse().describe());
       D.p();
-      Iterator<List<String>> it=r.iterator();
+      Iterator<List<String>> it = r.iterator();
       for (int i = 0; i < 10 && it.hasNext(); i++) {
         D.p(it.next());
       }

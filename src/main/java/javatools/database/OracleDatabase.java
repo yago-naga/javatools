@@ -10,14 +10,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
-This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
-It is licensed under the Creative Commons Attribution License
-(see http://creativecommons.org/licenses/by/3.0) by
-the YAGO-NAGA team (see http://mpii.de/yago-naga).
+Copyright 2016 Fabian M. Suchanek
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
+    http://www.apache.org/licenses/LICENSE-2.0
 
-
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. 
 
 The class OracleDatabase implements the Database-interface for an
 Oracle SQL data base. Make sure that the file "classes12.jar" of the
@@ -61,6 +66,7 @@ respective Java-adapters.
 public class OracleDatabase extends Database {
 
   /** Prepares the query internally for a call (deletes trailing semicolon)*/
+  @Override
   protected String prepareQuery(String sql) {
     if (sql.endsWith(";")) return (sql.substring(0, sql.length() - 1));
     else return (sql);
@@ -79,12 +85,14 @@ public class OracleDatabase extends Database {
   }
 
   /** Constructs a new OracleDatabase from a user, a password and a host*/
-  public OracleDatabase(String user, String password, String host) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+  public OracleDatabase(String user, String password, String host)
+      throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
     this(user, password, host, null);
   }
 
   /** Constructs a new OracleDatabase from a user, a password and a host*/
-  public OracleDatabase(String user, String password, String host, String port) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+  public OracleDatabase(String user, String password, String host, String port)
+      throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
     this(user, password, host, null, null);
   }
 
@@ -93,12 +101,13 @@ public class OracleDatabase extends Database {
    * @throws IllegalAccessException
    * @throws InstantiationException
    * @throws SQLException */
-  public OracleDatabase(String user, String password, String host, String port, String inst) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+  public OracleDatabase(String user, String password, String host, String port, String inst)
+      throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
     this();
     if (password == null) password = "";
-    if (host == null || host.length()==0) host = "localhost";
-    if (port == null || port.length()==0) port = "1521";
-    if (inst == null|| inst.length()==0) inst = "oracle";
+    if (host == null || host.length() == 0) host = "localhost";
+    if (port == null || port.length() == 0) port = "1521";
+    if (inst == null || inst.length() == 0) inst = "oracle";
     connectionString = "jdbc:oracle:thin:" + user + "/" + password + "@" + host + ":" + port + ":" + inst;
     Driver driver;
     driver = (Driver) Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
@@ -122,15 +131,16 @@ public class OracleDatabase extends Database {
     close(connection);
     connect();
   }
-  
+
   /** connects to the database specified */
   @Override
-  public void connect () throws SQLException{
+  public void connect() throws SQLException {
     connection = DriverManager.getConnection(connectionString);
     connection.setAutoCommit(true);
   }
 
   /** Makes an SQL query limited to n results */
+  @Override
   public String limit(String sql, int n) {
     n++;
     Matcher m = Pattern.compile(" where", Pattern.CASE_INSENSITIVE).matcher(sql);
@@ -154,10 +164,12 @@ public class OracleDatabase extends Database {
       super();
     }
 
+    @Override
     public String toString() {
       return ("VARCHAR2(" + scale + ")");
     }
 
+    @Override
     public String format(Object o) {
       String s = o.toString().replace("'", "''");
       if (s.length() > scale) s = s.substring(0, scale);
@@ -174,11 +186,13 @@ public class OracleDatabase extends Database {
       typeCode = java.sql.Types.INTEGER;
     }
 
+    @Override
     public String format(Object o) {
       if (super.format(o).equals("true")) return ("1");
       else return ("0");
     }
 
+    @Override
     public String toString() {
       return ("NUMBER(1)");
     }
@@ -188,6 +202,7 @@ public class OracleDatabase extends Database {
 
   public static class Bigint extends SQLType.ANSIBigint {
 
+    @Override
     public String toString() {
       return ("NUMBER(37)");
     }
@@ -207,22 +222,22 @@ public class OracleDatabase extends Database {
 
   /** Checks whether the connection to the database is still alive */
   @Override
-  public boolean connected()  {
-    try{
-      return (!connection.isClosed())&&connection.isValid(validityCheckTimeout);
-    } catch (SQLFeatureNotSupportedException nosupport){
-      try{
-        ResultSet rs= query("SELECT 1 FROM DUAL",resultSetType,resultSetConcurrency,null);
+  public boolean connected() {
+    try {
+      return (!connection.isClosed()) && connection.isValid(validityCheckTimeout);
+    } catch (SQLFeatureNotSupportedException nosupport) {
+      try {
+        ResultSet rs = query("SELECT 1 FROM DUAL", resultSetType, resultSetConcurrency, null);
         close(rs);
         return true;
-      }catch (SQLException ex){
+      } catch (SQLException ex) {
         return false;
       }
-    } catch (SQLException ex){
+    } catch (SQLException ex) {
       throw new RuntimeException("This is very unexpected and actually should never happen.", ex);
-    }    
+    }
   }
-  
+
   public static void main(String[] args) {
     OracleDatabase database = new OracleDatabase();
     String sql = "SELECT arg2 FROM facts WHERE relation=something AND arg1= something";

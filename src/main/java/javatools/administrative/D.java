@@ -17,14 +17,19 @@ import java.util.Map;
 import javatools.parsers.Char17;
 
 /** 
- This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
- It is licensed under the Creative Commons Attribution License 
- (see http://creativecommons.org/licenses/by/3.0) by 
- the YAGO-NAGA team (see http://mpii.de/yago-naga).
- 
- 
- 
+Copyright 2016 Fabian M. Suchanek
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. 
  
  This class provides convenience methods for Input/Output.
  Allows to do basic I/O with easy procedure calls
@@ -88,7 +93,7 @@ public class D {
   }
 
   /** Prints some Objects on one line */
-  public static void pl(Object... a) {    
+  public static void pl(Object... a) {
     System.out.print(toString(a));
   }
 
@@ -130,13 +135,13 @@ public class D {
 
   /** Reads a long from the keyboard */
   public static String read(String question) {
-    System.out.print(question+" ");
+    System.out.print(question + " ");
     return (D.read());
   }
 
   /** Reads a long from the keyboard */
   public static boolean readBoolean(String question) {
-    System.out.print(question+" ");
+    System.out.print(question + " ");
     return (D.read().startsWith("y"));
   }
 
@@ -238,13 +243,12 @@ public class D {
     coll.add(value);
   }
 
-
   /** Given a map that maps to EnumSets, adds a new key/value pair or introduces the key*/
   public static <K, V extends Enum<V>> void addKeyValue(Map<K, EnumSet<V>> map, K key, V value) {
     EnumSet<V> coll = map.get(key);
     if (coll == null) {
-        map.put(key, EnumSet.of(value));
-        return;
+      map.put(key, EnumSet.of(value));
+      return;
     }
     coll.add(value);
   }
@@ -252,9 +256,10 @@ public class D {
   /** Given a map that maps to collections, adds a new key/value pair or introduces the key*/
   @SuppressWarnings({ "rawtypes" })
   public static <K, V, C extends Collection<V>, L extends Collection> void addKeyValues(Map<K, C> map, K key, C values, Class<L> collectionType) {
-    for(V val : values) addKeyValue(map,key,val,collectionType);
+    for (V val : values)
+      addKeyValue(map, key, val, collectionType);
   }
-  
+
   /** Given a map that maps to integers, adds a new key/value pair or increases the counter*/
   public static <K> void addKeyValue(Map<K, Integer> map, K key, int value) {
     Integer coll = map.get(key);
@@ -273,9 +278,9 @@ public class D {
       map.put(key, value);
       return;
     }
-    map.put(key, coll + value);    
+    map.put(key, coll + value);
   }
-  
+
   /** Given a map that maps to doubles, adds a new key/value pair or increases the counter*/
   public static <K> void addKeyValueDbl(Map<K, Double> map, K key, double value) {
     Double coll = map.get(key);
@@ -284,20 +289,18 @@ public class D {
       return;
 
     }
-    map.put(key, coll + value);    
+    map.put(key, coll + value);
   }
-  
+
   /** Given a map that maps to comparable objects, sets a key to a given value iff the current value is null or smaller than the given value*/
-  public static <K ,V extends Comparable<V>> void setKeyValueIfGreaterThanCurrent(Map<K, V> map, K key, V value) {
+  public static <K, V extends Comparable<V>> void setKeyValueIfGreaterThanCurrent(Map<K, V> map, K key, V value) {
     V coll = map.get(key);
     if (coll == null) {
       map.put(key, value);
       return;
     }
-    if(coll.compareTo(value)<0)
-      map.put(key, value);    
+    if (coll.compareTo(value) < 0) map.put(key, value);
   }
-  
 
   /** Returns the element of a map or 0*/
   public static <K> int getOrZero(Map<K, Integer> map, K key) {
@@ -312,38 +315,40 @@ public class D {
     if (i == null) return (0);
     return (i);
   }
-  
+
   /** Returns the element of a map or a default value*/
-  public static <K,V> V getOr(Map<K, V> map, K key, V defValue) {
+  public static <K, V> V getOr(Map<K, V> map, K key, V defValue) {
     V i = map.get(key);
     if (i == null) return defValue;
     return (i);
   }
 
   /** Returns a sorted list of the items*/
-  public static<T> List<T> sorted(final Map<T, Integer> map) {
-    List<T> list=new ArrayList<T>(map.keySet());
-    Collections.sort(list,new Comparator<T>(){
+  public static <T> List<T> sorted(final Map<T, Integer> map) {
+    List<T> list = new ArrayList<T>(map.keySet());
+    Collections.sort(list, new Comparator<T>() {
 
       @Override
       public int compare(T arg0, T arg1) {
         return (map.get(arg1).compareTo(map.get(arg0)));
-      }});
-    return(list);
+      }
+    });
+    return (list);
   }
-  
+
   /** Returns a sorted list of the items*/
-  public static<T> List<T> sortedDouble(final Map<T, Double> map) {
-    List<T> list=new ArrayList<T>(map.keySet());
-    Collections.sort(list,new Comparator<T>(){
+  public static <T> List<T> sortedDouble(final Map<T, Double> map) {
+    List<T> list = new ArrayList<T>(map.keySet());
+    Collections.sort(list, new Comparator<T>() {
 
       @Override
       public int compare(T arg0, T arg1) {
         return (map.get(arg1).compareTo(map.get(arg0)));
-      }});
-    return(list);
+      }
+    });
+    return (list);
   }
-  
+
   /** Returns true if two things are equal, including NULL */
   public static <E> boolean equal(E s1, E s2) {
     if (s1 == s2) return (true);
@@ -417,18 +422,19 @@ public class D {
     }
     return (b.toString());
   }
-  
+
   /** Picks one element from a set or NULL*/
   public static <T> T pick(Collection<T> set) {
-    if(set==null || set.isEmpty()) return(null);
-    return(set.iterator().next());
+    if (set == null || set.isEmpty()) return (null);
+    return (set.iterator().next());
   }
-  
+
   /** Returns the size of the intersection*/
-  public static<T> int intersectionSize(Collection<T> c1, Collection<T> c2) {
-	  if(c1.size()>c2.size()) return(intersectionSize(c2,c1));
-	  int result=0;
-	  for(T t : c1) if(c2.contains(t)) result++;
-	  return(result);
+  public static <T> int intersectionSize(Collection<T> c1, Collection<T> c2) {
+    if (c1.size() > c2.size()) return (intersectionSize(c2, c1));
+    int result = 0;
+    for (T t : c1)
+      if (c2.contains(t)) result++;
+    return (result);
   }
 }

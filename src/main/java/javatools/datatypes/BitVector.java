@@ -1,17 +1,24 @@
 package javatools.datatypes;
 
-
 import java.util.AbstractSet;
 import java.util.Arrays;
-
 
 import javatools.administrative.D;
 
 /** 
-This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
-It is licensed under the Creative Commons Attribution License 
-(see http://creativecommons.org/licenses/by/3.0) by 
-the YAGO-NAGA team (see http://mpii.de/yago-naga).
+Copyright 2016 Fabian M. Suchanek
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. 
    
 This class implements an efficient boolean (bit) list . It wraps BitSet into a set of Integers
 <BR>
@@ -78,7 +85,7 @@ public class BitVector extends AbstractSet<Integer> {
   }
 
   public boolean contains(int index) {
-    if (index/64 >= data.length) return (false);
+    if (index / 64 >= data.length) return (false);
     long l = data[index / 64];
     return (l >> (index % 64) & 1) > 0;
   }
@@ -108,18 +115,18 @@ public class BitVector extends AbstractSet<Integer> {
   }
 
   public void compress() {
-    for(int i=data.length-1;i>=0;i--) {
-      if(data[i]!=0) {
-        if(i<data.length-10) {
-          long[] newdta = new long[i+1];
+    for (int i = data.length - 1; i >= 0; i--) {
+      if (data[i] != 0) {
+        if (i < data.length - 10) {
+          long[] newdta = new long[i + 1];
           System.arraycopy(data, 0, newdta, 0, newdta.length);
-          data = newdta;          
+          data = newdta;
         }
         return;
       }
     }
   }
-  
+
   @Override
   public PeekIterator<Integer> iterator() {
     compress();
@@ -130,8 +137,8 @@ public class BitVector extends AbstractSet<Integer> {
       @Override
       protected Integer internalNext() throws Exception {
         while (true) {
-          if(i/64>=data.length) return(null);
-          if(i>=0 && data[i/64]==0) i+=64;
+          if (i / 64 >= data.length) return (null);
+          if (i >= 0 && data[i / 64] == 0) i += 64;
           else i++;
           if (contains(i)) return (i);
         }

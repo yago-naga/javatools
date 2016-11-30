@@ -20,14 +20,19 @@ import javatools.administrative.Announce;
 import javatools.administrative.D;
 
 /** 
- This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
- It is licensed under the Creative Commons Attribution License 
- (see http://creativecommons.org/licenses/by/3.0) by 
- the YAGO-NAGA team (see http://mpii.de/yago-naga).
- 
- 
- 
+Copyright 2016 Fabian M. Suchanek
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. 
 
  This class provides a wrapping for
  <A HREF=http://wordnet.princeton.edu/>WordNet</A>.
@@ -69,9 +74,10 @@ import javatools.administrative.D;
  */
 
 public class WordNet implements Serializable {
-	private static final long serialVersionUID = 1L;
 
-/** Types of words in Wordnet */
+  private static final long serialVersionUID = 1L;
+
+  /** Types of words in Wordnet */
   public enum WordType {
     NOUN, VERB, ADJECTIVE, ADVERB
   };
@@ -101,9 +107,10 @@ public class WordNet implements Serializable {
 
   /** Represents a WordNet synset */
   public static class Synset implements Serializable, Comparable<Synset> {
-	private static final long serialVersionUID = 1L;
 
-	/** Id as given in the WordNet Prolog files */
+    private static final long serialVersionUID = 1L;
+
+    /** Id as given in the WordNet Prolog files */
     protected int id;
 
     /** Words of this synset */
@@ -127,21 +134,25 @@ public class WordNet implements Serializable {
     }
 
     /** Returns the id */
+    @Override
     public int hashCode() {
       return (id);
     }
 
     /** Tells wether the ids are the same */
+    @Override
     public boolean equals(Object o) {
       return (o != null && o instanceof Synset && ((Synset) o).id == id);
     }
 
     /** Sorts synsets by id */
+    @Override
     public int compareTo(Synset o) {
       return (o.id == id ? 0 : o.id < id ? 1 : -1);
     }
 
     /** Returns the id and the words of this synset */
+    @Override
     public final String toString() {
       StringBuilder result = new StringBuilder("Synset #").append(id).append(" (").append(getWordType()).append("): [");
       for (String s : words)
@@ -345,6 +356,7 @@ public class WordNet implements Serializable {
   }
 
   /** Returns a short String description */
+  @Override
   public String toString() {
     return ("WordNet: " + word2synsets.size() + " synsets");
   }
@@ -459,8 +471,8 @@ public class WordNet implements Serializable {
   /** Test routine, requires the Prolog version of WordNet and the paths adjusted. */
   public static void main(String[] argv) throws Exception {
     Announce.doing("Loading");
-    WordNet wordNet = new WordNet(new File("c:\\Program Files\\WordNet\\2.1\\Prolog\\wn_s.pl"), new File(
-        "c:\\Program Files\\WordNet\\2.1\\Prolog\\wn_hyp.pl"), WordType.NOUN, 13);
+    WordNet wordNet = new WordNet(new File("c:\\Program Files\\WordNet\\2.1\\Prolog\\wn_s.pl"),
+        new File("c:\\Program Files\\WordNet\\2.1\\Prolog\\wn_hyp.pl"), WordType.NOUN, 13);
     Announce.done();
     while (true) {
       D.p("Enter an English and press ENTER (CTRL+C to abort)");

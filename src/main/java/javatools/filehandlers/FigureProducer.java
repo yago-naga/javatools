@@ -12,20 +12,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+
 import javatools.parsers.Char17;
 import javatools.parsers.NumberFormatter;
 
-import javax.imageio.ImageIO;
-
 /** 
-This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
-It is licensed under the Creative Commons Attribution License 
-(see http://creativecommons.org/licenses/by/3.0) by 
-the YAGO-NAGA team (see http://mpii.de/yago-naga).
-  
+Copyright 2016 Fabian M. Suchanek
 
-  
- 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. 
+
 
  This class handles table data of the form
  <PRE>
@@ -265,9 +271,9 @@ public class FigureProducer {
         new ColumnDescriptor("BANKS II", "#.###") // 3rd column
     );
     // Add rows
-    test.addRow("1",6981,85931,84171,81462);
-    test.addRow("3",18027,124566,153078,132141);
-    test.addRow("6",43474,138852,159130,175045);
+    test.addRow("1", 6981, 85931, 84171, 81462);
+    test.addRow("3", 18027, 124566, 153078, 132141);
+    test.addRow("6", 43474, 138852, 159130, 175045);
     figure(test, new File("3term.jpg"));
     test = new Table("Avg # edges, 6 terminals", // Header
         new ColumnDescriptor("k", Alignment.LEFT, true), // 1st column
@@ -277,9 +283,9 @@ public class FigureProducer {
         new ColumnDescriptor("BANKS II", "#.###") // 3rd column
     );
     // Add rows
-    test.addRow("1",9559,375523,372634,365004);
-    test.addRow("3",27085,397004,460521,409414);
-    test.addRow("6",76259,447813,503054,491786);
+    test.addRow("1", 9559, 375523, 372634, 365004);
+    test.addRow("3", 27085, 397004, 460521, 409414);
+    test.addRow("6", 76259, 447813, 503054, 491786);
     figure(test, new File("6term.jpg"));
   }
 }

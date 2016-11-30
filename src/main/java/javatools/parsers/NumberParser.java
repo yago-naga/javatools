@@ -10,14 +10,19 @@ import javatools.administrative.D;
 import javatools.datatypes.FinalMap;
 
 /**
- * This class is part of the Java Tools (see
- * http://mpii.de/yago-naga/javatools). It is licensed under the Creative
- * Commons Attribution License (see http://creativecommons.org/licenses/by/3.0)
- * by the YAGO-NAGA team (see http://mpii.de/yago-naga).
+  * Copyright 2016 Fabian M. Suchanek
  * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
  * 
- * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
  * 
  * The NumberParser normalizes number expressions in English natural language
  * text. It can work with expressions like
@@ -69,9 +74,9 @@ public class NumberParser {
   }
 
   /** Maps decimal prefixes (like "giga") to their double */
-  public static final Map<String, Double> prefixes = new FinalMap<String, Double>("tera", 1000000000000.0, "T", 1000000000000.0, "giga",
-      1000000000.0, "G", 1000000000.0, "M", 1000000.0, "mega", 1000000.0, "kilo", 1000.0, "k", 1000.0, "deci", 0.1, "", 1.0, "d", 0.1, "centi", 0.01,
-      "c", 0.01, "milli", 0.001, "m", 0.001, "micro", 0.000001, "mu", 0.000001, "nano", 0.000000001, "n", 0.000000001);
+  public static final Map<String, Double> prefixes = new FinalMap<String, Double>("tera", 1000000000000.0, "T", 1000000000000.0, "giga", 1000000000.0,
+      "G", 1000000000.0, "M", 1000000.0, "mega", 1000000.0, "kilo", 1000.0, "k", 1000.0, "deci", 0.1, "", 1.0, "d", 0.1, "centi", 0.01, "c", 0.01,
+      "milli", 0.001, "m", 0.001, "micro", 0.000001, "mu", 0.000001, "nano", 0.000000001, "n", 0.000000001);
 
   /** A dot or comma as a RegEx */
   private static final String DC = "[\\.,]";
@@ -146,6 +151,7 @@ public class NumberParser {
 
     public String replacement;
 
+    @Override
     public String toString() {
       return (pattern + "   -->   " + replacement);
     }
@@ -244,12 +250,13 @@ public class NumberParser {
 
     /* applies the pattern-replacement 
      *  Note: If you fix something in this version, please try to apply the same fix at the position change tracking function below */
+    @Override
     public void apply(StringBuilder s, StringBuilder result) {
       result.setLength(0);
       Matcher m = pattern.matcher(s);
       if (!m.find()) return;
-      int pow = (replacement != null && Character.isDigit(replacement.charAt(replacement.length() - 1))) ? replacement
-          .charAt(replacement.length() - 1) - '0' : 1;
+      int pow = (replacement != null && Character.isDigit(replacement.charAt(replacement.length() - 1)))
+          ? replacement.charAt(replacement.length() - 1) - '0' : 1;
       int pos = 0;
       do {
         for (int i = pos; i < m.start(); i++)
@@ -265,13 +272,14 @@ public class NumberParser {
 
     /* applies the pattern-replacement 
      *  Note: If you fix something in this version, please try to apply the same fix at the non-tracking function */
+    @Override
     public void apply(StringBuilder s, StringBuilder result, PositionTracker posTracker) {
       Integer difference = 0;
       result.setLength(0);
       Matcher m = pattern.matcher(s);
       if (!m.find()) return;
-      int pow = (replacement != null && Character.isDigit(replacement.charAt(replacement.length() - 1))) ? replacement
-          .charAt(replacement.length() - 1) - '0' : 1;
+      int pow = (replacement != null && Character.isDigit(replacement.charAt(replacement.length() - 1)))
+          ? replacement.charAt(replacement.length() - 1) - '0' : 1;
       int pos = 0;
       do {
         for (int i = pos; i < m.start(); i++)
@@ -332,7 +340,7 @@ public class NumberParser {
       new FindReplace("(\\d+),(\\d{3}),?(\\d{3})?,?(\\d{3})?,?(\\d{3})?", "$1$2$3$4$5"),
       // 1,00 -> 1.00
       new FindReplace("(\\d),(\\d)", "$1.$2"),
-      
+
       // --------- 2-12 ------------
       new FindReplace(WB + "first" + WB, newNumber("1", "th")),
       new FindReplace(WB + "two" + WB, "2"),
@@ -427,6 +435,7 @@ public class NumberParser {
 
         /* applies the pattern-replacement 
          *  Note: If you fix something in this version, please try to apply the same fix at the position change tracking function below */
+        @Override
         public void apply(StringBuilder s, StringBuilder result) {
           result.setLength(0);
           Matcher m = pattern.matcher(s);
@@ -459,6 +468,7 @@ public class NumberParser {
 
         /* applies the pattern-replacement 
          *  Note: If you fix something in this version, please try to apply the same fix at the non-tracking function */
+        @Override
         public void apply(StringBuilder s, StringBuilder result, PositionTracker posTracker) {
           Integer difference = 0;
           result.setLength(0);
@@ -499,6 +509,7 @@ public class NumberParser {
 
         /* applies the pattern-replacement 
         *  Note: If you fix something in this version, please try to apply the same fix at the non-tracking function */
+        @Override
         public void apply(StringBuilder s, StringBuilder result, PositionTracker posTracker) {
           result.setLength(0);
           Integer difference = 0;
@@ -522,6 +533,7 @@ public class NumberParser {
 
         /* applies the pattern-replacement 
          *  Note: If you fix something in this version, please try to apply the same fix at the position change tracking function above */
+        @Override
         public void apply(StringBuilder s, StringBuilder result) {
           result.setLength(0);
           Matcher m = pattern.matcher(s);
@@ -541,6 +553,7 @@ public class NumberParser {
 
         /* applies the pattern-replacement 
         *  Note: If you fix something in this version, please try to apply the same fix at the non-tracking function */
+        @Override
         public void apply(StringBuilder s, StringBuilder result, PositionTracker posTracker) {
           result.setLength(0);
           Matcher m = pattern.matcher(s);
@@ -566,6 +579,7 @@ public class NumberParser {
 
         /* applies the pattern-replacement 
          *  Note: If you fix something in this version, please try to apply the same fix at the position change tracking function above */
+        @Override
         public void apply(StringBuilder s, StringBuilder result) {
           result.setLength(0);
           Matcher m = pattern.matcher(s);
@@ -588,6 +602,7 @@ public class NumberParser {
 
         /* applies the pattern-replacement 
         *  Note: If you fix something in this version, please try to apply the same fix at the non-tracking function */
+        @Override
         public void apply(StringBuilder s, StringBuilder result, PositionTracker posTracker) {
           result.setLength(0);
           Matcher m = pattern.matcher(s);
@@ -612,6 +627,7 @@ public class NumberParser {
           *  Note: If you fix something in this version, 
           *  please try to apply the same fix at 
           *  the position change tracking function above */
+        @Override
         public void apply(StringBuilder s, StringBuilder result) {
           result.setLength(0);
           Matcher m = pattern.matcher(s);
@@ -632,6 +648,7 @@ public class NumberParser {
 
         /* applies the pattern-replacement 
         *  Note: If you fix something in this version, please try to apply the same fix at the non-tracking function */
+        @Override
         public void apply(StringBuilder s, StringBuilder result) {
           result.setLength(0);
           Matcher m = pattern.matcher(s);
@@ -642,7 +659,7 @@ public class NumberParser {
               result.append(s.charAt(i));
             pos = m.end();
             String rep = newNumber(Integer.parseInt(m.group(1)) * 6350.29 + Integer.parseInt(m.group(2)) * 453.592, "g");
-            result.append(rep);           
+            result.append(rep);
           } while (m.find());
           for (int i = pos; i < s.length(); i++)
             result.append(s.charAt(i));
@@ -652,6 +669,7 @@ public class NumberParser {
 
         /* applies the pattern-replacement 
         *  Note: If you fix something in this version, please try to apply the same fix at the non-tracking function */
+        @Override
         public void apply(StringBuilder s, StringBuilder result, PositionTracker posTracker) {
           result.setLength(0);
           Matcher m = pattern.matcher(s);
@@ -675,6 +693,7 @@ public class NumberParser {
          *  Note: If you fix something in this version, 
          *  please try to apply the same fix at 
          *  the position change tracking function above */
+        @Override
         public void apply(StringBuilder s, StringBuilder result) {
           result.setLength(0);
           Matcher m = pattern.matcher(s);
@@ -786,28 +805,28 @@ public class NumberParser {
       new FindCompute("(degrees? Fahrenheit|degrees? F|Fahrenheit)", "K", 0.55555555555, +459.67),
       new FindCompute("(degrees|degree)", "rad", 0.0174532925, 0)
 
-  // ---------- Hyphens ---------------
-  /*
-   * newFindReplace(FLOAT+H+FLOAT+B+UNIT+"&%([^&]*)&",newNumber("$1","$3")+
-   * "&%$4& to "+newNumber("$2","$3")+"&%$4&"), new
-   * FindReplace(FLOAT+H+FLOAT+B
-   * +UNIT+"&\\*([^&]*)&",newNumber("$1","$3")+"&*$4& to "
-   * +newNumber("$2","$3")+"&*$4&"), new
-   * FindReplace(FLOAT+H+FLOAT,newNumber("$1")+" to "+newNumber("$2"))
-   */
+      // ---------- Hyphens ---------------
+      /*
+       * newFindReplace(FLOAT+H+FLOAT+B+UNIT+"&%([^&]*)&",newNumber("$1","$3")+
+       * "&%$4& to "+newNumber("$2","$3")+"&%$4&"), new
+       * FindReplace(FLOAT+H+FLOAT+B
+       * +UNIT+"&\\*([^&]*)&",newNumber("$1","$3")+"&*$4& to "
+       * +newNumber("$2","$3")+"&*$4&"), new
+       * FindReplace(FLOAT+H+FLOAT,newNumber("$1")+" to "+newNumber("$2"))
+       */
 
-  // --------- Speed ----------
-  /*
-   * new
-   * FindReplace(MNUMBER+" &%([^&]*)&"+B+"(per|/)"+B+"(hour|h)"+FB,newNumber
-   * ("$1","ms")+"&*3600&&%$2&$5"), new
-   * FindReplace(MNUMBER+" &\\*([^&]*)&"+B+"(per|/)"
-   * +B+"(hour|h)"+FB,newNumber("$1","ms")+"&*3600&&*$2&$5"), new
-   * FindReplace(MNUMBER
-   * +B+"(per|/)"+B+"(hour|h)"+FB,newNumber("$1","ms")+"$4"), new
-   * FindReplace(MNUMBER
-   * +B+"(per|/)"+B+"(second|s)"+FB,newNumber("$1","ms")+"$4"),
-   */
+      // --------- Speed ----------
+      /*
+       * new
+       * FindReplace(MNUMBER+" &%([^&]*)&"+B+"(per|/)"+B+"(hour|h)"+FB,newNumber
+       * ("$1","ms")+"&*3600&&%$2&$5"), new
+       * FindReplace(MNUMBER+" &\\*([^&]*)&"+B+"(per|/)"
+       * +B+"(hour|h)"+FB,newNumber("$1","ms")+"&*3600&&*$2&$5"), new
+       * FindReplace(MNUMBER
+       * +B+"(per|/)"+B+"(hour|h)"+FB,newNumber("$1","ms")+"$4"), new
+       * FindReplace(MNUMBER
+       * +B+"(per|/)"+B+"(second|s)"+FB,newNumber("$1","ms")+"$4"),
+       */
 
   };
 
@@ -856,7 +875,7 @@ public class NumberParser {
    * else null
    */
   public static String getNumber(CharSequence d) {
-    if(d==null) return(null);
+    if (d == null) return (null);
     Matcher m = NUMBERPATTERN.matcher(d);
     if (m.find()) return (m.group(1));
     return (null);
@@ -917,18 +936,18 @@ public class NumberParser {
   /** Calls Integer.parseInt, returns an Integer or NULL*/
   public static Integer parseInt(String d) {
     try {
-      return(Integer.parseInt(d));
-    } catch(Exception e) {
-      return(null);
+      return (Integer.parseInt(d));
+    } catch (Exception e) {
+      return (null);
     }
   }
 
   /** Calls Double.parseDouble, returns an Integer or NULL*/
   public static Double parseDouble(String d) {
     try {
-      return(Double.parseDouble(d));
-    } catch(Exception e) {
-      return(null);
+      return (Double.parseDouble(d));
+    } catch (Exception e) {
+      return (null);
     }
   }
 

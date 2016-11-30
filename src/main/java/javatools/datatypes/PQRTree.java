@@ -12,14 +12,20 @@ import javatools.administrative.CallStack;
 import javatools.administrative.D;
 
 /** 
-This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
-It is licensed under the Creative Commons Attribution License 
-(see http://creativecommons.org/licenses/by/3.0) by 
-the YAGO-NAGA team (see http://mpii.de/yago-naga).
-  
+Copyright 2016 Fabian M. Suchanek
 
-  
- 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. 
+
 
   This class implements the datastructure of PQR trees<BR>
  */
@@ -267,7 +273,7 @@ public class PQRTree<E> implements Iterable<E> {
 
     /** Debugging method*/
     public void debug(Object... args) {
-      if(true) return;
+      if (true) return;
       CallStack c = new CallStack();
       c.ret();
       D.p();
@@ -309,11 +315,11 @@ public class PQRTree<E> implements Iterable<E> {
       } else if (whiteFather.numChildren() == 1) {
         makeGrandchildChild(whiteFather, 0, numChildren() - 1);
         this.dropChild(numChildren() - 1);
-      }      
+      }
     }
 
     /** Prepares the LCA, updates the position of a given child*/
-    public void prepareLCA(int[] childPos) {     
+    public void prepareLCA(int[] childPos) {
       int numBlack = 0;
       for (Node child : children) {
         if (child.isBlack()) numBlack++;
@@ -328,12 +334,12 @@ public class PQRTree<E> implements Iterable<E> {
           if (i < childPos[0]) childPos[0]--;
           makeChildGrandchild(i--, blackFather);
         }
-      }      
+      }
     }
 
     /** Merges the child into the LCA, if the LCA is a Q node or an R node*/
     public void mergeIntoLCA(int childPos) {
-      Node father = child(childPos);      
+      Node father = child(childPos);
       debug();
       for (int j = father.numChildren() - 1; j >= 0; j--) {
         makeGrandchildChild(father, j, childPos + 1);
@@ -346,7 +352,7 @@ public class PQRTree<E> implements Iterable<E> {
       if (firstChild().color().ordinal() < lastChild().color().ordinal()) {
         debug();
         Collections.reverse(children);
-      }      
+      }
     }
 
     /** Reverses the current node (must be LCA of type Q) if this is necessary*/
@@ -356,7 +362,7 @@ public class PQRTree<E> implements Iterable<E> {
       if (childPos[0] == 0) {
         if (!child(1).isWhite()) {
           Collections.reverse(children);
-          childPos[0] = numChildren() - 1;          
+          childPos[0] = numChildren() - 1;
         }
         return;
       }
@@ -370,7 +376,7 @@ public class PQRTree<E> implements Iterable<E> {
       if (child(childPos[0] - 1).color().ordinal() < child(childPos[0] + 1).color().ordinal()) {
         Collections.reverse(children);
         childPos[0] = numChildren() - 1 - childPos[0];
-      }      
+      }
     }
 
     /** MOves children away from the current node, returns new LCA */
@@ -397,7 +403,7 @@ public class PQRTree<E> implements Iterable<E> {
         this.numBlackLeaves = grayChild.numBlackLeaves;
         this.type = grayChild.type;
         grayChild.parent = null; // This kills the Gray child
-        return(this);
+        return (this);
       }
       return (grayChild); // Gray child becomes new LCA
     }
@@ -423,9 +429,9 @@ public class PQRTree<E> implements Iterable<E> {
         s.append(' ');
       s.append(value).append(": ").append(color()).append('\n');
     }
-    
+
     public E getValue() {
-      return(value);
+      return (value);
     }
   }
 
@@ -455,7 +461,7 @@ public class PQRTree<E> implements Iterable<E> {
 
   /** Adds a constraint. FALSE if an R node was introduced*/
   public boolean addConstraint(Collection<E> elements) {
-    if(elements.size()==0) return(true);
+    if (elements.size() == 0) return (true);
     currentConstraintSetId++;
     Node lca = null;
     // Color the tree
@@ -478,7 +484,7 @@ public class PQRTree<E> implements Iterable<E> {
         lca.prepareLCA(greyChildPosp);
         greyChild = lca.child(greyChildPosp[0]);
         if (greyChild.isQ()) greyChild.reverseQNode();
-        lca=lca.moveChildrenAway(greyChildPosp[0]);
+        lca = lca.moveChildrenAway(greyChildPosp[0]);
         continue;
       }
       // QQ & QR
@@ -525,11 +531,12 @@ public class PQRTree<E> implements Iterable<E> {
           if (black == 1) black = 2;
         }
       }
-    }  
+    }
     return (!lca.isR());
   }
 
   /** Iterates over the leaves in the right order*/
+  @Override
   public PeekIterator<E> iterator() {
     return (new PeekIterator<E>() {
 
@@ -537,6 +544,7 @@ public class PQRTree<E> implements Iterable<E> {
 
       SmallStack currentChildren = new SmallStack(-1);
 
+      @Override
       public E internalNext() {
         while (true) {
           if (currentChildren.size() == 0) return (null);

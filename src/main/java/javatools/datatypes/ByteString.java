@@ -6,10 +6,19 @@ import java.util.WeakHashMap;
 import javatools.administrative.D;
 
 /**
- * This class is part of the Java Tools (see
- * http://mpii.de/yago-naga/javatools). It is licensed under the Creative
- * Commons Attribution License (see http://creativecommons.org/licenses/by/3.0)
- * by the YAGO-NAGA team (see http://mpii.de/yago-naga).
+ * Copyright 2016 Fabian M. Suchanek
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
  * 
  * This class represents strings with 1 byte per character. Thus, they use
  * roughly half as much space as ordinary strings -- but they also cannot store
@@ -34,17 +43,17 @@ public class ByteString implements CharSequence {
 
   /** Constructor*/
   public static ByteString of(CharSequence s) {
-    ByteString newOne=new ByteString(s);
+    ByteString newOne = new ByteString(s);
     synchronized (values) {
       ByteString canonic = values.get(newOne);
       if (canonic != null) return (canonic);
-      values.put(newOne,newOne);
-      newOne.isInterned=true;
+      values.put(newOne, newOne);
+      newOne.isInterned = true;
       /* We need this flag, because if we go directly always by ==, then WeakHashMap will not be able to detect if the String is already there...*/
     }
     return (newOne);
   }
-  
+
   /** Use subSequence()*/
   protected ByteString(ByteString s, int start, int end) {
     data = Arrays.copyOfRange(s.data, start, end);
@@ -82,10 +91,10 @@ public class ByteString implements CharSequence {
 
   @Override
   public boolean equals(Object obj) {
-    if(!(obj instanceof ByteString)) return(false);
-    ByteString other=(ByteString) obj;
-    if(this.isInterned && other.isInterned) return(this==other);
-    return(Arrays.equals(other.data, data));
+    if (!(obj instanceof ByteString)) return (false);
+    ByteString other = (ByteString) obj;
+    if (this.isInterned && other.isInterned) return (this == other);
+    return (Arrays.equals(other.data, data));
   }
 
   @Override
@@ -98,6 +107,6 @@ public class ByteString implements CharSequence {
   }
 
   public static void main(String[] args) throws Exception {
-    D.p(new ByteString("Hallo dü!"));
+    D.p(new ByteString("Hallo dï¿½!"));
   }
 }

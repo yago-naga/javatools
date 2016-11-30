@@ -11,19 +11,24 @@ import java.util.List;
 import javatools.administrative.D;
 
 /**
- * 
- * This class is part of the Java Tools (see
- * http://mpii.de/yago-naga/javatools). It is licensed under the Creative
- * Commons Attribution License (see http://creativecommons.org/licenses/by/3.0)
- * by the YAGO-NAGA team (see http://mpii.de/yago-naga).
- *
- * This class implements a HashMap with double values.
- * 
- * @author Fabian M. Suchanek
- * 
- * @param <K>
+Copyright 2016 Fabian M. Suchanek
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. 
+ 
+ This class implements a HashMap with double values.
+ 
  */
-public class DoubleHashMap<K> extends AbstractSet<K>{
+public class DoubleHashMap<K> extends AbstractSet<K> {
 
   /** Holds the keys */
   protected Object[] keys;
@@ -41,8 +46,9 @@ public class DoubleHashMap<K> extends AbstractSet<K>{
 
   /** Creates a DoubleHashMap with these keys set to 1*/
   public DoubleHashMap(K... keys) {
-	  this();
-	  for(K k : keys) add(k);
+    this();
+    for (K k : keys)
+      add(k);
   }
 
   /** Returns an index where to store the object*/
@@ -93,13 +99,13 @@ public class DoubleHashMap<K> extends AbstractSet<K>{
       if (size > keys.length * 3 / 4) rehash();
       return (true);
     }
-    values[pos]+=delta;
+    values[pos] += delta;
     return (false);
   }
-  
+
   /** Increases a value, true for  'added new key with value 1', false for 'increased existing value' */
   public boolean increase(K key) {
-    return(add(key,1.0));
+    return (add(key, 1.0));
   }
 
   /** Returns keys. Can be used only once. */
@@ -166,7 +172,7 @@ public class DoubleHashMap<K> extends AbstractSet<K>{
   /** Test*/
   public static void main(String[] args) throws Exception {
     DoubleHashMap<String> m = new DoubleHashMap<String>();
-    for (double i = 1; i <3000; i *= 2)
+    for (double i = 1; i < 3000; i *= 2)
       m.put("#" + i, i);
     m.put("#0", 17);
     for (String key : m.keys())
@@ -174,7 +180,7 @@ public class DoubleHashMap<K> extends AbstractSet<K>{
   }
 
   @Override
-  public Iterator<K> iterator() {    
+  public Iterator<K> iterator() {
     return keys().iterator();
   }
 
@@ -182,19 +188,19 @@ public class DoubleHashMap<K> extends AbstractSet<K>{
   public int size() {
     return size;
   }
-  
+
   @Override
   public boolean add(K e) {
-    return(increase(e));
+    return (increase(e));
   };
-  
+
   @Override
   public void clear() {
-    size=0;
+    size = 0;
     keys = new Object[10];
     values = new double[10];
   }
-  
+
   @Override
   public boolean contains(Object o) {
     return containsKey(o);
@@ -202,95 +208,95 @@ public class DoubleHashMap<K> extends AbstractSet<K>{
 
   /** Adds all integer values up*/
   public void add(DoubleHashMap<K> countBindings) {
-    for(K key : countBindings.keys()) {
-      add(key,countBindings.get(key));
+    for (K key : countBindings.keys()) {
+      add(key, countBindings.get(key));
     }
   }
 
   /** increases the counters*/
   public void add(Collection<K> set) {
-    for(K k : set) add(k);    
+    for (K k : set)
+      add(k);
   }
-    
+
   @Override
-  public String toString() {   
-    if(isEmpty()) return("{}");
-    StringBuilder b=new StringBuilder("{");
-    int counter=20;
-    for(K key : keys()) {
-      if(counter--==0) {
+  public String toString() {
+    if (isEmpty()) return ("{}");
+    StringBuilder b = new StringBuilder("{");
+    int counter = 20;
+    for (K key : keys()) {
+      if (counter-- == 0) {
         b.append("..., ");
         break;
       }
       b.append(key).append('=').append(get(key)).append(", ");
     }
-    b.setLength(b.length()-2);
-    return(b.append("}").toString());
+    b.setLength(b.length() - 2);
+    return (b.append("}").toString());
   }
-  
+
   /** returns the keys in increasing order*/
   public List<K> increasingKeys() {
-    List<K> result=keys().asList();    
-    Collections.sort(result, new Comparator<K>(){
+    List<K> result = keys().asList();
+    Collections.sort(result, new Comparator<K>() {
 
       @Override
       public int compare(K o1, K o2) {
-        double i1=get(o1);
-        double i2=get(o2);
-        return(i1<i2?-1:i1>i2?1:0);
-      }});
-    return(result);
+        double i1 = get(o1);
+        double i2 = get(o2);
+        return (i1 < i2 ? -1 : i1 > i2 ? 1 : 0);
+      }
+    });
+    return (result);
   }
-  
+
   /** returns the keys in decreasing order*/
   public List<K> decreasingKeys() {
-    List<K> result=keys().asList();    
-    Collections.sort(result, new Comparator<K>(){
+    List<K> result = keys().asList();
+    Collections.sort(result, new Comparator<K>() {
 
       @Override
       public int compare(K o1, K o2) {
-        double i1=get(o1);
-        double i2=get(o2);
-        return(i1<i2?1:i1>i2?-1:0);
-      }});
-    return(result);
+        double i1 = get(o1);
+        double i2 = get(o2);
+        return (i1 < i2 ? 1 : i1 > i2 ? -1 : 0);
+      }
+    });
+    return (result);
   }
 
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof IntHashMap<?>))
-			return (false);
-		IntHashMap<?> other = (IntHashMap<?>) o;
-		if (other.size() != this.size())
-			return (false);
-		for(int i=0;i<keys.length;i++) {
-			if(keys[i]!=null && values[i]!=other.get(keys[i])) return(false);
-		}
-		return(true);
-	}
-	
-	@Override
-	public int hashCode() {
-		return Arrays.hashCode(values);
-	}
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof IntHashMap<?>)) return (false);
+    IntHashMap<?> other = (IntHashMap<?>) o;
+    if (other.size() != this.size()) return (false);
+    for (int i = 0; i < keys.length; i++) {
+      if (keys[i] != null && values[i] != other.get(keys[i])) return (false);
+    }
+    return (true);
+  }
 
-	/** Finds the maximum value*/
-	public double findMax() {
-		double max = Double.NEGATIVE_INFINITY;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i] != null && values[i] > max)
-				max = values[i];
-		}
-		return (max);
-	}
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode(values);
+  }
 
-	/** Computes the sum*/
-	public double computeSum() {
-		double sum=0;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i] != null) sum+=values[i];
-		}
-		return (sum);
-	}
+  /** Finds the maximum value*/
+  public double findMax() {
+    double max = Double.NEGATIVE_INFINITY;
+    for (int i = 0; i < keys.length; i++) {
+      if (keys[i] != null && values[i] > max) max = values[i];
+    }
+    return (max);
+  }
+
+  /** Computes the sum*/
+  public double computeSum() {
+    double sum = 0;
+    for (int i = 0; i < keys.length; i++) {
+      if (keys[i] != null) sum += values[i];
+    }
+    return (sum);
+  }
 
 }

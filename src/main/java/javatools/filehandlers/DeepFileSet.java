@@ -11,13 +11,20 @@ import javatools.administrative.D;
 import javatools.datatypes.PeekIterator;
 
 /** 
-This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
-It is licensed under the Creative Commons Attribution License 
-(see http://creativecommons.org/licenses/by/3.0) by 
-the YAGO-NAGA team (see http://mpii.de/yago-naga).
-  
+Copyright 2016 Fabian M. Suchanek
 
-  
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. 
+
  
 
  This class represents a set of files as given by a wildcard string.
@@ -45,13 +52,12 @@ public class DeepFileSet extends PeekIterator<File> {
   protected Iterator<File> currentIterator;
 
   public Pattern patternForWildcard(String wildcard) {
-    return (Pattern.compile("(?i)" + wildcard.replace(".", "\\.").replace("*",".*").replace('?', '.')));
+    return (Pattern.compile("(?i)" + wildcard.replace(".", "\\.").replace("*", ".*").replace('?', '.')));
   }
 
   /** Constructs a DeepFileSet from a path that ends in a wildcard*/
   public DeepFileSet(File folderPlusWildcard) {
-    this(folderPlusWildcard.getParentFile()==null?
-        new File("."):folderPlusWildcard.getParentFile(),folderPlusWildcard.getName());
+    this(folderPlusWildcard.getParentFile() == null ? new File(".") : folderPlusWildcard.getParentFile(), folderPlusWildcard.getName());
   }
 
   /** Constructs a DeepFileSet from a path that ends in a wildcard*/
@@ -73,6 +79,7 @@ public class DeepFileSet extends PeekIterator<File> {
     File folder = paths.pop();
     currentIterator = Arrays.asList(folder.listFiles(new FileFilter() {
 
+      @Override
       public boolean accept(File pathname) {
         if (pathname.isDirectory()) paths.push(pathname);
         return (wildcard.matcher(pathname.getName()).matches());
@@ -90,6 +97,7 @@ public class DeepFileSet extends PeekIterator<File> {
   }
 
   /** Returns the current state of this DeepFileSet */
+  @Override
   public String toString() {
     return ("DeepFileSet at " + paths);
   }
