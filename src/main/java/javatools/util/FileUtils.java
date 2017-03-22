@@ -13,10 +13,11 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.zip.GZIPInputStream;
 
 import javatools.filehandlers.FileLines;
 
-/** 
+/**
 Copyright 2016 Johannes Hoffart
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,7 +30,7 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-limitations under the License. 
+limitations under the License.
 
 Some utility methods for files
 */
@@ -37,29 +38,33 @@ public class FileUtils {
 
   /**
    * Creates a BufferedReader for UTF-8-encoded files
-   * 
+   *
    * @param file  File in UTF-8 encoding
    * @return      BufferedReader for file
    * @throws FileNotFoundException
    */
-  public static BufferedReader getBufferedUTF8Reader(File file) throws FileNotFoundException {
-    return new BufferedReader(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8")));
+  public static BufferedReader getBufferedUTF8Reader(File file) throws IOException {
+    InputStream is = new FileInputStream(file);
+    if (file.getName().endsWith(".gz")) {
+      is = new GZIPInputStream(is);
+    }
+    return getBufferedUTF8Reader(is);
   }
 
   /**
    * Creates a BufferedReader for UTF-8-encoded files
-   * 
+   *
    * @param fileName  Path to file in UTF-8 encoding
    * @return      BufferedReader for file
    * @throws FileNotFoundException
    */
-  public static BufferedReader getBufferedUTF8Reader(String fileName) throws FileNotFoundException {
-    return new BufferedReader(new InputStreamReader(new FileInputStream(fileName), Charset.forName("UTF-8")));
+  public static BufferedReader getBufferedUTF8Reader(String fileName) throws IOException {
+    return getBufferedUTF8Reader(new File(fileName));
   }
 
   /**
    * Creates a BufferedReader the UTF-8-encoded InputStream
-   * 
+   *
    * @param inputStream  InputStream in UTF-8 encoding
    * @return      BufferedReader for inputStream
    */
@@ -69,7 +74,7 @@ public class FileUtils {
 
   /**
    * Creates a BufferedWriter for UTF-8-encoded files
-   * 
+   *
    * @param file  File in UTF-8 encoding
    * @return      BufferedWriter for file
    * @throws FileNotFoundException
@@ -80,7 +85,7 @@ public class FileUtils {
 
   /**
    * Creates a BufferedWriter for UTF-8-encoded files
-   * 
+   *
    * @param fileName  Path to file in UTF-8 encoding
    * @return      BufferedWriter for file
    * @throws FileNotFoundException
@@ -92,10 +97,10 @@ public class FileUtils {
   /**
    * Returns the content of the (UTF-8 encoded) file as string. Linebreaks
    * are encoded as unix newlines (\n)
-   * 
+   *
    * @param file  File to get String content from
    * @return      String content of file.
-   * @throws IOException 
+   * @throws IOException
    */
   public static String getFileContent(File file) throws IOException {
     StringBuilder sb = new StringBuilder();
@@ -110,10 +115,10 @@ public class FileUtils {
 
   /**
    * Writes the content of the string to the (UTF-8 encoded) file.
-   * 
+   *
    * @param file  File to write String content to.
    * @return      Content of file.
-   * @throws IOException 
+   * @throws IOException
    */
   public static void writeFileContent(File file, String content) throws IOException {
     BufferedWriter writer = getBufferedUTF8Writer(file);
@@ -123,7 +128,7 @@ public class FileUtils {
 
   /**
    * Verifies that a file is lexicographically order (ascending or descending)
-   * 
+   *
    * @param check         File to check
    * @param descending    true if ordering should be descending, false if it should be ascending
    * @return              true if file is order, false otherwise
@@ -173,9 +178,9 @@ public class FileUtils {
   }
 
   /**
-   * Collects all non-directory files in the given input directory 
+   * Collects all non-directory files in the given input directory
    * (recursively).
-   * 
+   *
    * @param directory Input directory.
    * @return          All non-directory files, recursively.
    */
