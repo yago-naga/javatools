@@ -36,6 +36,9 @@ Some utility methods for files
 */
 public class FileUtils {
 
+  /** Buffer size for the readers */
+  private static final int bufferSize = 16777216; // 16 MiB
+
   /**
    * Creates a BufferedReader for UTF-8-encoded files
    *
@@ -46,7 +49,7 @@ public class FileUtils {
   public static BufferedReader getBufferedUTF8Reader(File file) throws IOException {
     InputStream is = new FileInputStream(file);
     if (file.getName().endsWith(".gz")) {
-      is = new GZIPInputStream(is);
+      is = new GZIPInputStream(is, bufferSize);
     }
     return getBufferedUTF8Reader(is);
   }
@@ -69,7 +72,7 @@ public class FileUtils {
    * @return      BufferedReader for inputStream
    */
   public static BufferedReader getBufferedUTF8Reader(InputStream inputStream) {
-    return new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
+    return new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")), bufferSize);
   }
 
   /**
@@ -80,7 +83,7 @@ public class FileUtils {
    * @throws FileNotFoundException
    */
   public static BufferedWriter getBufferedUTF8Writer(File file) throws FileNotFoundException {
-    return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")));
+    return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")), bufferSize);
   }
 
   /**
@@ -91,7 +94,7 @@ public class FileUtils {
    * @throws FileNotFoundException
    */
   public static BufferedWriter getBufferedUTF8Writer(String fileName) throws FileNotFoundException {
-    return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), Charset.forName("UTF-8")));
+    return getBufferedUTF8Writer(new File(fileName));
   }
 
   /**
