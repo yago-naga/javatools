@@ -11,7 +11,7 @@ import java.util.Set;
 
 import javatools.administrative.D;
 
-/** 
+/**
 Copyright 2016 Fabian M. Suchanek
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,10 +24,10 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-limitations under the License. 
+limitations under the License.
 
 
-This class provides an Iterator that can look ahead. With the method peek(), you 
+This class provides an Iterator that can look ahead. With the method peek(), you
 can retrieve the next element without advancing the iterator.<BR>
 Example:
 <PRE>
@@ -35,11 +35,11 @@ Example:
     i.peek();
     ---> 1
     i.peek();
-    ---> 1    
+    ---> 1
     i.next();
     ---> 1
     i.peek();
-    ---> 2    
+    ---> 2
 
 </PRE>
 The class is also suited to create an Interator by overriding. The only method that
@@ -55,9 +55,9 @@ Example:
         return(counter++);
       }
     };
-    
+
     for(Integer i : it) D.p(i);
-    
+
     --->
          0
          1
@@ -69,8 +69,8 @@ public abstract class PeekIterator<T> implements Iterator<T>, Iterable<T>, Close
   /** Holds the next element (to be peeked)*/
   public T next = null;
 
-  /** TRUE if next has received its first value */
-  public boolean initialized = false;
+  /** TRUE if variable next contains the next value */
+  public boolean fetchedNextValue = false;
 
   /** TRUE if the iterator has been closed*/
   public boolean closed = false;
@@ -78,7 +78,7 @@ public abstract class PeekIterator<T> implements Iterator<T>, Iterable<T>, Close
   /** TRUE if there are more elements to get with getNext */
   @Override
   public final boolean hasNext() {
-    if (!initialized) next = internalSilentNext();
+    if (!fetchedNextValue) next = internalSilentNext();
     if (next == null && !closed) {
       close();
       closed = true;
@@ -90,7 +90,7 @@ public abstract class PeekIterator<T> implements Iterator<T>, Iterable<T>, Close
   protected final T internalSilentNext() {
     try {
       T next = internalNext();
-      initialized = true;
+      fetchedNextValue = true;
       return (next);
     } catch (Exception e) {
       if (e instanceof RuntimeException) throw (RuntimeException) e;
@@ -106,7 +106,7 @@ public abstract class PeekIterator<T> implements Iterator<T>, Iterable<T>, Close
   public final T next() {
     if (hasNext()) {
       T returnMe = next;
-      next = internalSilentNext();
+      fetchedNextValue = false;
       return (returnMe);
     }
     throw new NoSuchElementException();
@@ -173,7 +173,7 @@ public abstract class PeekIterator<T> implements Iterator<T>, Iterable<T>, Close
 
   @Override
   public String toString() {
-    return "PeekIterator[initialized=" + initialized + ", closed=" + closed + ", next=" + next + "]";
+    return "PeekIterator[initialized=" + fetchedNextValue + ", closed=" + closed + ", next=" + next + "]";
   }
 
   /** A PeekIterator that can iterate over another iterator or over a list of elements*/
@@ -251,7 +251,7 @@ public abstract class PeekIterator<T> implements Iterator<T>, Iterable<T>, Close
 
     {
       closed = true;
-      initialized = true;
+      fetchedNextValue = true;
       next = null;
     }
 
