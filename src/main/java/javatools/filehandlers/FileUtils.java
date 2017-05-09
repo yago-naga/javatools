@@ -1,4 +1,4 @@
-package javatools.util;
+package javatools.filehandlers;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,8 +13,6 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.LinkedList;
-
-import javatools.filehandlers.FileLines;
 
 /** 
 Copyright 2016 Johannes Hoffart

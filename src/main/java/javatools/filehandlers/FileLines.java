@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -95,7 +94,7 @@ public class FileLines extends PeekIterator<String> implements Iterable<String>,
       Announce.progressStart(announceMsg, f.length());
       announceChars = 0;
     }
-    br = new BufferedReader(new FileReader(f));
+    br = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
   }
 
   /** Constructs FileLines from a Reader */

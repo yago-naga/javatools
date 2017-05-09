@@ -1,4 +1,4 @@
-package javatools.util;
+package javatools.datatypes;
 
 /** 
 Copyright 2016 Fabian M. Suchanek

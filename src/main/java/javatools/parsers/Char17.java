@@ -363,6 +363,15 @@ public class Char17 {
     public boolean isLegal(char c);
   }
 
+  /** TRUE for HTML UTF8 characters*/
+  public static final Legal htmlUtf8 = new Legal() {
+
+    @Override
+    public boolean isLegal(char c) {
+      return c >= ' ' && !in(c, "<>&'\"");
+    }
+  };
+
   /** Encodes with backslash all illegal characters */
   public static String encodeBackslash(CharSequence s, Legal legal) {
     StringBuilder b = new StringBuilder((int) (s.length() * 1.5));

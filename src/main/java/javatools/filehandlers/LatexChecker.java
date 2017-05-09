@@ -1,4 +1,4 @@
-package javatools.util;
+package javatools.filehandlers;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,8 +7,6 @@ import java.util.Set;
 
 import javatools.administrative.Announce;
 import javatools.datatypes.FinalSet;
-import javatools.filehandlers.FileLines;
-import javatools.filehandlers.FileSet;
 
 /** 
 Copyright 2016 Fabian M. Suchanek
