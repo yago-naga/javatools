@@ -41,14 +41,14 @@ Example:
   --> true
   Name.isPerson("Prof. Mickey Mouse");
   --> true
-  Name.of("Prof. Dr. Fabian the Great III of Saarbruecken").describe()
+  Name.of("Prof. Dr. Elvis the Great III of Saarbruecken").describe()
   // equivalent to new PersonName(...) in this case
   -->
   PersonName
-    Original: Prof. Dr. Fabian the Great III of Saarbruecken
+    Original: Prof. Dr. Elvis the Great III of Saarbruecken
     Titles: Prof. Dr.
-    Given Name: Fabian
-    Given Names: Fabian
+    Given Name: Elvis
+    Given Names: Elvis
     Family Name Prefix: null
     Attribute Prefix: the
     Family Name: null
@@ -56,7 +56,7 @@ Example:
     Family Name Suffix: null
     Roman: III
     City: Saarbruecken
-    Normalized: Fabian_Great
+    Normalized: Elvis_Great
 </PRE>
 */
 
@@ -69,7 +69,7 @@ public class Name {
   //                 Punctation
   // -----------------------------------------------------------------------------------
 
-  /** Contains romam digits */
+  /** Contains Roman digits */
   public static String roman = "\\b(?:[XIV]++)\\b";
 
   /** Contains "of" */
@@ -187,7 +187,7 @@ public class Name {
 
   /** Contains common titles (like "Mr.") */
   public static final String title = "\\b(?:" + "[aA]dmiral\\b|" + "[aA]mbassador\\b|" + "[bB]ishop\\b|" + "[bB]brother\\b|" + "[cC]aptain\\b|" +
-      //"cardinal\\b|"+ // Problems with "Cardinal Health"
+  //"cardinal\\b|"+ // Problems with "Cardinal Health"
       "[cC]hancellor\\b|" + "[cC]ol\\.|" + "[cC]olonel\\b|" + "[cC]ommander\\b|" + "[cC]ongressman\\b|" + "[cC]ongresswoman\\b|" + "[dD]rs?\\.?|"
       + "[fF]ather\\b|" +
       //"general\\b|"+  // too many problems with this one (cf. "general motors")
@@ -441,20 +441,20 @@ public class Name {
 
   /** The pattern for strings that are person names with high probability*/
   public static final String safePersonName =
-  // Mr. Bob Carl Miller
-  title + B + givenNames + B + opt(familyNamePrefix + B) + familyName + opt(BC + familyNameSuffix) + or +
+      // Mr. Bob Carl Miller
+      title + B + givenNames + B + opt(familyNamePrefix + B) + familyName + opt(BC + familyNameSuffix) + or +
       // Mr. Miller 
-      title + B + opt(familyNamePrefix + B) + familyName + opt(BC + familyNameSuffix) + or +
-      // Bob XI
-      givenName + B + roman + or +
-      // Bob Miller Jr.
-      givenNames + B + opt(familyNamePrefix + B) + familyName + BC + familyNameSuffix + or +
-      // Miller Jr.
-      opt(familyNamePrefix + B) + familyName + BC + familyNameSuffix + or +
-      // George W. Bush
-      givenName + B + U + "\\." + B + opt(familyNamePrefix + B) + familyName + opt(BC + familyNameSuffix) + or +
-      // George H. W. Bush
-      givenName + B + U + "\\." + B + U + "\\." + B + opt(familyNamePrefix + B) + familyName + opt(BC + familyNameSuffix);;
+          title + B + opt(familyNamePrefix + B) + familyName + opt(BC + familyNameSuffix) + or +
+          // Bob XI
+          givenName + B + roman + or +
+          // Bob Miller Jr.
+          givenNames + B + opt(familyNamePrefix + B) + familyName + BC + familyNameSuffix + or +
+          // Miller Jr.
+          opt(familyNamePrefix + B) + familyName + BC + familyNameSuffix + or +
+          // George W. Bush
+          givenName + B + U + "\\." + B + opt(familyNamePrefix + B) + familyName + opt(BC + familyNameSuffix) + or +
+          // George H. W. Bush
+          givenName + B + U + "\\." + B + U + "\\." + B + opt(familyNamePrefix + B) + familyName + opt(BC + familyNameSuffix);;
 
   public static final Pattern safePersonNamePattern = Pattern.compile(safePersonName);
 
@@ -1262,7 +1262,7 @@ public class Name {
 
   /** Test routine */
   public static void main(String[] argv) throws Exception {
-    for (String s : new FileLines("./testdata/NameParserTest.txt")) {
+    for (String s : new FileLines("./src/test/resources/testdata/NameParserTest.txt")) {
       D.p(Name.of(s).describe());
     }
   }

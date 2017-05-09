@@ -143,7 +143,7 @@ public class CSVFile implements Closeable {
 
   /** Test method*/
   public static void main(String[] args) throws Exception {
-    CSVFile out = new CSVFile("c:/fabian/temp/t.csv", "blah", "blub");
+    CSVFile out = new CSVFile("t.csv", "blah", "blub");
     out.write(1, 2, " blah ", "\"blub\"");
     out.close();
   }
