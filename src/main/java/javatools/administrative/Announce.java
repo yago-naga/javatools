@@ -50,7 +50,7 @@ import javatools.parsers.NumberFormatter;
  *  Announce.done();
  *  Announce.done();
  *  Announce.done(); // This is one too much, but it works nevertheless
- *  -->
+ *  --&gt;
  *  Testing 1...
  *  Testing 2...
  *  Now testing 3
@@ -147,7 +147,7 @@ public class Announce {
   /**
    * Starts a named timer
    * 
-   * @note The numerical identifier for the timer has to be a number generated
+   * Note: The numerical identifier for the timer has to be a number generated
    *       by calling initTimer beforehand
    */
   public static void startTimer(int number) {
@@ -505,7 +505,7 @@ public class Announce {
 
   /**
    * Writes s, prepares to make progress up to max (takes only effect iff
-   * current Announce level >= the given lvl)
+   * current Announce level &gt;= the given lvl)
    */
   public static void progressStart(String s, double max, Level lvl) {
     progressStart(s, null, max, lvl);
@@ -522,7 +522,7 @@ public class Announce {
   /**
    * Writes s, prepares to make progress up to max remembers id as name for
    * progress counter (and prints it if necessary) (takes only effect iff
-   * current Announce level >= the given lvl)
+   * current Announce level &gt;= the given lvl)
    */
   public static synchronized void progressStart(String s, String id, double max, Level lvl) {
     if (D.smaller(level, lvl)) return;
@@ -552,7 +552,7 @@ public class Announce {
   /**
    * Notes that the progress is at d, prints dots if necessary, calculates and
    * displays the estimated time after 60sec of the progress then again after
-   * every 30min (takes only effect iff current Announce level >= the given
+   * every 30min (takes only effect iff current Announce level &gt;= the given
    * lvl)
    */
   public static void progressAt(double d, Level lvl) {
@@ -594,7 +594,7 @@ public class Announce {
 
   /**
    * One progress step (use alternatively to progressAt) (takes only effect
-   * iff current Announce level >= the given lvl)
+   * iff current Announce level &gt;= the given lvl)
    */
   public static void progressStep(Level lvl) {
     if (D.smaller(level, lvl)) return;
@@ -608,7 +608,7 @@ public class Announce {
 
   /**
    * Fills missing dots and writes "done NEWLINE" (takes only effect iff
-   * current Announce level >= the given lvl)
+   * current Announce level &gt;= the given lvl)
    */
   public static void progressDone(Level lvl) {
     if (D.smaller(level, lvl)) return;

@@ -33,13 +33,13 @@ Example:
 <PRE>
     PeekIterator i=new SimplePeekIterator(1,2,3,4);
     i.peek();
-    ---> 1
+    ---&gt; 1
     i.peek();
-    ---> 1
+    ---&gt; 1
     i.next();
-    ---> 1
+    ---&gt; 1
     i.peek();
-    ---> 2
+    ---&gt; 2
 
 </PRE>
 The class is also suited to create an Interator by overriding. The only method that
@@ -58,7 +58,7 @@ Example:
 
     for(Integer i : it) D.p(i);
 
-    --->
+    ---&gt;
          0
          1
          2

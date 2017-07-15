@@ -27,15 +27,15 @@ limitations under the License.
 The class OracleDatabase implements the Database-interface for an
 Oracle SQL data base. Make sure that the file "classes12.jar" of the
 Oracle distribution is in the classpath. When using Eclipse, add
-the file via Project ->Properties ->JavaBuildPath ->Libraries
-->ExternalJARFile.<BR>
+the file via Project -&gt;Properties -&gt;JavaBuildPath -&gt;Libraries
+-&gt;ExternalJARFile.<BR>
 Example:
 <PRE>
      Database d=new OracleDatabase("user","password");
      d.queryColumn("SELECT foodname FROM food WHERE origin=\"Italy\"")
-     -> [ "Pizza Romana", "Spaghetti alla Bolognese", "Saltimbocca"]
+     -&gt; [ "Pizza Romana", "Spaghetti alla Bolognese", "Saltimbocca"]
      Database.describe(d.query("SELECT * FROM food WHERE origin=\"Italy\"")
-     -> foodname |origin  |calories |
+     -&gt; foodname |origin  |calories |
         ------------------------------
         Pizza Rom|Italy   |10000    |
         Spaghetti|Italy   |8000     |

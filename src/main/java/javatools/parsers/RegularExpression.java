@@ -36,16 +36,16 @@ limitations under the License.
    Example:
    <PRE>
          D.p(RegularExpression.compile("a|(b c+)+").describe());
-         -->
-            1(a) -> []             // From a, we're done
-            2(b) -> [3(c)]         // From b, go to c
-            3(c) -> [3(c), 2(b)]   // From c, go either to c or to b
+         --&gt;
+            1(a) -&gt; []             // From a, we're done
+            2(b) -&gt; [3(c)]         // From b, go to c
+            3(c) -&gt; [3(c), 2(b)]   // From c, go either to c or to b
             Valid exits: 1(a), 3(c),  
          D.p(RegularExpression.compile("a|(b c+)+").inverse().describe());            
-         -->
-            4(a) -> []
-            6(c) -> [5(b), 6(c)]
-            5(b) -> [6(c)]    
+         --&gt;
+            4(a) -&gt; []
+            6(c) -&gt; [5(b), 6(c)]
+            5(b) -&gt; [6(c)]    
             Valid exits: 4(a), 5(b),       
    </PRE>
 */

@@ -43,9 +43,9 @@ Example:
   Database database=new OracleDatabase("scott","tiger");
   DBWordNet wordnet = new DBWordNet(database);
   System.out.println(wordnet.synsetsFor("house"));
-  --->     103413667, 103413668, 103413669 (or similar)
+  ---&gt;     103413667, 103413668, 103413669 (or similar)
   System.out.println(wordnet.glossFor(103413667));  
-  --->     a dwelling that serves as living quarters for one or more families
+  ---&gt;     a dwelling that serves as living quarters for one or more families
 </PRE>
  */
 public class DBWordNet {

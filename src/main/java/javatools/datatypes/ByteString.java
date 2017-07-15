@@ -41,7 +41,7 @@ public class ByteString implements CharSequence {
   /** is interned */
   public boolean isInterned = false;
 
-  /** Constructor*/
+  /* Constructor*/
   public static ByteString of(CharSequence s) {
     ByteString newOne = new ByteString(s);
     synchronized (values) {

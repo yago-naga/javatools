@@ -147,7 +147,7 @@ public class BitVector extends AbstractSet<Integer> {
     };
   }
 
-  /**  Test */
+  /* Test */
   public static void main(String[] args) {
     BitVector v = new BitVector();
     v.add(1);

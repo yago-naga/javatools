@@ -25,7 +25,7 @@ Example:
       // Compiletime error, because Scanner is an Iterator but not Iterable
    }
 
-   for(String s : new IterableForIterator&lt;String>(new Scanner("Scan this string"))) {
+   for(String s : new IterableForIterator&lt;String&gt;(new Scanner("Scan this string"))) {
      // works fine
    }
 

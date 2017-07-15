@@ -111,8 +111,7 @@ public class DummyDatabase extends Database {
     description = "Dummy database with schema " + columnNames + " and " + numRows + " rows";
   }
 
-  /** Creates a dummy database with values from a TSV file 
-   * @throws IOException */
+  /** Creates a dummy database with values from a TSV file */
   public DummyDatabase(List<String> columnNames, File values) throws SQLException {
     for (String columnName : columnNames) {
       this.columnNames.add(columnName.toLowerCase());

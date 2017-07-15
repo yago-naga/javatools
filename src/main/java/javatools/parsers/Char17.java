@@ -244,7 +244,7 @@ public class Char17 {
   }
 
   /**
-   * Decodes an HTML ampersand code such as "& amp", returns -1 in case of
+   * Decodes an HTML ampersand code such as "&amp;amp", returns -1 in case of
    * failure
    */
   public static int decodeAmpersandChar(String b) {
@@ -310,7 +310,7 @@ public class Char17 {
   /**
    * Tells from the first UTF-8 code character how long the code is. Returns
    * -1 if the character is not an UTF-8 code start. Returns 1 if the
-   * character is ASCII<128
+   * character is ASCII&lt;128
    */
   public static int Utf8Length(char c) {
     // 0xxx xxxx

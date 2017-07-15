@@ -26,7 +26,7 @@ limitations under the License.
 This class iterates over the lines in a TSV file.<BR>
 Example:
 <PRE>
-for(List&lt;String> line : new TSVFile("blah.tsv")) {
+for(List&lt;String&gt; line : new TSVFile("blah.tsv")) {
   System.out.println(line);
 }
 </PRE>

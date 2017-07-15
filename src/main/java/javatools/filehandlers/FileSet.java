@@ -28,7 +28,7 @@ limitations under the License.
    <PRE>
          for(File f : new FileSet("c:\\myfiles\\*.jAvA"))
                  System.out.println(f);
-         -->
+         --&gt;
              c:\myfiles\FileSet.java
              c:\myfiles\HTMLReader.java
              ...

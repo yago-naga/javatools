@@ -33,13 +33,13 @@ Example:
     Reader r=new InputStreamReader(new ByteArrayInputStream(new byte[]{(byte)144}));
     System.out.println(r.read());
     r.close();
-     -----> 65533
+     -----&gt; 65533
      
     // But it does like this
     r=new SimpleInputStreamReader(new ByteArrayInputStream(new byte[]{(byte)144}));
     System.out.println(r.read());
     r.close();
-     -----> 144
+     -----&gt; 144
      
 </PRE>
 */

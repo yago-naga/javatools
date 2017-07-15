@@ -27,7 +27,7 @@ modifiers and its head.<BR>
 Example:
 <PRE>
      System.out.println(new NounGroup("the United States of America").description());
-     ->
+     -&gt;
       NounGroup:
         Original: the_United_States_of_America
         Determiner: the

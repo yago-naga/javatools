@@ -36,8 +36,8 @@ Example:<BR>
        m1(); 
      }
    }
-   -->
-      Blah.main(12)->Blah.m1(8)->Blah.m2(2)  // Call Stack at (1)
+   --&gt;
+      Blah.main(12)-&gt;Blah.m1(8)-&gt;Blah.m2(2)  // Call Stack at (1)
       Blah.m2(3)                             // Method and line number at (2)
 </PRE>
 */
@@ -70,7 +70,7 @@ public class CallStack {
     return (cln + "." + e.getMethodName() + '(' + e.getLineNumber() + ')');
   }
 
-  /** Returns "method(line)->method(line)->..." */
+  /** Returns "method(line)-&gt;method(line)-&gt;..." */
   @Override
   public String toString() {
     StringBuilder s = new StringBuilder();

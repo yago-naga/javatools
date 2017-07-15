@@ -243,8 +243,7 @@ public class NonsharedParameters implements Cloneable {
   }
 
   /** Returns a URL built from a given parameter's value, but returns a given default value if the parameter is undefined
-   * @throws MalformedURLException 
-   * @throws URISyntaxException */
+   * @throws MalformedURLException */
   public URL getURL(String s, URL defaultValue) throws UndefinedParameterException, MalformedURLException {
     return (isDefined(s) ? new URL(get(s)) : defaultValue);
   }
@@ -663,7 +662,7 @@ public class NonsharedParameters implements Cloneable {
    * @param field  the attribute against which to match the parameters
    * @return  an object representing the value of a parameter that matches the given attribute
    *          iff there is a match, otherwise null
-   *  @Note	this will become protected, please use the initiateClassAttributes method (if it does not work for you, let me(Steffen) know
+   *  Note	this will become protected, please use the initiateClassAttributes method (if it does not work for you, let me(Steffen) know
    *  TODO: make protected
    */
   @Deprecated //will become protected, use the initiateClassAttributes method instead
@@ -684,7 +683,7 @@ public class NonsharedParameters implements Cloneable {
   /** 
    * Checks for all full-upper-case class attributes whether there is a matching parameter 
    * and sets its value to the parameter value.  
-   * @param classname  name of the class for which to check
+   * @param className  name of the class for which to check
    * @param	object	object, which needs to be an instance of the given class
    */
   public void initiateClassAttributes(String className, Object object) {
@@ -706,7 +705,6 @@ public class NonsharedParameters implements Cloneable {
   /** 
    * Checks for all full-upper-case class attributes whether there is a matching parameter 
    * and sets its value to the parameter value. Does this also for parameters inherited from super-classes.
-   * @param classname  name of the class for which to check
    * @param	object	object, which needs to be an instance of the given class
    */
   public void initiateAllClassAttributes(Object object) {
@@ -729,7 +727,6 @@ public class NonsharedParameters implements Cloneable {
   /** 
    * Checks for all full-upper-case class attributes whether there is a matching parameter 
    * and sets its value to the parameter value.  
-   * @param classname  name of the class for which to check
    * @param	object	object, which needs to be an instance of the given class
    */
   public void initiateClassAttributes(Object object) {

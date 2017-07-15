@@ -26,7 +26,7 @@ limitations under the License.
   It can also convert an untyped Enumeration to a list.<BR>
   Example:<BR>
   <PRE>
-    for(String s : new IteratorForEnumeration&lt;String>(someUntypedEnumeration)) {
+    for(String s : new IteratorForEnumeration&lt;String&gt;(someUntypedEnumeration)) {
       System.out.println(s);
     }
   </PRE>

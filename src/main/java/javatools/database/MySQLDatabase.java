@@ -28,14 +28,14 @@ MySQL data base. Make sure that the file
 "mysql-connector-java-<i>version</i>-bin.jar" from the "MySQL Connector/J" 
 (see the <A HREF=http://dev.mysql.com/downloads/ TARGET=_blank>MySQL-website</A>)
 is in the classpath. When using Eclipse, add the file via Project 
-->Properties ->JavaBuildPath ->Libraries ->ExternalJARFile.<BR>
+-&gt;Properties -&gt;JavaBuildPath -&gt;Libraries -&gt;ExternalJARFile.<BR>
 Example:
 <PRE>
      Database d=new MySQLDatabase("user","password","database");     
      d.queryColumn("SELECT foodname FROM food WHERE origin=\"Italy\"")
-     -> [ "Pizza Romana", "Spaghetti alla Bolognese", "Saltimbocca"]
+     -&gt; [ "Pizza Romana", "Spaghetti alla Bolognese", "Saltimbocca"]
      Database.describe(d.query("SELECT * FROM food WHERE origin=\"Italy\"")
-     -> foodname |origin  |calories |
+     -&gt; foodname |origin  |calories |
         ------------------------------
         Pizza Rom|Italy   |10000    |
         Spaghetti|Italy   |8000     |

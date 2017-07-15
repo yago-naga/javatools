@@ -37,17 +37,17 @@ Example:
 <PRE>
      Database d=new OracleDatabase("user","password");     
      d.getSQLType(java.sql.Types.VARCHAR).format("Bobby's")
-     -> 'Bobby"s'
+     -&gt; 'Bobby"s'
      d=new MySQLDatabase("user","password","database");     
      d.getSQLType(java.sql.Types.VARCHAR).format("Bobby's")
-     -> 'Bobby\'s'
+     -&gt; 'Bobby\'s'
 </PRE>
 See <A HREF=http://troels.arvin.dk/db/rdbms/>here</A> for a comparison of database systems.
 This class provides the ANSI implementations with generous conversion capabilities.<BR>
 Example:
 <PRE>
     SQLType.ANSItimestamp.format("13th of May 1980")
-    --> TIMESTAMP '1980-05-13 00:00:00.00'
+    --&gt; TIMESTAMP '1980-05-13 00:00:00.00'
 </PRE>
 
 */

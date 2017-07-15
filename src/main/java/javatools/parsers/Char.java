@@ -61,7 +61,7 @@ limitations under the License.
   <PRE>
      int[] eatLength=new int[1];
      char c=eatPercentage("%2Cblah blah",eatLength);
-     -->  c=','
+     --&gt;  c=','
           eatLength[0]=3  // the code was 3 characters long
   </PRE>
   There is a static integer array Char.eatLength, which you can use for this purpose.
@@ -74,7 +74,7 @@ limitations under the License.
   Example:
   <PRE>
      decode("This String contains some codes: &amp;amp; %2C \ u0041");
-     --> "This String contains some codes: &amp; , A"
+     --&gt; "This String contains some codes: &amp; , A"
   </PRE>
   <P>
   <B>Normalization</B> is done by the method <TT>normalize(int c)</TT>. It converts a Unicode 
@@ -85,13 +85,13 @@ limitations under the License.
   Example:
   <PRE>
     normalize('&auml;');
-    --> "ae"
+    --&gt; "ae"
   </PRE>  
   The method <TT>normalize(String)</TT>  normalizes all characters in a String.<BR>
   Example:
   <PRE>
      normalize("This String contains the umlauts �, � and �");
-     -->  "This String contains the umlauts Ae, Oe and Ue"
+     --&gt;  "This String contains the umlauts Ae, Oe and Ue"
   </PRE>
   If the method cannot find a normalization, it calls defaultNormalizer.apply(char c).
   Decoding and normalizing can be combined by the method decodeAndNormalize(String s).
@@ -103,13 +103,13 @@ limitations under the License.
   Example:
   <PRE>
      encodePercentage('�');
-     -->  "%C4"
+     --&gt;  "%C4"
   </PRE>  
   There are also methods that work on entire Strings<BR>
   Example:
   <PRE>
      encodePercentage("This String contains the umlauts �, � and �");
-     -->  "This String contains the umlauts %C4, %D6 and %DC;"
+     --&gt;  "This String contains the umlauts %C4, %D6 and %DC;"
   </PRE>  
   <P>
   Last, this class provides the character categorization for URIs, as given in
@@ -118,9 +118,9 @@ limitations under the License.
   Example:
   <PRE>
      isReserved(';');
-     -->  true
+     --&gt;  true
      encodeURIPathComponent("a: b")
-     -->  "a:%20b"
+     --&gt;  "a:%20b"
   </PRE>    
  */
 @Deprecated
@@ -807,7 +807,7 @@ public class Char {
 
   /** Tells from the first UTF-8 code character how long the code is.
    * Returns -1 if the character is not an UTF-8 code start.
-   * Returns 1 if the character is ASCII<128*/
+   * Returns 1 if the character is ASCII&lt;128*/
   public static int Utf8Length(char c) {
     // 0xxx xxxx
     if ((c & 0x80) == 0x00) return (1);

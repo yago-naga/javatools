@@ -29,15 +29,15 @@ limitations under the License.
 The class PostgresDatabase implements the Database-interface for a
 PostgreSQL data base. Make sure that the file "postgresql-<I>version</I>.jdbc3.jar" of the 
 Postgres distribution is in the classpath. When using Eclipse, add 
-the file via Project ->Properties ->JavaBuildPath ->Libraries 
-->ExternalJARFile.<BR>
+the file via Project -&gt;Properties -&gt;JavaBuildPath -&gt;Libraries 
+-&gt;ExternalJARFile.<BR>
 Example:
 <PRE>
      Database d=new PostgresDatabase("user","password");     
      d.queryColumn("SELECT foodname FROM food WHERE origin=\"Italy\"")
-     -> [ "Pizza Romana", "Spaghetti alla Bolognese", "Saltimbocca"]
+     -&gt; [ "Pizza Romana", "Spaghetti alla Bolognese", "Saltimbocca"]
      Database.describe(d.query("SELECT * FROM food WHERE origin=\"Italy\"")
-     -> foodname |origin  |calories |
+     -&gt; foodname |origin  |calories |
         ------------------------------
         Pizza Rom|Italy   |10000    |
         Spaghetti|Italy   |8000     |

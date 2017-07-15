@@ -32,18 +32,18 @@ create a Name-object of the appropriate subclass.<BR>
 Example:
 <PRE>
   Name.isName("Mouse");
-  --> true
+  --&gt; true
   Name.isAbbreviation("PMM");
-  --> true  
+  --&gt; true  
   Name.isPerson("Mickey Mouse");
-  --> false
+  --&gt; false
   Name.couldBePerson("Mickey Mouse");
-  --> true
+  --&gt; true
   Name.isPerson("Prof. Mickey Mouse");
-  --> true
+  --&gt; true
   Name.of("Prof. Dr. Elvis the Great III of Saarbruecken").describe()
   // equivalent to new PersonName(...) in this case
-  -->
+  --&gt;
   PersonName
     Original: Prof. Dr. Elvis the Great III of Saarbruecken
     Titles: Prof. Dr.

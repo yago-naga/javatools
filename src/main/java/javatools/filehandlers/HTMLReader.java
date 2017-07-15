@@ -38,11 +38,11 @@ Example:
            else System.out.print(c);
          }
          
-         -->
+         --&gt;
              This is the HTML-file, with resolved ampersand sequences
              and with -2 returned for tags.
    </PRE>
-<P />   
+
 If the file is UTF8-encoded, consider wrapping an UTF8Reader:
    <PRE>
      HTMLReader r=new HTMLReader(new UTF8Reader(new File("index.html")));

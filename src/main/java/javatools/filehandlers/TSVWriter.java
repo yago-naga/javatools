@@ -59,9 +59,9 @@ public class TSVWriter {
 
   /**
    * the main method to write facts as arg1 tab relation tab arg2 
-   * @param arg1
-   * @param relation
-   * @param arg2
+   * @param pattern
+   * @param method
+   * @param factResults
    * @throws IOException
    */
   public void write(String pattern, String method, String[] factResults) throws IOException {

@@ -27,11 +27,11 @@ limitations under the License.
    Example:
    <PRE>
          System.out.println(new NumberFormatter("+##.###").format(3.1119));
-         -->      +03.112
+         --&gt;      +03.112
          System.out.println(NumberFormatter.ISOtime());
-         -->      2006-01-17 T 21:01:00.000
+         --&gt;      2006-01-17 T 21:01:00.000
          System.out.println(NumberFormatter.ISOweekTime());
-         -->      2006-w03-2 T 21:01:00.000
+         --&gt;      2006-w03-2 T 21:01:00.000
    </PRE>
    The pattern for numbers may look like                                   <BR>
    <PRE>

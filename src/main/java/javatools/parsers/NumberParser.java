@@ -41,10 +41,10 @@ import javatools.datatypes.FinalMap;
  * 
  * <PRE>
  * System.out.println(NumberParser.normalize("It was 1.2 inches long"));
- *          --> "It was 0.030479999999999997#meter long"
+ *          --&gt; "It was 0.030479999999999997#meter long"
  *          
  *          System.out.println(toLong("more than ten kB"));
- *          --> 10000.0
+ *          --&gt; 10000.0
  * </PRE>
  */
 

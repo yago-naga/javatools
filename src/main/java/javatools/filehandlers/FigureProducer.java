@@ -56,7 +56,7 @@ limitations under the License.
  <PRE>
  FigureProducer.latexTable(table,"output.tex");
  FigureProducer.figure(table,"output.jpg");
- <PRE>
+ </PRE>
  */
 public class FigureProducer {
 

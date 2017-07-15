@@ -52,24 +52,24 @@ import javatools.filehandlers.FileLines;
  * <PRE>
  * NameML.init();
  * NameML.isName("Mouse");
- *   --> true
+ *   --&gt; true
  *   NameML.isAbbreviation("PMM");
- *   --> true  
+ *   --&gt; true  
  *   NameML.isPersonName("Mickey Mouse",Language.ENGLISH);
- *   --> false
+ *   --&gt; false
  *   NameML.couldBePersonName("Mickey Mouse",Language.ENGLISH);
- *   --> true
+ *   --&gt; true
  *   NameML.isPersonName("Pope Mickey Mouse",Language.ENGLISH);
- *   --> true
+ *   --&gt; true
  *   NameML.isPersonName("Pope Mickey Mouse",Language.SPANISH);
- *   --> false
+ *   --&gt; false
  *   NameML.isPersonName("Pope Mickey Mouse",Language.GERMAN);
- *   --> false    
+ *   --&gt; false    
  *   NameML.isPersonName("Papst Mickey Mouse",Language.GERMAN);
- *   --> true   
+ *   --&gt; true   
  *   NameML.of("Prof. Dr. Fabian the Great III of Saarbruecken").describe()
  *   // equivalent to new PersonName(...) in this case
- *   -->
+ *   --&gt;
  *   PersonName
  *     Original: Prof. Dr. Fabian the Great III of Saarbruecken
  *     Titles: Prof. Dr.
@@ -521,7 +521,7 @@ public class NameML {
    * Read an entire text file as a list of strings. The strings do not include
    * a terminating new line character.
    * 
-   * @param inputFile
+   * @param configFile
    *            text file to open
    * @param encoding
    *            character encoding name (as used by Java) or null for UTF-8
@@ -548,7 +548,7 @@ public class NameML {
   /**
    * Read set from an UTF-8 text file, ignoring lines starting with "##"
    * 
-   * @param inputFile
+   * @param configFile
    * @return set of strings
    */
   public static Set<String> readTextFileLinesSet(String configFile) {

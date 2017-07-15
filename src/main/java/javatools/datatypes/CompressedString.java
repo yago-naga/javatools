@@ -7,7 +7,7 @@ import java.util.TreeSet;
 import javatools.administrative.D;
 import javatools.parsers.Char17;
 
-/** 
+/**
 Copyright 2016 Fabian M. Suchanek
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,19 +30,19 @@ limitations under the License.
   it will be that you can reconstruct the original String and the larger the equivalence class
   will be.
   Example:
-   <PRE>
+   <PRE> 
     System.out.println(new CompressedString("How are you?",7));
     System.out.println(new CompressedString("How are you?",6));
     System.out.println(new CompressedString("How are you?",5));
     System.out.println(new CompressedString("How are you?",4));
     System.out.println(new CompressedString("How are you?",3)); 
-    -->
+    --&gt;
         How are you?
         HOW ARE YOU?
         HOW ARE YOU?
-        HOW@ARE@YOU
-        HOG@ABE@IOEO
-        @GG@ABE@AGEG
+        HOW&#64;ARE&#64;YOU
+        HOG&#64;ABE&#64;IOEO
+        &#64;GG&#64;ABE&#64;AGEG
    </PRE>
    CompressedStrings are useful for large Collections of Strings where only membership
    checks are made. If the Strings are sufficiently different, then a TreeSet can
@@ -53,7 +53,7 @@ limitations under the License.
   */
 public class CompressedString implements CharSequence, Comparable<CompressedString> {
 
-  /** Number of bits per character*/
+  /** Number of bits per character */
   protected byte BITSPERCHAR;
 
   /** The string*/

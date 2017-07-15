@@ -40,11 +40,11 @@ import javatools.datatypes.Triple;
  *
  * <PRE>
  * DateParser.normalize("It was November 23rd to 24th 1998.")
- *          --> "It was 1998-11-23 to 1998-11-24."
+ *          --&gt; "It was 1998-11-23 to 1998-11-24."
  *          DateParser.getDate("It was 1998-11-23 to 1998-11-24.")
- *          -->  1998, 11, 23
+ *          --&gt;  1998, 11, 23
  *          NumberFormatter.ISOtime(DateParser.getCalendar("November 24th 1998"))
- *          --> 1998-12-24 T 00:00:00.00
+ *          --&gt; 1998-12-24 T 00:00:00.00
  * </PRE>
  *
  * TODO 1st century transformed to 0##-##-##. Should be 00##-##-##. Just padding
@@ -1027,7 +1027,7 @@ public class DateParser {
 
   /**
    * Parses the normalized date into ints, putting Integer.MAX_VALUE for '#'.
-   * This looses partial information in the year!! (e.g. 18## -> ####)
+   * This looses partial information in the year!! (e.g. 18## -&gt; ####)
    */
   public static int[] asInts(String[] yearMonthDay) {
     int[] result = new int[3];

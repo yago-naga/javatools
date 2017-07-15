@@ -35,7 +35,7 @@ limitations under the License.
  <PRE>
  for(File f : new DeepFileSet("c:\\myfiles","*.jaVa"))
  System.out.println(f);
- -->
+ --&gt;
  c:\myfiles\FileSet.java
  c:\myfiles\HTMLReader.java
  c:\myfiles\mysubfolder\OtherFile.java

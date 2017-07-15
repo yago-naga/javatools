@@ -16,11 +16,6 @@ import java.util.LinkedList;
 import java.util.zip.GZIPInputStream;
 
 /** 
-=======
-import javatools.filehandlers.FileLines;
-
-/**
->>>>>>> 89c9b59d43bed12e9804a55921af206f188b0603:src/main/java/javatools/util/FileUtils.java
 Copyright 2016 Johannes Hoffart
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -122,8 +117,8 @@ public class FileUtils {
   /**
    * Writes the content of the string to the (UTF-8 encoded) file.
    *
-   * @param file  File to write String content to.
-   * @return      Content of file.
+   * @param file      File to write String content to.
+   * @param content   Content of file.
    * @throws IOException
    */
   public static void writeFileContent(File file, String content) throws IOException {

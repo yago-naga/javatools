@@ -53,7 +53,7 @@ import javatools.filehandlers.UTF8Writer;
  * for(String food : d.query("SELECT foodname FROM food", ResultIterator.StringWrapper)) {
  *   System.out.print(food);
  * } 
- * -> Pizza Spaghetti Saltimbocca
+ * -&gt; Pizza Spaghetti Saltimbocca
  * </PRE>
  *  
  * It is possible to execute multiple INSERT statements by a bulk loader: 
@@ -85,11 +85,11 @@ import javatools.filehandlers.UTF8Writer;
  * 
  * Database d=new OracleDatabase("user","password");
  * d.getSQLType(java.sql.Types.VARCHAR).format("Bobby's") 
- * -> 'Bobby"s' 
+ * -&gt; 'Bobby"s' 
  * 
  * d=new MySQLDatabase("user","password","database");
  * d.getSQLType(java.sql.Types.VARCHAR).format("Bobby's") 
- * -> 'Bobby\'s'
+ * -&gt; 'Bobby\'s'
  * 
  * </PRE>
  * 
@@ -123,7 +123,7 @@ public abstract class Database {
   /** indicates whether automatic reconnection and requerying is attempted 
    *  when a broken connection is discovered after an update (INSERT, UPDATE) query
    *  if this is set to false, a ConnectionBrokenSQLException is thrown instead 
-   *  @Note: In rare cases this may lead to an update query being executed twice,
+   *  Note: In rare cases this may lead to an update query being executed twice,
    *  so treat with care! */
   boolean autoReconnectOnUpdate = false;
 
@@ -345,7 +345,7 @@ public abstract class Database {
   /** indicates whether automatic reconnection and requerying is attempted 
    *  when a broken connection is discovered after an update (INSERT, UPDATE) query
    *  if this is set to false, a ConnectionBrokenSQLException is thrown instead 
-   *  @Note: In rare cases this may lead to an update query being executed twice,
+   *  Note: In rare cases this may lead to an update query being executed twice,
    *  so treat with care! */
   public boolean isAutoReconnectingOnUpdate() {
     return autoReconnectOnUpdate;
@@ -354,7 +354,7 @@ public abstract class Database {
   /** enables/disables whether automatic reconnection and requerying is attempted 
    *  when a broken connection is discovered after an update (INSERT, UPDATE) query
    *  if this is set to false, a ConnectionBrokenSQLException is thrown instead 
-   *  @Note: In rare cases this may lead to an update query being executed twice,
+   *  Note: In rare cases this may lead to an update query being executed twice,
    *  so treat with care! */
   public void setAutoReconnectOnUpdate(boolean autoReconnectOnUpdate) {
     this.autoReconnectOnUpdate = autoReconnectOnUpdate;
@@ -363,7 +363,7 @@ public abstract class Database {
   /** gets the current default fetchsize affecting all queries 
    *  where no specific fetchsize is provided as query argument
    *  The fetchsize determines how many result rows are pulled in from the server at once. 
-   *  @Note: Not all database drivers may implement this properly/in a way supported by this class */
+   *  Note: Not all database drivers may implement this properly/in a way supported by this class */
   public int getFetchsize() {
     return fetchsize;
   }
@@ -371,7 +371,7 @@ public abstract class Database {
   /** sets the default fetchsize affecting all following queries 
    *  where no specific fetchsize is provided as query argument
    *  The fetchsize determines how many result rows are pulled in from the server at once. 
-   *  @Note: Not all database drivers may implement this properly/in a way supported by this class 
+   *  Note: Not all database drivers may implement this properly/in a way supported by this class 
    *  	e.g. for Postgre this has only an effect when using transactions */
   public void setFetchsize(int fetchsize) {
     this.fetchsize = fetchsize;
@@ -386,7 +386,7 @@ public abstract class Database {
 
   /** sets the amount of time a database has to answer to a connection probing 
    *  before the connection is considered broken 
-   *  @Note: the value cannot be smaller than 0 */
+   *  Note: the value cannot be smaller than 0 */
   public void setValidityCheckTimeout(int validityCheckTimeout) {
     if (validityCheckTimeout < 0) validityCheckTimeout = 0;
     this.validityCheckTimeout = validityCheckTimeout;
@@ -660,7 +660,7 @@ public abstract class Database {
 
   /** Please use the version without parameter
    *  @param	flush	deprecated, will be removed 
-   *  @Note The flush parameter is deprecated and will be removed as the transaction end always requires a commit */
+   *  Note: The flush parameter is deprecated and will be removed as the transaction end always requires a commit */
   @Deprecated //TODO: remove after a while
   public void endTransaction(@Deprecated boolean flush) throws TransactionSQLException {
     endTransaction();
@@ -858,7 +858,7 @@ public abstract class Database {
 
   /** checks if a table with the given name exists (or rather whether it can be accessed).
    * @param table  name of the table to be checked 
-   * @note if there is any error with the database connection,
+   * Note: if there is any error with the database connection,
    * the function will also return false. */
   public boolean existsTable(String table) {
     ResultSet rs = null;

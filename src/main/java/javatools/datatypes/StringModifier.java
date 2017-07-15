@@ -34,11 +34,11 @@ limitations under the License.
   String array[]={"cat", "mouse", "cheese"}; 
   String imploded=StringModifier.implode(array," eats ");
   System.out.println(imploded);  
-  -> cat eats mouse eats cheese;
+  -&gt; cat eats mouse eats cheese;
   
   imploded=StringModifier.implode(array,",");
   System.out.println(imploded);
-  -> cat,mouse,cheese;
+  -&gt; cat,mouse,cheese;
   
   This is helpfull for instance to generate a list of values 
   for database insertion; note that there is also a version
@@ -141,8 +141,8 @@ public abstract class StringModifier {
    * and each key-value pair by pair delimeter 
    * while optionally applying the database.format function to each key/value
    * @param map the Map to be imploded
-   * @param keyValueDelimeter delimeter inserted between each key and its value
-   * @param pairDelimeter delimeter inserted between key-value pairs 
+   * @param keyValueDelim delimeter inserted between each key and its value
+   * @param pairDelim delimeter inserted between key-value pairs 
    * @param database  the Database instance for which the pairs shall be formatted 
    * @param formatKey flag indicating whether to format the keys with database.format 
    * @param formatValue flag indicating whether to format the values with database.format */
@@ -160,8 +160,8 @@ public abstract class StringModifier {
    * and each key-value pair by pair delimeter 
    * while optionally applying the database.format function to each key/value
    * @param it  the Map.Entry iterator
-   * @param keyValueDelimeter delimeter inserted between each key and its value
-   * @param pairDelimeter delimeter inserted between key-value pairs 
+   * @param keyValueDelim delimeter inserted between each key and its value
+   * @param pairDelim delimeter inserted between key-value pairs 
    * @param database  the Database instance for which the pairs shall be formatted 
    * @param formatKey flag indicating whether to format the keys with database.format 
    * @param formatValue flag indicating whether to format the values with database.format */
@@ -190,7 +190,7 @@ public abstract class StringModifier {
 
   /** limits the length of a String to the given size
    * ie applies s.substring(0,length) for given length iff
-   * length<s.length() */
+   * length&lt;s.length() */
   public static String limitLength(String s, int length) {
     if (s.length() > length) return s.substring(0, length);
     else return s;

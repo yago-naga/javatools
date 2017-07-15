@@ -27,7 +27,7 @@ limitations under the License.
   Example:
   <PRE>
   // We need this class to define how to construct an Employer from a table row
-  public static class EmployerWrapper implements ResultWrapper&lt;Employer> {
+  public static class EmployerWrapper implements ResultWrapper&lt;Employer&gt; {
   
      // Wraps the current row in a ResultSet into an Employer
      public Employer wrap(ResultSet r) {  
@@ -37,7 +37,7 @@ limitations under the License.
   }
   
   Database d=new OracleDatabase("scott","tiger");
-  for(Employer e : d.query("SELECT * FROM employers WHERE salary>1000",
+  for(Employer e : d.query("SELECT * FROM employers WHERE salary&gt;1000",
                            new EmployerConstructor())) {
      System.out.println(e);
   }

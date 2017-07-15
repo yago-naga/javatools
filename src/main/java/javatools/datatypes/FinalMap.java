@@ -20,12 +20,12 @@ limitations under the License.
 Provides a nicer constructor for a TreeMap. 
 Example:
 <PRE>
-   FinalMap<String,Integer> f=new FinalMap(
+   FinalMap&lt;String,Integer&gt; f=new FinalMap(
      "a",1,
      "b",2,
      "c",3);
    System.out.println(f.get("b"));
-   --> 2
+   --&gt; 2
 </PRE>
 */
 public class FinalMap<T1 extends Comparable, T2> extends TreeMap<T1, T2> {

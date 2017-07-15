@@ -31,7 +31,7 @@ as many elements as you give it). It is more efficient than a LinkedList. <BR>
 Example:<BR>
 <PRE>
     // Create a queue with some initial elements
-    Queue&lt;Integer> a=new ArrayQueue&lt;Integer>(1,2,3,4,5,6,7,8);
+    Queue&lt;Integer&gt; a=new ArrayQueue&lt;Integer&gt;(1,2,3,4,5,6,7,8);
     int counter=9;
     // Always add one new element and poll two
     while(a.size()!=0) {
@@ -39,7 +39,7 @@ Example:<BR>
       D.p(a.poll());
       D.p(a.poll());      
     }
-    -->
+    --&gt;
         1,2,3,...,14
 </PRE>
 */

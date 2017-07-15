@@ -29,7 +29,7 @@ limitations under the License.
   The class provides an iterator over the lines in a comma-separated file<BR>
   Example:
   <PRE>
-      for(List<String> columns : new CSVFile("c:\\autoexec.csv")) {
+      for(List&lt;String&gt; columns : new CSVFile("c:\\autoexec.csv")) {
          System.out.println(columns);
       }
   </PRE>

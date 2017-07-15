@@ -50,7 +50,7 @@ limitations under the License.
    // Choose hyponomy
    File relationDef=new File("wn_hyp.pl");
    // Choose to store only nouns and verbs
-   EnumSet<WordNet.WordType> types
+   EnumSet&lt;WordNet.WordType&gt; types
    =EnumSet.of(WordNet.WordType.NOUN,WordNet.WordType.VERB);
    // Choose to store only two senses per word
    int sensesPerWord=2;
@@ -59,7 +59,7 @@ limitations under the License.
    D.p(s);              // Print synset
    D.p(" "+s.getUps()); // Print direct supersynsets
    }
- -->
+ --&gt;
    Synset #102244530 (NOUN): [mouse, ]
    [Synset #102243671 (NOUN): [rodent, gnawer, gnawing_animal, ]]
    Synset #103651364 (NOUN): [mouse, computer_mouse, ]
@@ -408,7 +408,7 @@ public class WordNet implements Serializable {
   /** Returns the nearest common ancestor of two synsets. 
    * The NCA (nearest common ancestor) is the ancestor node for both synsets that has the
    * smallest distance (number of edges) to them. This need not be the lowest common ancestor!
-   * Returns the distance source->NCA in dist1[0] and the distance destination->NCA in dist2[0].
+   * Returns the distance source-&gt;NCA in dist1[0] and the distance destination-&gt;NCA in dist2[0].
    * In case of failure, null is returned and dist1[0]=dist2[0]=-1. */
   public Synset nca(Synset source, Synset destination, int[] dist1, int[] dist2) {
     if (source == destination) {
@@ -435,7 +435,7 @@ public class WordNet implements Serializable {
     return (nca(s1, s2, dist1, dist2));
   }
 
-  /** Returns the length of s1->NCA->s2, -1 in case of failure */
+  /** Returns the length of s1-&gt;NCA-&gt;s2, -1 in case of failure */
   public int distance(Synset s1, Synset s2) {
     int d1[] = new int[1];
     int d2[] = new int[1];

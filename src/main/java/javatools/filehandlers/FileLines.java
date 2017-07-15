@@ -421,8 +421,6 @@ public class FileLines extends PeekIterator<String> implements Iterable<String>,
 
   /**
    * Reads the string between the delimiters
-   * 
-   * @throws IOException
    */
   public static String readBetween(String in, String start, String end) {
     try {
