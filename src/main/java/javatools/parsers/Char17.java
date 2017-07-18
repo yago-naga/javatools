@@ -395,6 +395,7 @@ public class Char17 {
 
   /** Decodes a backslash sequence */
   public static String decodeBackslash(String string) {
+    if(string == null) return null;
     int pos = string.indexOf('\\');
     if (pos == -1) return (string);
     StringBuilder result = new StringBuilder(string.length());
