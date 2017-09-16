@@ -5,6 +5,7 @@ The Javatools are a collection of Java classes for a variety of small tasks, suc
 ### Prerequisites
 
   * Java 6 or newer
+    Note: in order to use Java 6 or Java 7, you need to comment out javatools.datatypes.FinalSet::spliterator
   * Maven
 
 ### Usage
