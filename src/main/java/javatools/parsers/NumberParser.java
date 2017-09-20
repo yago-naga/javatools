@@ -263,8 +263,8 @@ public class NumberParser {
           result.append(s.charAt(i));
         pos = m.end();
         double val = Double.parseDouble(m.group(1));
-        if (replacement == null) result.append((val + summand) * factor * prefixes.get(m.group(2)) + "").append(' ');
-        else result.append(newNumber((val + summand) * factor * Math.pow(prefixes.get(m.group(2)), pow), replacement)).append(' ');
+        if (replacement == null) result.append((val + summand) * factor * prefixes.get(m.group(2)) + "")/*.append(' ')*/;
+        else result.append(newNumber((val + summand) * factor * Math.pow(prefixes.get(m.group(2)), pow), replacement))/*.append(' ')*/;
       } while (m.find());
       for (int i = pos; i < s.length(); i++)
         result.append(s.charAt(i));
@@ -287,13 +287,13 @@ public class NumberParser {
         pos = m.end();
         double val = Double.parseDouble(m.group(1));
         if (replacement == null) {
-          String rep = (val + summand) * factor * prefixes.get(m.group(2)) + " ";
+          String rep = (val + summand) * factor * prefixes.get(m.group(2)) + "" /*+ " "*/;
           //result.append((val+summand)*factor*prefixes.get(m.group(2))+"").append(' ');
           result.append(rep);
           difference = rep.length() - (m.end() - m.start());
           posTracker.addPositionChange(m.end(), difference);
         } else {
-          String rep = newNumber((val + summand) * factor * Math.pow(prefixes.get(m.group(2)), pow), replacement) + ' ';
+          String rep = newNumber((val + summand) * factor * Math.pow(prefixes.get(m.group(2)), pow), replacement) /*+ ' '*/;
           //result.append(newNumber((val+summand)*factor*Math.pow(prefixes.get(m.group(2)),pow),replacement)).append(' ');
           result.append(rep);
           difference = rep.length() - (m.end() - m.start());
@@ -840,7 +840,7 @@ public class NumberParser {
     for (FindReplace fr : patterns) {
       fr.apply(in, result);
       if (result.length() != 0) {
-        // D.p(fr.pattern,"--->    ",result); // For debugging
+        // D.p(fr.pattern,"--->    '",result, "'"); // For debugging
         StringBuilder temp = in;
         in = result;
         result = temp;
