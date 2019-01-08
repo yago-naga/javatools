@@ -4,3 +4,6 @@
 .classpath
 .project
 .settings
+
+#IntelliJ IDEA generated folder
+.idea

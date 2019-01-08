@@ -424,7 +424,7 @@ public class Char17 {
           i++;
           continue;
         case 'n':
-          result.append((char) 10);
+          result.append(System.lineSeparator());
           i++;
           continue;
         case 'f':
